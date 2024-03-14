@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:icon="@drawable/baseline_home_24"
+        android:title="@string/home"
+        android:id="@+id/Home"/>
+    <item
+        android:icon="@drawable/baseline_calendar_month_24"
+        android:title="@string/entrenamiento"
+        android:id="@+id/entrenamiento"/>
+    <item
+        android:icon="@drawable/baseline_create_24"
+        android:title="@string/calendari"
+        android:id="@+id/calendar"/>
+    <item
+        android:icon="@drawable/ubicacion"
+        android:title="@string/ubication"
+        android:id="@+id/ubication"/>
+</menu>

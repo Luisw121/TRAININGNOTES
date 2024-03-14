@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/signInFragment">
+
+    <fragment
+        android:id="@+id/signInFragment"
+        android:name="com.example.trainingnotes.views.signInFragment"
+        android:label="fragment_sign_in"
+        tools:layout="@layout/fragment_sign_in" >
+        <action
+            android:id="@+id/action_signInFragment_to_signUpFragment"
+            app:destination="@id/signUpFragment" />
+        <action
+            android:id="@+id/action_signInFragment_to_pantallaPrincipalFragment"
+            app:destination="@id/pantallaPrincipalFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/signUpFragment"
+        android:name="com.example.trainingnotes.views.signUpFragment"
+        android:label="fragment_sign_up"
+        tools:layout="@layout/fragment_sign_up" >
+        <action
+            android:id="@+id/action_signUpFragment_to_signInFragment"
+            app:destination="@id/signInFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/pantallaPrincipalFragment"
+        android:name="com.example.trainingnotes.views.pantallaPrincipalFragment"
+        android:label="fragment_pantalla_principal"
+        tools:layout="@layout/fragment_pantalla_principal" >
+        <action
+            android:id="@+id/action_pantallaPrincipalFragment_to_perfilFragment"
+            app:destination="@id/perfilFragment" />
+        <action
+            android:id="@+id/action_pantallaPrincipalFragment_to_entrenamientoFragment"
+            app:destination="@id/entrenamientoFragment" />
+        <action
+            android:id="@+id/action_pantallaPrincipalFragment_to_calendarioFragment"
+            app:destination="@id/calendarioFragment" />
+        <action
+            android:id="@+id/action_pantallaPrincipalFragment_to_mapsFragment"
+            app:destination="@id/mapsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/perfilFragment"
+        android:name="com.example.trainingnotes.perfilFragment"
+        android:label="fragment_perfil"
+        tools:layout="@layout/fragment_perfil" >
+        <action
+            android:id="@+id/action_perfilFragment_to_pantallaPrincipalFragment"
+            app:destination="@id/pantallaPrincipalFragment" />
+        <action
+            android:id="@+id/action_perfilFragment_to_signInFragment"
+            app:destination="@id/signInFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/entrenamientoFragment"
+        android:name="com.example.trainingnotes.entrenamientoFragment"
+        android:label="fragment_entrenamiento"
+        tools:layout="@layout/fragment_entrenamiento" >
+        <action
+            android:id="@+id/action_entrenamientoFragment_to_pantallaPrincipalFragment"
+            app:destination="@id/pantallaPrincipalFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/calendarioFragment"
+        android:name="com.example.trainingnotes.calendarioFragment"
+        android:label="fragment_calendario"
+        tools:layout="@layout/fragment_calendario" >
+        <action
+            android:id="@+id/action_calendarioFragment_to_pantallaPrincipalFragment"
+            app:destination="@id/pantallaPrincipalFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/mapsFragment"
+        android:name="com.example.trainingnotes.mapsFragment"
+        android:label="fragment_maps"
+        tools:layout="@layout/fragment_maps" >
+        <action
+            android:id="@+id/action_mapsFragment_to_pantallaPrincipalFragment"
+            app:destination="@id/pantallaPrincipalFragment" />
+    </fragment>
+</navigation>

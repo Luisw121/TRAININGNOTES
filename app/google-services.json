@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "975638896713",
+    "firebase_url": "https://trainingnotes-b0592-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "trainingnotes-b0592",
+    "storage_bucket": "trainingnotes-b0592.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:975638896713:android:3ba400dea34a6814e65f98",
+        "android_client_info": {
+          "package_name": "com.example.trainingnotes"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "975638896713-5gi1ur1kh0gviv7sg8nua3mhc65qhhgp.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.trainingnotes",
+            "certificate_hash": "09e5fe120dd59841b03a0f2b8db52a1164a705b4"
+          }
+        },
+        {
+          "client_id": "975638896713-9s09te0hnolqfudp2mcpt2el15seqlrm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBHFuxWBWpnuClzFxKibhMHw4UdB3VYJpg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "975638896713-9s09te0hnolqfudp2mcpt2el15seqlrm.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
