@@ -37,12 +37,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         bottomNavigationView.setVisibility(View.GONE);
         navController.addOnDestinationChangedListener((((navController1, navDestination, bundle) -> {
-            if(navDestination.getId() == R.id.pantallaPrincipalFragment ||
-            navDestination.getId() == R.id.entrenamientoFragment ||
-            navDestination.getId() == R.id.calendarioFragment ||
-            navDestination.getId() == R.id.mapsFragment) {
+            if (navDestination.getId() == R.id.pantallaPrincipalFragment ||
+                    navDestination.getId() == R.id.entrenamientoFragment ||
+                    navDestination.getId() == R.id.calendarioFragment ||
+                    navDestination.getId() == R.id.mapsFragment) {
                 bottomNavigationView.setVisibility(View.VISIBLE);
-            }else {
+            } else {
                 bottomNavigationView.setVisibility(View.GONE);
             }
         })));
