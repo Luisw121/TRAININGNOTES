@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,8 +22,13 @@ import com.bumptech.glide.Glide;
 import com.example.trainingnotes.viewmodel.AuthViewModel;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -31,6 +37,7 @@ public class perfilFragment extends Fragment {
     private ImageView fotoPerfilImageView;
     private TextView displayNameTextView;
     private AuthViewModel authViewModel;
+    private static final String TAG = "signInFragment";
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -80,10 +87,54 @@ public class perfilFragment extends Fragment {
         eliminarCUenta.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                authViewModel.deleteAccount();
-                navController.navigate(R.id.signInFragment);
+                FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+                if (currentUser != null) {
+                    // Eliminar la cuenta del Firestore
+                    FirebaseFirestore.getInstance().collection("users").document(currentUser.getUid())
+                            .delete()
+                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    // Eliminar la cuenta de autenticación
+                                    currentUser.delete()
+                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                @Override
+                                                public void onSuccess(Void aVoid) {
+                                                    // Revocar el token de acceso de Google
+                                                    GoogleSignIn.getClient(requireActivity(),
+                                                                    new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                                                                            .build())
+                                                            .revokeAccess()
+                                                            .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                                @Override
+                                                                public void onComplete(@NonNull Task<Void> task) {
+                                                                    // Redirigir al usuario al fragmento de inicio de sesión
+                                                                    navController.navigate(R.id.signInFragment);
+                                                                }
+                                                            });
+                                                }
+                                            })
+                                            .addOnFailureListener(new OnFailureListener() {
+                                                @Override
+                                                public void onFailure(@NonNull Exception e) {
+                                                    // Manejar el fallo de eliminación de cuenta de autenticación
+                                                    Log.e(TAG, "Error al eliminar la cuenta de autenticación: " + e.getMessage());
+                                                }
+                                            });
+                                }
+                            })
+                            .addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    // Manejar el fallo de eliminación de cuenta del Firestore
+                                    Log.e(TAG, "Error al eliminar la cuenta del Firestore: " + e.getMessage());
+                                }
+                            });
+                }
             }
         });
+
+
 
     }
 }
