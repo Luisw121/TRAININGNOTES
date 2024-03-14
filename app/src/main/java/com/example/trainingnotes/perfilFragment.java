@@ -1,5 +1,7 @@
 package com.example.trainingnotes;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -13,6 +15,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -28,9 +31,16 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Arrays;
+import java.util.List;
+import com.google.firebase.firestore.FirebaseFirestore;
+
 
 public class perfilFragment extends Fragment {
     private NavController navController;
@@ -38,6 +48,9 @@ public class perfilFragment extends Fragment {
     private TextView displayNameTextView;
     private AuthViewModel authViewModel;
     private static final String TAG = "signInFragment";
+
+    private List<String> edades = Arrays.asList("5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31", "32", "33", "34", "35", "36", "37", "38", "39", "40");
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -50,7 +63,7 @@ public class perfilFragment extends Fragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        navController = Navigation.findNavController(view);
+        navController = Navigation.findNavController(requireView());
 
         Button cerrarSessionButton = view.findViewById(R.id.buttoncerrarsesion);
 
@@ -133,8 +146,74 @@ public class perfilFragment extends Fragment {
                 }
             }
         });
-
+// Botón para seleccionar la edad
+        Button edadButton = view.findViewById(R.id.button2);
+        edadButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mostrarSelectorDeEdad();
+            }
+        });
 
 
     }
+
+    private void mostrarSelectorDeEdad() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+        builder.setTitle("Selecciona tu edad");
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_list_item_1, edades);
+
+        builder.setAdapter(adapter, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String edadSeleccionada = edades.get(which);
+                // Llama a la función para guardar la edad seleccionada en Firebase
+                guardarEdadSeleccionadaEnFirebase(edadSeleccionada);
+            }
+        });
+
+        builder.show();
+    }
+
+
+    private void guardarEdadSeleccionadaEnFirebase(String edadSeleccionada) {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            String uidUsuario = user.getUid();
+
+            // Obtener la referencia al documento del usuario en Firestore
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            db.collection("users").document(uidUsuario)
+                    .update("edad", edadSeleccionada)
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            // La edad se guardó correctamente en Firestore
+                            // Puedes hacer cualquier acción adicional aquí si es necesario
+                            Log.d(TAG, "Edad guardada correctamente en Firestore");
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            // Hubo un error al guardar la edad en Firestore
+                            Log.e(TAG, "Error al guardar la edad en Firestore: " + e.getMessage());
+                        }
+                    });
+        }
+        TextView edadTextView = getView().findViewById(R.id.edad);
+        edadTextView.setText(edadSeleccionada);
+    }
+
 }
+
+
+
+
+
+/*
+TextView edadTextView = getView().findViewById(R.id.edad);
+    edadTextView.setText(edadSeleccionada);
+ */
+

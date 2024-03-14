@@ -1,10 +1,19 @@
 package com.example.trainingnotes.repository;
 
 import android.app.Application;
+import android.util.Log;
+import android.widget.TextView;
+
+import androidx.annotation.NonNull;
 import androidx.lifecycle.MutableLiveData;
+
+import com.example.trainingnotes.R;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class AutenticationRepository {
     private FirebaseAuth mAuth;

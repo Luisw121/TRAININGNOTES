@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
+        android:id="@+id/Home"
         android:icon="@drawable/baseline_home_24"
-        android:title="@string/home"
-        android:id="@+id/Home"/>
+        android:title="@string/home" />
     <item
+        android:id="@+id/entrenamiento"
         android:icon="@drawable/baseline_calendar_month_24"
-        android:title="@string/entrenamiento"
-        android:id="@+id/entrenamiento"/>
+        android:title="@string/entrenamiento" />
     <item
+        android:id="@+id/calendar"
         android:icon="@drawable/baseline_create_24"
-        android:title="@string/calendari"
-        android:id="@+id/calendar"/>
+        android:title="@string/calendari" />
     <item
+        android:id="@+id/ubication"
         android:icon="@drawable/ubicacion"
-        android:title="@string/ubication"
-        android:id="@+id/ubication"/>
+        android:title="@string/ubication" />
 </menu>

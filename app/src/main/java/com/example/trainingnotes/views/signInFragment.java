@@ -56,7 +56,6 @@ public class signInFragment extends Fragment {
     private ProgressBar signInProgressBar;
     private LinearLayout signInForm;
     private FirebaseAuth mAuth;
-    private static final String TAG = "sigInFragment";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -68,7 +67,6 @@ public class signInFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
         navController = Navigation.findNavController(view);
 
         emailEdit = view.findViewById(R.id.emailEditSignIn);
@@ -168,15 +166,14 @@ public class signInFragment extends Fragment {
                                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                                         @Override
                                         public void onComplete(@NonNull Task<Void> task) {
-                                            if (task.isSuccessful()) {
-                                                navController.navigate(R.id.pantallaPrincipalFragment);
-                                            } else {
+                                            if (!task.isSuccessful()) {
                                                 Snackbar.make(requireView(), "Error al actualizar el perfil: " + task.getException().getMessage(), Snackbar.LENGTH_LONG).show();
                                                 signInForm.setVisibility(View.VISIBLE);
                                                 signInProgressBar.setVisibility(View.GONE);
                                             }
                                         }
                                     });
+                            navController.navigate(R.id.pantallaPrincipalFragment);
                         } else {
                             Snackbar.make(requireView(), "Error al iniciar sesión: " + task.getException().getMessage(), Snackbar.LENGTH_LONG).show();
                             signInForm.setVisibility(View.VISIBLE);
@@ -226,7 +223,7 @@ public class signInFragment extends Fragment {
 
     private void actualizarUI(FirebaseUser currentUser) {
         if(currentUser != null){
-            navController.navigate(R.id.pantallaPrincipalFragment);
+            navController.navigate(R.id.action_signInFragment_to_pantallaPrincipalFragment);
         }
     }
 }

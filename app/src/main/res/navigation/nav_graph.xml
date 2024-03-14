@@ -64,6 +64,12 @@
         <action
             android:id="@+id/action_entrenamientoFragment_to_pantallaPrincipalFragment"
             app:destination="@id/pantallaPrincipalFragment" />
+        <action
+            android:id="@+id/action_entrenamientoFragment_to_calendarioFragment"
+            app:destination="@id/calendarioFragment" />
+        <action
+            android:id="@+id/action_entrenamientoFragment_to_mapsFragment"
+            app:destination="@id/mapsFragment" />
     </fragment>
     <fragment
         android:id="@+id/calendarioFragment"
@@ -73,12 +79,24 @@
         <action
             android:id="@+id/action_calendarioFragment_to_pantallaPrincipalFragment"
             app:destination="@id/pantallaPrincipalFragment" />
+        <action
+            android:id="@+id/action_calendarioFragment_to_entrenamientoFragment"
+            app:destination="@id/entrenamientoFragment" />
+        <action
+            android:id="@+id/action_calendarioFragment_to_mapsFragment"
+            app:destination="@id/mapsFragment" />
     </fragment>
     <fragment
         android:id="@+id/mapsFragment"
         android:name="com.example.trainingnotes.mapsFragment"
         android:label="fragment_maps"
         tools:layout="@layout/fragment_maps" >
+        <action
+            android:id="@+id/action_mapsFragment_to_calendarioFragment"
+            app:destination="@id/calendarioFragment" />
+        <action
+            android:id="@+id/action_mapsFragment_to_entrenamientoFragment"
+            app:destination="@id/entrenamientoFragment" />
         <action
             android:id="@+id/action_mapsFragment_to_pantallaPrincipalFragment"
             app:destination="@id/pantallaPrincipalFragment" />
