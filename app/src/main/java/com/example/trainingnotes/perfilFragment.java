@@ -2,6 +2,8 @@ package com.example.trainingnotes;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -33,12 +35,17 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 import com.google.firebase.firestore.FirebaseFirestore;
 
 
@@ -47,6 +54,7 @@ public class perfilFragment extends Fragment {
     private ImageView fotoPerfilImageView;
     private TextView displayNameTextView;
     private AuthViewModel authViewModel;
+    private TextView edadTextView;
     private static final String TAG = "signInFragment";
 
     private List<String> edades = Arrays.asList("5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31", "32", "33", "34", "35", "36", "37", "38", "39", "40");
@@ -67,6 +75,8 @@ public class perfilFragment extends Fragment {
 
         Button cerrarSessionButton = view.findViewById(R.id.buttoncerrarsesion);
 
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
         cerrarSessionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -84,13 +94,12 @@ public class perfilFragment extends Fragment {
         fotoPerfilImageView = view.findViewById(R.id.imageView);
         displayNameTextView = view.findViewById(R.id.textView3);
 
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-
         if (user != null) {
             displayNameTextView.setText(user.getDisplayName());
             Glide.with(requireView()).load(user.getPhotoUrl())//obtenemos la imagen del usuario
                     .circleCrop()//para redondear la iamgen del perfil
                     .into(fotoPerfilImageView);
+            obtenerYMostrarEdadDesdeFirestore();
         }
 
         authViewModel = new ViewModelProvider(requireActivity()).get(AuthViewModel.class);
@@ -148,15 +157,34 @@ public class perfilFragment extends Fragment {
         });
 // Botón para seleccionar la edad
         Button edadButton = view.findViewById(R.id.button2);
+        edadTextView = view.findViewById(R.id.edad);
         edadButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mostrarSelectorDeEdad();
             }
         });
-
-
+        ImageView imageView2 = view.findViewById(R.id.imageView2);
+        imageView2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                    Uri uri = Uri.parse("https://www.tiktok.com/@trainingnotes");
+                    Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                    startActivity(intent);
+            }
+        });
+        ImageView instagramicon = view.findViewById(R.id.instagramicon);
+        instagramicon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Uri uri = Uri.parse("https://www.instagram.com/trainingnotesapp/?next=%2F");
+                Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                startActivity(intent);
+            }
+        });
     }
+
+
 
     private void mostrarSelectorDeEdad() {
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
@@ -176,7 +204,6 @@ public class perfilFragment extends Fragment {
         builder.show();
     }
 
-
     private void guardarEdadSeleccionadaEnFirebase(String edadSeleccionada) {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
@@ -184,29 +211,96 @@ public class perfilFragment extends Fragment {
 
             // Obtener la referencia al documento del usuario en Firestore
             FirebaseFirestore db = FirebaseFirestore.getInstance();
+            DocumentReference userRef = db.collection("users").document(uidUsuario);
+
+            // Verificar si el documento del usuario ya existe
+            userRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot document = task.getResult();
+                        if (document.exists()) {
+                            // El documento del usuario ya existe, actualizar la edad
+                            userRef.update("edad", edadSeleccionada)
+                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
+                                            // La edad se guardó correctamente en Firestore
+                                            // Puedes hacer cualquier acción adicional aquí si es necesario
+                                            Log.d(TAG, "Edad guardada correctamente en Firestore");
+                                            // Actualizar el TextView con la nueva edad
+                                            edadTextView.setText(edadSeleccionada);
+                                        }
+                                    })
+                                    .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            // Hubo un error al guardar la edad en Firestore
+                                            Log.e(TAG, "Error al guardar la edad en Firestore: " + e.getMessage());
+                                        }
+                                    });
+                        } else {
+                            // El documento del usuario no existe, crearlo con la edad seleccionada
+                            Map<String, Object> userData = new HashMap<>();
+                            userData.put("edad", edadSeleccionada);
+                            userRef.set(userData)
+                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
+                                            // El documento del usuario se creó correctamente
+                                            Log.d(TAG, "Documento del usuario creado correctamente en Firestore");
+                                            // Actualizar el TextView con la nueva edad
+                                            edadTextView.setText(edadSeleccionada);
+                                        }
+                                    })
+                                    .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            // Hubo un error al crear el documento del usuario en Firestore
+                                            Log.e(TAG, "Error al crear el documento del usuario en Firestore: " + e.getMessage());
+                                        }
+                                    });
+                        }
+                    } else {
+                        // Hubo un error al verificar la existencia del documento del usuario
+                        Log.e(TAG, "Error al verificar la existencia del documento del usuario en Firestore: " + task.getException().getMessage());
+                    }
+                }
+            });
+        }
+    }
+
+    private void obtenerYMostrarEdadDesdeFirestore() {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            String uidUsuario = user.getUid();
+
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
             db.collection("users").document(uidUsuario)
-                    .update("edad", edadSeleccionada)
-                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    .get()
+                    .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                         @Override
-                        public void onSuccess(Void aVoid) {
-                            // La edad se guardó correctamente en Firestore
-                            // Puedes hacer cualquier acción adicional aquí si es necesario
-                            Log.d(TAG, "Edad guardada correctamente en Firestore");
+                        public void onSuccess(DocumentSnapshot documentSnapshot) {
+                            if (documentSnapshot.exists()) {
+                                String edad = documentSnapshot.getString("edad");
+                                if (edad != null) {
+                                    // Mostrar la edad en el TextView
+                                    edadTextView.setText(edad);
+                                }
+                            }
                         }
                     })
                     .addOnFailureListener(new OnFailureListener() {
                         @Override
                         public void onFailure(@NonNull Exception e) {
-                            // Hubo un error al guardar la edad en Firestore
-                            Log.e(TAG, "Error al guardar la edad en Firestore: " + e.getMessage());
+                            Log.e(TAG, "Error al obtener la edad desde Firestore: " + e.getMessage());
                         }
                     });
         }
-        TextView edadTextView = getView().findViewById(R.id.edad);
-        edadTextView.setText(edadSeleccionada);
     }
 
 }
+
 
 
 
