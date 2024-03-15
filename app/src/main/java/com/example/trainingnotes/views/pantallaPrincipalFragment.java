@@ -4,6 +4,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
@@ -13,10 +14,13 @@ import androidx.navigation.Navigation;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.example.trainingnotes.MainActivity;
 import com.example.trainingnotes.R;
 import com.example.trainingnotes.viewmodel.AuthViewModel;
 import com.google.firebase.auth.FirebaseAuth;
@@ -55,6 +59,13 @@ public class pantallaPrincipalFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 navController.navigate(R.id.action_pantallaPrincipalFragment_to_perfilFragment);
+            }
+        });
+        ConstraintLayout entrenamiento = view.findViewById(R.id.buttonEntrenamiento);
+        entrenamiento.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                navController.navigate(R.id.action_pantallaPrincipalFragment_to_entrenamientoFragment);
             }
         });
     }
