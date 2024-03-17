@@ -22,6 +22,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.trainingnotes.viewmodel.AuthViewModel;
@@ -55,7 +56,10 @@ public class perfilFragment extends Fragment {
     private ImageView fotoPerfilImageView;
     private TextView displayNameTextView;
     private AuthViewModel authViewModel;
-    private TextView edadTextView, alturaTextView, pesoTextView, genero;
+    private TextView edadTextView, alturaTextView, pesoTextView, genero, textViewNombreUsuario;
+    private Button buttonCambiarNombre;
+    private FirebaseAuth mAuth;
+    private FirebaseFirestore db;
     private static final String TAG = "signInFragment";
 
     private List<String> edades = Arrays.asList("5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31", "32", "33", "34", "35", "36", "37", "38", "39", "40");
@@ -74,8 +78,10 @@ public class perfilFragment extends Fragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-
         navController = Navigation.findNavController(requireView());
+
+        mAuth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
 
         Button cerrarSessionButton = view.findViewById(R.id.buttoncerrarsesion);
 
@@ -111,6 +117,7 @@ public class perfilFragment extends Fragment {
             obtenerYMostrarPesoDesdeFirestore();
             obtenerYMostrarGeneroDesdeFirestore();
         }
+        obtenerYMostrarNombreUsuarioDesdeFirestore();
 
         authViewModel = new ViewModelProvider(requireActivity()).get(AuthViewModel.class);
 
@@ -220,7 +227,109 @@ public class perfilFragment extends Fragment {
             }
         });
 
+        textViewNombreUsuario = view.findViewById(R.id.textView3);
+        buttonCambiarNombre = view.findViewById(R.id.buttonnameusuario);
+
+        buttonCambiarNombre.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mostrarDialogoCambiarNombre(); 
+            }
+        });
+
     }
+
+    private void mostrarDialogoCambiarNombre() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setTitle("Cambiar nombre de usuario");
+
+        // Set up the input
+        final EditText input = new EditText(getContext());
+        builder.setView(input);
+
+        // Set up the buttons
+        builder.setPositiveButton("Guardar", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String nuevoNombre = input.getText().toString();
+                if (!nuevoNombre.isEmpty()) {
+                    FirebaseUser user = mAuth.getCurrentUser();
+                    if (user != null) {
+                        // Verificar si el nombre de usuario ya está actualizado en Firestore
+                        DocumentReference userRef = db.collection("users").document(user.getUid());
+                        userRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                if (task.isSuccessful()) {
+                                    DocumentSnapshot document = task.getResult();
+                                    if (document.exists()) {
+                                        String nombreActual = document.getString("nombre");
+                                        if (nombreActual != null && nombreActual.equals(nuevoNombre)) {
+                                            Toast.makeText(getContext(), "El nombre de usuario ya está actualizado", Toast.LENGTH_SHORT).show();
+                                        } else {
+                                            // Actualizar el TextView con el nuevo nombre
+                                            textViewNombreUsuario.setText(nuevoNombre);
+
+                                            // Guardar el nuevo nombre en Firestore
+                                            Map<String, Object> data = new HashMap<>();
+                                            data.put("nombre", nuevoNombre);
+                                            db.collection("users").document(user.getUid())
+                                                    .update(data)
+                                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                        @Override
+                                                        public void onSuccess(Void aVoid) {
+                                                            Toast.makeText(getContext(), "Nombre de usuario cambiado correctamente", Toast.LENGTH_SHORT).show();
+                                                        }
+                                                    })
+                                                    .addOnFailureListener(new OnFailureListener() {
+                                                        @Override
+                                                        public void onFailure(@NonNull Exception e) {
+                                                            Toast.makeText(getContext(), "Error al cambiar el nombre de usuario: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                                        }
+                                                    });
+                                        }
+                                    }
+                                } else {
+                                    Log.d(TAG, "Error al obtener el documento:", task.getException());
+                                }
+                            }
+                        });
+                    }
+                }
+            }
+        });
+        builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+
+        builder.show();
+    }
+    private void obtenerYMostrarNombreUsuarioDesdeFirestore() {
+        FirebaseUser user = mAuth.getCurrentUser();
+        if (user != null) {
+            DocumentReference userRef = db.collection("users").document(user.getUid());
+            userRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot document = task.getResult();
+                        if (document.exists()) {
+                            String nombreUsuario = document.getString("nombre");
+                            if (nombreUsuario != null) {
+                                textViewNombreUsuario.setText(nombreUsuario);
+                            }
+                        }
+                    } else {
+                        Log.d(TAG, "Error al obtener el nombre de usuario:", task.getException());
+                    }
+                }
+            });
+        }
+    }
+
 
     private void obtenerYMostrarGeneroDesdeFirestore() {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
