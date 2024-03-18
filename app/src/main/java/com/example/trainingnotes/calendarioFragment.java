@@ -72,7 +72,7 @@ public class calendarioFragment extends Fragment {
                 if (snapshot.getValue() != null) {
                     editText.setText(snapshot.getValue().toString());
                 }else {
-                    editText.setText("null");
+                    editText.setText("vacio");
                 }
             }
 
