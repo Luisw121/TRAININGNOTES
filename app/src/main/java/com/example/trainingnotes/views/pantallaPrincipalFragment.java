@@ -29,7 +29,7 @@ import com.google.firebase.auth.FirebaseUser;
 public class pantallaPrincipalFragment extends Fragment {
 
     private NavController navController;
-    TextView displayNameTextVIew;
+    //TextView displayNameTextVIew;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -45,12 +45,12 @@ public class pantallaPrincipalFragment extends Fragment {
         navController = Navigation.findNavController(view);
 
         ImageView perfil = view.findViewById(R.id.perfil);
-        displayNameTextVIew = view.findViewById(R.id.nombreperfil);
+        //displayNameTextVIew = view.findViewById(R.id.nombreperfil);
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
         if (user != null) {
-            displayNameTextVIew.setText(user.getDisplayName());
+            //displayNameTextVIew.setText(user.getDisplayName());
             Glide.with(requireActivity()).load(user.getPhotoUrl())
                     .circleCrop()
                     .into(perfil);

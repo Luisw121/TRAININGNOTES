@@ -90,6 +90,7 @@
 
     <Button
         android:id="@+id/buttoncambiopeso"
+        style="@style/FirebaseUI.Button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:backgroundTint="@color/black"
@@ -124,6 +125,7 @@
 
     <Button
         android:id="@+id/buttonnameusuario"
+        style="@style/FirebaseUI.Button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:backgroundTint="@color/black"
@@ -136,6 +138,7 @@
 
     <Button
         android:id="@+id/buttongenero"
+        style="@style/FirebaseUI.Button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:backgroundTint="@color/black"
@@ -147,6 +150,7 @@
 
     <Button
         android:id="@+id/button2"
+        style="@style/FirebaseUI.Button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="24dp"
@@ -161,6 +165,7 @@
 
     <Button
         android:id="@+id/buttonaltura"
+        style="@style/FirebaseUI.Button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:backgroundTint="@color/black"
@@ -194,6 +199,7 @@
 
     <Button
         android:id="@+id/buttoneliminarcuenta"
+        style="@style/FirebaseUI.Button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:backgroundTint="@color/rojoflojo"
@@ -206,6 +212,7 @@
 
     <Button
         android:id="@+id/buttoncerrarsesion"
+        style="@style/FirebaseUI.Button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
