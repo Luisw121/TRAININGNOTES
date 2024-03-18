@@ -16,11 +16,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,56 +31,60 @@ public class entrenamientoFragment extends Fragment {
     private RecyclerView recyclerView;
     private BlockAdapter adapter;
     private List<Block> blockList;
-    private DatabaseReference databaseReference;
+    private FirebaseFirestore firestore;
+    private FirebaseAuth auth;
+    private FirebaseUser currentUser;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        blockList = new ArrayList<>();
-        databaseReference = FirebaseDatabase.getInstance().getReference("blocks");
-        loadBlocksFromFirebase();
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_entrenamiento, container, false);
+        View view = inflater.inflate(R.layout.fragment_entrenamiento, container, false);
+        recyclerView = view.findViewById(R.id.recyclerViewBlocks);
+        return view;
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        recyclerView = view.findViewById(R.id.recyclerViewBlocks);
+        blockList = new ArrayList<>();
+        adapter = new BlockAdapter(blockList);
+
+        recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
+        recyclerView.setAdapter(adapter);
+
+        firestore = FirebaseFirestore.getInstance();
+        auth = FirebaseAuth.getInstance();
+        currentUser = auth.getCurrentUser();
+
+        if (currentUser != null) {
+            loadBlocksFromFirestore(currentUser.getUid());
+        }
+
         view.findViewById(R.id.addBlockButton).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 showAddBlockDialog();
             }
         });
-
-        adapter = new BlockAdapter(blockList, databaseReference);
-
-        recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
-        recyclerView.setAdapter(adapter);
-
-
     }
 
-    private void loadBlocksFromFirebase() {
-        databaseReference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                blockList.clear();
-                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                    Block block = dataSnapshot.getValue(Block.class);
-                    blockList.add(block);
-                }
-                adapter.notifyDataSetChanged();
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
+    private void loadBlocksFromFirestore(String userId) {
+        firestore.collection("users").document(userId).collection("blocks")
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    blockList.clear();
+                    for (DocumentSnapshot document : queryDocumentSnapshots) {
+                        Block block = document.toObject(Block.class);
+                        blockList.add(block);
+                    }
+                    adapter.notifyDataSetChanged();
+                })
+                .addOnFailureListener(e -> {
+                    // Handle errors
+                });
     }
+
     private void showAddBlockDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
         builder.setTitle("Agregar Bloque");
@@ -94,7 +100,7 @@ public class entrenamientoFragment extends Fragment {
             public void onClick(DialogInterface dialog, int which) {
                 String blockName = input.getText().toString();
                 if (!blockName.isEmpty()) {
-                    addBlockToFirebase(blockName);
+                    addBlockToFirestore(blockName);
                 }
             }
         });
@@ -108,18 +114,17 @@ public class entrenamientoFragment extends Fragment {
         builder.show();
     }
 
-    private void addBlockToFirebase(String blockName) {
-        // Generar una clave única para el nuevo bloque
-        String blockId = databaseReference.push().getKey();
-
-        // Crear un objeto Block con el nombre proporcionado
+    private void addBlockToFirestore(String blockName) {
         Block block = new Block(blockName);
-
-        // Guardar el bloque en la base de datos Firebase
-        if (blockId != null) {
-            databaseReference.child(blockId).setValue(block);
-        }
+        firestore.collection("users").document(currentUser.getUid()).collection("blocks")
+                .add(block)
+                .addOnSuccessListener(documentReference -> {
+                    // Block added successfully
+                    blockList.add(block);
+                    adapter.notifyDataSetChanged();
+                })
+                .addOnFailureListener(e -> {
+                    // Handle errors
+                });
     }
-
-
 }

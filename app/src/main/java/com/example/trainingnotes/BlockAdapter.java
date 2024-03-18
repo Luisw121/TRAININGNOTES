@@ -10,19 +10,23 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.List;
 
 public class BlockAdapter extends RecyclerView.Adapter<BlockAdapter.BlockViewHolder> {
     private List<Block> blockList;
     private Context context;
-    private DatabaseReference databaseReference;
+    private CollectionReference blocksCollection;
 
-    public BlockAdapter( List<Block> blockList, DatabaseReference databaseReference) {
+    public BlockAdapter(List<Block> blockList) {
         this.blockList = blockList;
-        this.databaseReference = databaseReference;
+
     }
 
     @NonNull
@@ -37,23 +41,22 @@ public class BlockAdapter extends RecyclerView.Adapter<BlockAdapter.BlockViewHol
         Block block = blockList.get(position);
         holder.bind(block);
 
-        holder.deleteButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                deleteBlock(holder.getAdapterPosition());
-            }
-        });
-
+        holder.deleteButton.setOnClickListener(v -> deleteBlock(position));
     }
 
     private void deleteBlock(int position) {
         Block block = blockList.get(position);
         String blockName = block.getBlockName();
 
-        blockList.remove(position);
-        notifyDataSetChanged();
-
-        databaseReference.child(blockName).removeValue();
+        blocksCollection.document(blockName)
+                .delete()
+                .addOnSuccessListener(aVoid -> {
+                    blockList.remove(position);
+                    notifyDataSetChanged();
+                })
+                .addOnFailureListener(e -> {
+                    // Handle error
+                });
     }
 
     @Override
