@@ -23,10 +23,11 @@ public class BlockAdapter extends RecyclerView.Adapter<BlockAdapter.BlockViewHol
     private List<Block> blockList;
     private Context context;
     private CollectionReference blocksCollection;
+    private OnDeleteClickListener onDeleteClickListener;
 
-    public BlockAdapter(List<Block> blockList) {
+    public BlockAdapter(List<Block> blockList, CollectionReference blocksCollection) {
         this.blockList = blockList;
-
+        this.blocksCollection = blocksCollection;
     }
 
     @NonNull
@@ -41,27 +42,22 @@ public class BlockAdapter extends RecyclerView.Adapter<BlockAdapter.BlockViewHol
         Block block = blockList.get(position);
         holder.bind(block);
 
-        holder.deleteButton.setOnClickListener(v -> deleteBlock(position));
-    }
-
-    private void deleteBlock(int position) {
-        Block block = blockList.get(position);
-        String blockName = block.getBlockName();
-
-        blocksCollection.document(blockName)
-                .delete()
-                .addOnSuccessListener(aVoid -> {
-                    blockList.remove(position);
-                    notifyDataSetChanged();
-                })
-                .addOnFailureListener(e -> {
-                    // Handle error
-                });
+        holder.deleteButton.setOnClickListener(v -> {
+            if (onDeleteClickListener != null) {
+                onDeleteClickListener.onDeleteClick(block.getBlockName());
+            }
+        });
     }
 
     @Override
     public int getItemCount() {
         return blockList.size();
+    }
+    public void setOnDeleteClickListener(OnDeleteClickListener listener) {
+        this.onDeleteClickListener = listener;
+    }
+    public interface OnDeleteClickListener {
+        void onDeleteClick(String position);
     }
 
     public class BlockViewHolder extends RecyclerView.ViewHolder {
@@ -78,5 +74,6 @@ public class BlockAdapter extends RecyclerView.Adapter<BlockAdapter.BlockViewHol
             blockNameTextView.setText(block.getBlockName());
         }
     }
+
 }
 

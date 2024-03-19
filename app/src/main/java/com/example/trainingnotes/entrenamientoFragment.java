@@ -15,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ImageView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -34,7 +35,7 @@ public class entrenamientoFragment extends Fragment {
     private FirebaseFirestore firestore;
     private FirebaseAuth auth;
     private FirebaseUser currentUser;
-
+    private CollectionReference blocksCollectionRef;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -47,24 +48,33 @@ public class entrenamientoFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        blockList = new ArrayList<>();
-        adapter = new BlockAdapter(blockList);
-
-        recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
-        recyclerView.setAdapter(adapter);
-
         firestore = FirebaseFirestore.getInstance();
         auth = FirebaseAuth.getInstance();
         currentUser = auth.getCurrentUser();
 
         if (currentUser != null) {
+            blocksCollectionRef = firestore.collection("users").document(currentUser.getUid()).collection("blocks");
             loadBlocksFromFirestore(currentUser.getUid());
         }
+
+        blockList = new ArrayList<>();
+        adapter = new BlockAdapter(blockList, blocksCollectionRef);
+
+        recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
+        recyclerView.setAdapter(adapter);
 
         view.findViewById(R.id.addBlockButton).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 showAddBlockDialog();
+            }
+        });
+
+        // Configurar el RecyclerView para manejar los clics en los botones de eliminar
+        adapter.setOnDeleteClickListener(new BlockAdapter.OnDeleteClickListener() {
+            @Override
+            public void onDeleteClick(String blockName) {
+                deleteBlockFromFirestore(blockName);
             }
         });
     }
@@ -127,4 +137,30 @@ public class entrenamientoFragment extends Fragment {
                     // Handle errors
                 });
     }
+    private void deleteBlockFromFirestore(String blockName) {
+        blocksCollectionRef.whereEqualTo("blockName", blockName)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    for (DocumentSnapshot document : queryDocumentSnapshots) {
+                        document.getReference().delete()
+                                .addOnSuccessListener(aVoid -> {
+                                    // Eliminar el bloque localmente
+                                    for (int i = 0; i < blockList.size(); i++) {
+                                        if (blockList.get(i).getBlockName().equals(blockName)) {
+                                            blockList.remove(i);
+                                            adapter.notifyItemRemoved(i);
+                                            break;
+                                        }
+                                    }
+                                })
+                                .addOnFailureListener(e -> {
+                                    System.out.println("Error al eliminar el bloque de Firestore: " + e.getMessage());
+                                });
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    System.out.println("Error al consultar el bloque en Firestore: " + e.getMessage());
+                });
+    }
+
 }
