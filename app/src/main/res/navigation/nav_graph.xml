@@ -70,6 +70,9 @@
         <action
             android:id="@+id/action_entrenamientoFragment_to_mapsFragment"
             app:destination="@id/mapsFragment" />
+        <action
+            android:id="@+id/action_entrenamientoFragment_to_blockDetailFragment"
+            app:destination="@id/blockDetailFragment" />
     </fragment>
     <fragment
         android:id="@+id/calendarioFragment"
@@ -101,4 +104,9 @@
             android:id="@+id/action_mapsFragment_to_pantallaPrincipalFragment"
             app:destination="@id/pantallaPrincipalFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/blockDetailFragment"
+        android:name="com.example.trainingnotes.BlockDetailFragment"
+        android:label="fragment_block_detail"
+        tools:layout="@layout/fragment_block_detail" />
 </navigation>

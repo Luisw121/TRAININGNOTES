@@ -24,7 +24,14 @@ public class BlockAdapter extends RecyclerView.Adapter<BlockAdapter.BlockViewHol
     private Context context;
     private CollectionReference blocksCollection;
     private OnDeleteClickListener onDeleteClickListener;
-
+    private OnBlockClickListener onBlockClickListener;
+    private OnItemClickListener listener;
+    public interface OnItemClickListener {
+        void onItemClick(String blockName);
+    }
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        this.listener = listener;
+    }
     public BlockAdapter(List<Block> blockList, CollectionReference blocksCollection) {
         this.blockList = blockList;
         this.blocksCollection = blocksCollection;
@@ -47,6 +54,11 @@ public class BlockAdapter extends RecyclerView.Adapter<BlockAdapter.BlockViewHol
                 onDeleteClickListener.onDeleteClick(block.getBlockName());
             }
         });
+        holder.itemView.setOnClickListener(v -> {
+            if (onBlockClickListener != null) {
+                listener.onItemClick(block.getBlockName());
+            }
+        });
     }
 
     @Override
@@ -58,6 +70,14 @@ public class BlockAdapter extends RecyclerView.Adapter<BlockAdapter.BlockViewHol
     }
     public interface OnDeleteClickListener {
         void onDeleteClick(String position);
+    }
+
+    // Método para establecer el listener
+    public void setOnBlockClickListener(OnBlockClickListener listener) {
+        this.onBlockClickListener = listener;
+    }
+    public interface OnBlockClickListener {
+        void onBlockClick(String blockName);
     }
 
     public class BlockViewHolder extends RecyclerView.ViewHolder {

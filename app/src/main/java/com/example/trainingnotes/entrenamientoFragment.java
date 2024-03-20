@@ -7,6 +7,8 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -15,15 +17,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.ImageView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -77,6 +76,39 @@ public class entrenamientoFragment extends Fragment {
                 deleteBlockFromFirestore(blockName);
             }
         });
+        adapter.setOnBlockClickListener(new BlockAdapter.OnBlockClickListener() {
+            @Override
+            public void onBlockClick(String blockName) {
+                createAdditionalCollectionInFirestore(blockName);
+            }
+        });
+        adapter.setOnItemClickListener(new BlockAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(String blockName) {
+                // Navegar al nuevo fragmento y pasar el nombre del elemento como argumento
+                navigateToBlockDetailFragment(blockName);
+            }
+        });
+    }
+
+    private void createAdditionalCollectionInFirestore(String blockName) {
+        // Por ejemplo, crea una colección llamada "datos" dentro de cada bloque
+        firestore.collection("users").document(currentUser.getUid())
+                .collection("blocks").document(blockName).collection("datos")
+                .add(new DatoInicial())
+                .addOnSuccessListener(documentReference -> {
+                    // Documento agregado exitosamente a la colección "datos"
+                })
+                .addOnFailureListener(e -> {
+                    // Handle errors
+                });
+    }
+
+    private void navigateToBlockDetailFragment(String blockName) {
+        Bundle bundle = new Bundle();
+        bundle.putString("blockName", blockName);
+        NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
+        navController.navigate(R.id.action_entrenamientoFragment_to_blockDetailFragment, bundle);
     }
 
     private void loadBlocksFromFirestore(String userId) {
@@ -132,6 +164,8 @@ public class entrenamientoFragment extends Fragment {
                     // Block added successfully
                     blockList.add(block);
                     adapter.notifyDataSetChanged();
+
+                    createAdditionalCollectionInFirestore(blockName);
                 })
                 .addOnFailureListener(e -> {
                     // Handle errors
