@@ -83,6 +83,12 @@ public class BlockDetailFragment extends Fragment {
                 showAddElementDialog();
             }
         });
+        adapterElement.setOnDeleteClickListener(new BlockAdapter.OnDeleteClickListener() {
+            @Override
+            public void onDeleteClick(String position) {
+                deleteElementFromFirestore(position);
+            }
+        });
 
     }
 
@@ -142,13 +148,35 @@ public class BlockDetailFragment extends Fragment {
                 .add(element)
                 .addOnSuccessListener(documentReference -> {
                     elementList.add(element);
-
                     adapterElement.notifyDataSetChanged();
 
                 })
                 .addOnFailureListener(e -> {
-                    System.out.println("Error " + e.getMessage());
+
                 });
     }
-
+    private void deleteElementFromFirestore(String blockname) {
+        elementsCollectionRef.whereEqualTo("blockName", blockname)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    for (DocumentSnapshot document : queryDocumentSnapshots) {
+                        document.getReference().delete()
+                                .addOnSuccessListener(aVoid -> {
+                                    for (int i = 0; i < elementList.size(); i++) {
+                                        if (elementList.get(i).getName().equals(blockname)) {
+                                            elementList.remove(i);
+                                            adapterElement.notifyItemRemoved(i);
+                                            break;
+                                        }
+                                    }
+                                })
+                                .addOnFailureListener(e -> {
+                                    System.out.println("Error al eliminar el bloque de Firestore: "+ e.getMessage());
+                                });
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    System.out.println("Error al consultar el bloque en Firestore: " + e.getMessage());
+                });
     }
+}
