@@ -36,9 +36,11 @@ public class ElementAdapter extends RecyclerView.Adapter<ElementAdapter.ElementV
         Element element = elementList.get(position);
         holder.bind(element);
 
-        holder.deleteButton.setOnClickListener(v -> {
-            if (onDeleteClickListener != null) {
-                onDeleteClickListener.onDeleteClick(element.getName());
+        holder.deleteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                elementList.remove(v);
+                notifyDataSetChanged();
             }
         });
     }

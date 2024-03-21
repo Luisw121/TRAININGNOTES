@@ -20,6 +20,7 @@ import android.widget.TextView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -48,13 +49,13 @@ public class BlockDetailFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_block_detail, container, false);
+        recyclerViewElement = view.findViewById(R.id.recyclerViewElements);
 
         String blockname = getArguments().getString("blockName");
 
         TextView blockNameTextView = view.findViewById(R.id.blockDetailNameTextView);
         blockNameTextView.setText(blockname);
 
-        recyclerViewElement = view.findViewById(R.id.recyclerViewElements);
 
         return view;
     }
@@ -83,13 +84,6 @@ public class BlockDetailFragment extends Fragment {
                 showAddElementDialog();
             }
         });
-        adapterElement.setOnDeleteClickListener(new BlockAdapter.OnDeleteClickListener() {
-            @Override
-            public void onDeleteClick(String position) {
-                deleteElementFromFirestore(position);
-            }
-        });
-
     }
 
     private void loadElementsFromFirestore(String uid) {
@@ -110,7 +104,7 @@ public class BlockDetailFragment extends Fragment {
 
     private void showAddElementDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-        builder.setTitle("Agregar Bloque");
+        builder.setTitle("Agregar Elemento");
 
         // Set up the input
         final EditText input = new EditText(requireContext());
@@ -121,11 +115,14 @@ public class BlockDetailFragment extends Fragment {
         builder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                String blockName = getArguments().getString("blockName");
-
                 String elementName = input.getText().toString();
-                if (!blockName.isEmpty()) {
-                    addElementToFirestore(blockName, elementName);
+                if (!elementName.isEmpty()) {
+                    String blockName = getArguments().getString("blockName");
+                    if (blockName != null && !blockName.isEmpty()) {
+                        addElementToFirestore(blockName, elementName);
+                    } else {
+                        // Manejar el caso cuando el nombre del bloque es nulo o vacío
+                    }
                 }
             }
         });
@@ -140,22 +137,42 @@ public class BlockDetailFragment extends Fragment {
     }
     private void addElementToFirestore(String blockName, String elementName) {
         Element element = new Element(elementName);
-        firestoreElement.collection("users")
+
+        // Construir la referencia a la colección "elements" dentro del documento del bloque
+        CollectionReference elementsCollectionRef = firestoreElement.collection("users")
                 .document(currentUserElement.getUid())
                 .collection("blocks")
                 .document(blockName)
-                .collection("elements")
-                .add(element)
+                .collection("elements");
+
+        // Agregar el elemento a la colección "elements"
+        elementsCollectionRef.add(element)
                 .addOnSuccessListener(documentReference -> {
+                    // Manejar el éxito, si es necesario
                     elementList.add(element);
                     adapterElement.notifyDataSetChanged();
-
                 })
                 .addOnFailureListener(e -> {
-
+                    // Manejar el fallo, si es necesario
+                    System.out.println("Error al agregar elemento: " + e.getMessage());
                 });
     }
-    private void deleteElementFromFirestore(String blockname) {
+
+
+
+
+
+}
+/*
+adapterElement.setOnDeleteClickListener(new BlockAdapter.OnDeleteClickListener() {
+            @Override
+            public void onDeleteClick(String position) {
+                deleteElementFromFirestore(position);
+            }
+        });
+ */
+/*
+private void deleteElementFromFirestore(String blockname) {
         elementsCollectionRef.whereEqualTo("blockName", blockname)
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
@@ -179,4 +196,4 @@ public class BlockDetailFragment extends Fragment {
                     System.out.println("Error al consultar el bloque en Firestore: " + e.getMessage());
                 });
     }
-}
+ */

@@ -79,7 +79,6 @@ public class entrenamientoFragment extends Fragment {
         adapter.setOnBlockClickListener(new BlockAdapter.OnBlockClickListener() {
             @Override
             public void onBlockClick(String blockName) {
-                createAdditionalCollectionInFirestore(blockName);
             }
         });
         adapter.setOnItemClickListener(new BlockAdapter.OnItemClickListener() {
@@ -89,19 +88,6 @@ public class entrenamientoFragment extends Fragment {
                 navigateToBlockDetailFragment(blockName);
             }
         });
-    }
-
-    private void createAdditionalCollectionInFirestore(String blockName) {
-        // Por ejemplo, crea una colección llamada "datos" dentro de cada bloque
-        firestore.collection("users").document(currentUser.getUid())
-                .collection("blocks").document(blockName).collection("datos")
-                .add(new DatoInicial())
-                .addOnSuccessListener(documentReference -> {
-                    // Documento agregado exitosamente a la colección "datos"
-                })
-                .addOnFailureListener(e -> {
-                    // Handle errors
-                });
     }
 
     private void navigateToBlockDetailFragment(String blockName) {
@@ -165,7 +151,7 @@ public class entrenamientoFragment extends Fragment {
                     blockList.add(block);
                     adapter.notifyDataSetChanged();
 
-                    createAdditionalCollectionInFirestore(blockName);
+
                 })
                 .addOnFailureListener(e -> {
                     // Handle errors
