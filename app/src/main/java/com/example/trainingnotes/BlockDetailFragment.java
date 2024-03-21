@@ -27,11 +27,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BlockDetailFragment extends Fragment {
-    private RecyclerView recyclerView;
-    private FirebaseFirestore firestore;
-    private FirebaseAuth auth;
-    private FirebaseUser currentUser;
-    private ElementAdapter adapter;
+    private RecyclerView recyclerViewElement;
+    private FirebaseFirestore firestoreElement;
+    private FirebaseAuth authElement;
+    private FirebaseUser currentUserElement;
+    private ElementAdapter adapterElement;
     private List<Element> elementList;
     private CollectionReference elementsCollectionRef;
 
@@ -54,7 +54,7 @@ public class BlockDetailFragment extends Fragment {
         TextView blockNameTextView = view.findViewById(R.id.blockDetailNameTextView);
         blockNameTextView.setText(blockname);
 
-        recyclerView = view.findViewById(R.id.recyclerViewElements);
+        recyclerViewElement = view.findViewById(R.id.recyclerViewElements);
 
         return view;
     }
@@ -62,20 +62,20 @@ public class BlockDetailFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        firestore = FirebaseFirestore.getInstance();
-        auth = FirebaseAuth.getInstance();
-        currentUser = auth.getCurrentUser();
+        firestoreElement = FirebaseFirestore.getInstance();
+        authElement = FirebaseAuth.getInstance();
+        currentUserElement = authElement.getCurrentUser();
 
-        if (currentUser != null) {
-            elementsCollectionRef = firestore.collection("blocks").document(currentUser.getUid()).collection("elements");
-            loadElementsFromFirestore(currentUser.getUid());
+        if (currentUserElement != null) {
+            elementsCollectionRef = firestoreElement.collection("blocks").document(currentUserElement.getUid()).collection("elements");
+            loadElementsFromFirestore(currentUserElement.getUid());
         }
 
         elementList = new ArrayList<>();
-        adapter = new ElementAdapter(elementList, elementsCollectionRef);
+        adapterElement = new ElementAdapter(elementList, elementsCollectionRef);
 
-        recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
-        recyclerView.setAdapter(adapter);
+        recyclerViewElement.setLayoutManager(new LinearLayoutManager(requireContext()));
+        recyclerViewElement.setAdapter(adapterElement);
 
         view.findViewById(R.id.añadirElemento).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -87,7 +87,7 @@ public class BlockDetailFragment extends Fragment {
     }
 
     private void loadElementsFromFirestore(String uid) {
-        firestore.collection("blocks").document(uid).collection("elements")
+        firestoreElement.collection("blocks").document(uid).collection("elements")
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     elementList.clear();
@@ -95,7 +95,7 @@ public class BlockDetailFragment extends Fragment {
                         Element element = document.toObject(Element.class);
                         elementList.add(element);
                     }
-                    adapter.notifyDataSetChanged();
+                    adapterElement.notifyDataSetChanged();
                 })
                 .addOnFailureListener(e -> {
                     System.out.println("Error" + e.getMessage());
@@ -134,17 +134,20 @@ public class BlockDetailFragment extends Fragment {
     }
     private void addElementToFirestore(String blockName, String elementName) {
         Element element = new Element(elementName);
-        firestore.collection("users")
-                .document(currentUser.getUid())
+        firestoreElement.collection("users")
+                .document(currentUserElement.getUid())
                 .collection("blocks")
                 .document(blockName)
                 .collection("elements")
                 .add(element)
                 .addOnSuccessListener(documentReference -> {
-                    // Elemento agregado con éxito
+                    elementList.add(element);
+
+                    adapterElement.notifyDataSetChanged();
+
                 })
                 .addOnFailureListener(e -> {
-                    // Maneja el error
+                    System.out.println("Error " + e.getMessage());
                 });
     }
 

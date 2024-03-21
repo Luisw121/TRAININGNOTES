@@ -2,6 +2,7 @@ package com.example.trainingnotes;
 
 public class Element {
     private String name;
+    public Element() {}
 
     public Element(String name) {
         this.name = name;
