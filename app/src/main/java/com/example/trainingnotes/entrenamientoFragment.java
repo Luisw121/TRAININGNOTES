@@ -69,7 +69,6 @@ public class entrenamientoFragment extends Fragment {
             }
         });
 
-        // Configurar el RecyclerView para manejar los clics en los botones de eliminar
         adapter.setOnDeleteClickListener(new BlockAdapter.OnDeleteClickListener() {
             @Override
             public void onDeleteClick(String blockName) {
@@ -109,7 +108,6 @@ public class entrenamientoFragment extends Fragment {
                     adapter.notifyDataSetChanged();
                 })
                 .addOnFailureListener(e -> {
-                    // Handle errors
                 });
     }
 
@@ -117,12 +115,10 @@ public class entrenamientoFragment extends Fragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
         builder.setTitle("Agregar Bloque");
 
-        // Set up the input
         final EditText input = new EditText(requireContext());
         input.setInputType(InputType.TYPE_CLASS_TEXT);
         builder.setView(input);
 
-        // Set up the buttons
         builder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -154,7 +150,6 @@ public class entrenamientoFragment extends Fragment {
 
                 })
                 .addOnFailureListener(e -> {
-                    // Handle errors
                 });
     }
     private void deleteBlockFromFirestore(String blockName) {
@@ -164,7 +159,6 @@ public class entrenamientoFragment extends Fragment {
                     for (DocumentSnapshot document : queryDocumentSnapshots) {
                         document.getReference().delete()
                                 .addOnSuccessListener(aVoid -> {
-                                    // Eliminar el bloque localmente
                                     for (int i = 0; i < blockList.size(); i++) {
                                         if (blockList.get(i).getBlockName().equals(blockName)) {
                                             blockList.remove(i);

@@ -16,7 +16,7 @@ import java.util.List;
 public class ElementAdapter extends RecyclerView.Adapter<ElementAdapter.ElementViewHolder> {
     private List<Element> elementList;
     private CollectionReference elementsCollection;
-    private BlockAdapter.OnDeleteClickListener onDeleteClickListener;
+    private OnDeleteClickListener onDeleteClickListener;
 
 
     public ElementAdapter(List<Element> elementList, CollectionReference elementsCollection) {
@@ -39,8 +39,13 @@ public class ElementAdapter extends RecyclerView.Adapter<ElementAdapter.ElementV
         holder.deleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                elementList.remove(v);
-                notifyDataSetChanged();
+                // Obtener la posición del elemento
+                int adapterPosition = holder.getAdapterPosition();
+                if (adapterPosition != RecyclerView.NO_POSITION) {
+                    // Eliminar el elemento de la lista y notificar al adaptador
+                    elementList.remove(adapterPosition);
+                    notifyItemRemoved(adapterPosition);
+                }
             }
         });
     }
@@ -49,9 +54,12 @@ public class ElementAdapter extends RecyclerView.Adapter<ElementAdapter.ElementV
     public int getItemCount() {
         return elementList.size();
     }
-    public void setOnDeleteClickListener(BlockAdapter.OnDeleteClickListener listener) {
+
+
+    public void setOnDeleteClickListener(OnDeleteClickListener listener) {
         this.onDeleteClickListener = listener;
     }
+
     public interface OnDeleteClickListener {
         void onDeleteClick(String position);
     }
