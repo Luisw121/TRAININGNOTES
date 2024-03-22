@@ -136,5 +136,17 @@
         <action
             android:id="@+id/action_ejerciciosFragment_to_blockDetailFragment"
             app:destination="@id/blockDetailFragment" />
+        <action
+            android:id="@+id/action_ejerciciosFragment_to_datosEjerciciosFragment"
+            app:destination="@id/datosEjerciciosFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/datosEjerciciosFragment"
+        android:name="com.example.trainingnotes.DatosEjerciciosFragment"
+        android:label="fragment_datos_ejercicios"
+        tools:layout="@layout/fragment_datos_ejercicios" >
+        <action
+            android:id="@+id/action_datosEjerciciosFragment_to_ejerciciosFragment"
+            app:destination="@id/ejerciciosFragment" />
     </fragment>
 </navigation>
