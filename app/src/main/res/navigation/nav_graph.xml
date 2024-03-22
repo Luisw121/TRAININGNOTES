@@ -43,6 +43,9 @@
         <action
             android:id="@+id/action_pantallaPrincipalFragment_to_mapsFragment"
             app:destination="@id/mapsFragment" />
+        <action
+            android:id="@+id/action_pantallaPrincipalFragment_to_listaEjerciciosFragment"
+            app:destination="@id/listaEjerciciosFragment" />
     </fragment>
     <fragment
         android:id="@+id/perfilFragment"
@@ -108,5 +111,30 @@
         android:id="@+id/blockDetailFragment"
         android:name="com.example.trainingnotes.BlockDetailFragment"
         android:label="fragment_block_detail"
-        tools:layout="@layout/fragment_block_detail" />
+        tools:layout="@layout/fragment_block_detail" >
+        <action
+            android:id="@+id/action_blockDetailFragment_to_entrenamientoFragment"
+            app:destination="@id/entrenamientoFragment" />
+        <action
+            android:id="@+id/action_blockDetailFragment_to_ejerciciosFragment"
+            app:destination="@id/ejerciciosFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/listaEjerciciosFragment"
+        android:name="com.example.trainingnotes.ListaEjerciciosFragment"
+        android:label="fragment_lista_ejercicios"
+        tools:layout="@layout/fragment_lista_ejercicios" >
+        <action
+            android:id="@+id/action_listaEjerciciosFragment_to_pantallaPrincipalFragment"
+            app:destination="@id/pantallaPrincipalFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/ejerciciosFragment"
+        android:name="com.example.trainingnotes.EjerciciosFragment"
+        android:label="fragment_ejercicios"
+        tools:layout="@layout/fragment_ejercicios" >
+        <action
+            android:id="@+id/action_ejerciciosFragment_to_blockDetailFragment"
+            app:destination="@id/blockDetailFragment" />
+    </fragment>
 </navigation>

@@ -68,5 +68,12 @@ public class pantallaPrincipalFragment extends Fragment {
                 navController.navigate(R.id.action_pantallaPrincipalFragment_to_entrenamientoFragment);
             }
         });
+        ConstraintLayout buttonListaEjercicios = view.findViewById(R.id.buttonListaEjercicios);
+        buttonListaEjercicios.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                navController.navigate(R.id.action_pantallaPrincipalFragment_to_listaEjerciciosFragment);
+            }
+        });
     }
 }

@@ -138,25 +138,19 @@ public class BlockDetailFragment extends Fragment {
     private void addElementToFirestore(String blockName, String elementName) {
         Element element = new Element(elementName);
 
-        // Construir la referencia a la colección "elements" dentro del documento del bloque
-        CollectionReference elementsCollectionRef = firestoreElement.collection("users")
-                .document(currentUserElement.getUid())
-                .collection("blocks")
-                .document(blockName)
-                .collection("elements");
-
-        // Agregar el elemento a la colección "elements"
-        elementsCollectionRef.add(element)
+        firestoreElement.collection("users").document(currentUserElement.getUid()).collection("blocks")
+                .document(currentUserElement.getUid()).collection("elements")
+                .add(element)
                 .addOnSuccessListener(documentReference -> {
-                    // Manejar el éxito, si es necesario
                     elementList.add(element);
                     adapterElement.notifyDataSetChanged();
                 })
                 .addOnFailureListener(e -> {
-                    // Manejar el fallo, si es necesario
-                    System.out.println("Error al agregar elemento: " + e.getMessage());
+
                 });
     }
+
+
 
 
 
