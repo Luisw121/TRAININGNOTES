@@ -1,12 +1,126 @@
 package com.example.trainingnotes;
+import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.api.model.PlaceLikelihood;
+import com.google.android.libraries.places.api.net.FindCurrentPlaceRequest;
+import com.google.android.libraries.places.api.net.FindCurrentPlaceResponse;
+import com.google.android.libraries.places.api.net.PlacesClient;
+
+import java.util.Arrays;
+import java.util.List;
+
+public class mapsFragment extends Fragment implements OnMapReadyCallback {
+    GoogleMap mMap;
+    private PlacesClient placesClient;
+
+    // Lista de palabras clave para filtrar lugares
+    private List<String> keywords = Arrays.asList("gimnasio", "crossfit", "fit-plus");
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_maps, container, false);
+
+        // Inicializar la API de Places
+        String apiKey = getString(R.string.google_maps_key);
+        if (!Places.isInitialized()) {
+            Places.initialize(requireContext(), apiKey);
+        }
+        placesClient = Places.createClient(requireContext());
+
+        // Obtener el mapa asincrónicamente
+        SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
+
+        return view;
+    }
+
+    @Override
+    public void onMapReady(@NonNull GoogleMap googleMap) {
+        mMap = googleMap;
+
+        // Crear la solicitud de encontrar lugares actuales
+        FindCurrentPlaceRequest request = FindCurrentPlaceRequest
+                .newInstance(Arrays.asList(Place.Field.NAME, Place.Field.LAT_LNG));
+
+        // Realizar la solicitud para encontrar los lugares actuales
+        placesClient.findCurrentPlace(request).addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                FindCurrentPlaceResponse response = task.getResult();
+                if (response != null) {
+                    // Iterar sobre los lugares encontrados
+                    for (PlaceLikelihood placeLikelihood : response.getPlaceLikelihoods()) {
+                        Place place = placeLikelihood.getPlace();
+                        String name = place.getName();
+
+                        // Verificar si el nombre del lugar contiene alguna palabra clave
+                        if (name != null && containsKeyword(name.toLowerCase())) {
+                            LatLng location = place.getLatLng();
+
+                            // Agregar marcadores en el mapa para cada lugar encontrado
+                            if (location != null) {
+                                mMap.addMarker(new MarkerOptions().position(location).title(name));
+                            }
+                        }
+                    }
+
+                    // Si se encuentran lugares, mover la cámara al primer lugar encontrado
+                    if (!response.getPlaceLikelihoods().isEmpty()) {
+                        Place place = response.getPlaceLikelihoods().get(0).getPlace();
+                        LatLng location = place.getLatLng();
+                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 12f));
+                    }
+                }
+            } else {
+                // Manejar el caso de que ocurra un error al realizar la solicitud
+                Exception exception = task.getException();
+                if (exception != null) {
+                    exception.printStackTrace();
+                }
+            }
+        });
+    }
+
+    // Método para verificar si el nombre del lugar contiene alguna palabra clave
+    private boolean containsKeyword(String name) {
+        for (String keyword : keywords) {
+            if (name.contains(keyword)) {
+                return true;
+            }
+        }
+        return false;
+    }
+}
+
+
+
+
+/*
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
@@ -17,42 +131,64 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-public class mapsFragment extends Fragment {
-    NavController navController;
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.libraries.places.api.net.PlacesClient;
+
+public class mapsFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnMapClickListener, GoogleMap.OnMapLongClickListener {
+    EditText txtLatitud, txtLongitud;
+    GoogleMap mMap;
+    private PlacesClient placesClient;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_maps, container, false);
+        View view = inflater.inflate(R.layout.fragment_maps, container, false);
+
+        txtLatitud = view.findViewById(R.id.txtLatitud);
+        txtLongitud = view.findViewById(R.id.txtLongitud);
+
+        SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
+
+        return view;
     }
+
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+    public void onMapReady(@NonNull GoogleMap googleMap) {
+        mMap = googleMap;
+        this.mMap.setOnMapClickListener(this);
+        this.mMap.setOnMapLongClickListener(this);
 
-        navController = Navigation.findNavController(view);
+        LatLng barcelona = new LatLng(41.38879, 2.15899);
+        mMap.addMarker(new MarkerOptions().position(barcelona).title("Barcelona"));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(barcelona));
+    }
+    //para darle click en el mapa pueda generarse
+    @Override
+    public void onMapClick(@NonNull LatLng latLng) {
+        txtLatitud.setText(""+latLng.latitude);
+        txtLongitud.setText(""+latLng.longitude);
 
-        EditText editTextSource = view.findViewById(R.id.source);
-        EditText editTextDestination = view.findViewById(R.id.destination);
-        Button button = view.findViewById(R.id.btnSubmit);
+        mMap.clear();
+        LatLng barcelona = new LatLng(latLng.latitude, latLng.longitude);
+        mMap.addMarker(new MarkerOptions().position(barcelona).title(""));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(barcelona));
+    }
+    //para cuando presionemos en el mapa peuda generar el evento
+    @Override
+    public void onMapLongClick(@NonNull LatLng latLng) {
+        txtLatitud.setText(""+latLng.latitude);
+        txtLongitud.setText(""+latLng.longitude);
 
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String source = editTextSource.getText().toString();
-                String destination = editTextDestination.getText().toString();
-
-                if (source.equals("") && destination.equals("")) {
-                    Toast.makeText(getActivity().getApplicationContext(), "Enter both and destination",
-                            Toast.LENGTH_SHORT).show();
-                }
-                else {
-                    Uri uri = Uri.parse("http://www.google.com/maps/dir/" + source + "/" + destination);
-                    Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-                    intent.setPackage("com.google.android.apps.maps");
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    startActivity(intent);
-                }
-            }
-        });
+        mMap.clear();
+        LatLng barcelona = new LatLng(latLng.latitude, latLng.longitude);
+        mMap.addMarker(new MarkerOptions().position(barcelona).title(""));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(barcelona));
     }
 }
+ */

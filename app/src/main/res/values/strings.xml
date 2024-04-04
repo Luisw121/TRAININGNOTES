@@ -6,4 +6,5 @@
     <string name="calendari">Calendari</string>
     <string name="entrenamiento">Entrenamiento</string>
     <string name="home">Home</string>
+    <string name="google_maps_key" translatable="false">AIzaSyAR9zuY_SKb7Ol8eY1f1hjPaHSwrSdR1Fg</string>
 </resources>
