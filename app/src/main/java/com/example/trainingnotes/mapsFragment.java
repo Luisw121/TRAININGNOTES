@@ -1,13 +1,12 @@
 package com.example.trainingnotes;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -16,6 +15,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.LocationRestriction;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.model.PlaceLikelihood;
 import com.google.android.libraries.places.api.net.FindCurrentPlaceRequest;
@@ -30,7 +30,7 @@ public class mapsFragment extends Fragment implements OnMapReadyCallback {
     private PlacesClient placesClient;
 
     // Lista de palabras clave para filtrar lugares
-    private List<String> keywords = Arrays.asList("gimnasio", "crossfit", "fit-plus");
+    private List<String> keywords = Arrays.asList("gimnasio", "crossfit", "fit", "gym", "gimnas", "deportivo", "esport", "deporte");
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -55,9 +55,8 @@ public class mapsFragment extends Fragment implements OnMapReadyCallback {
     public void onMapReady(@NonNull GoogleMap googleMap) {
         mMap = googleMap;
 
-        // Crear la solicitud de encontrar lugares actuales
-        FindCurrentPlaceRequest request = FindCurrentPlaceRequest
-                .newInstance(Arrays.asList(Place.Field.NAME, Place.Field.LAT_LNG));
+        // Crear una solicitud para encontrar lugares actuales con los campos de nombre y latitud-longitud
+        FindCurrentPlaceRequest request = FindCurrentPlaceRequest.newInstance(Arrays.asList(Place.Field.NAME, Place.Field.LAT_LNG));
 
         // Realizar la solicitud para encontrar los lugares actuales
         placesClient.findCurrentPlace(request).addOnCompleteListener(task -> {
@@ -107,7 +106,6 @@ public class mapsFragment extends Fragment implements OnMapReadyCallback {
         return false;
     }
 }
-
 
 
 
