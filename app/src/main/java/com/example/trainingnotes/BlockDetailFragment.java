@@ -32,8 +32,8 @@ public class BlockDetailFragment extends Fragment {
     private FirebaseFirestore firestoreElement;
     private FirebaseAuth authElement;
     private FirebaseUser currentUserElement;
-    private ElementAdapter adapterElement;
-    private List<Element> elementList;
+    private blockAdapter adapterElement;
+    private List<block> elementList;
     private CollectionReference elementsCollectionRef;
 
 
@@ -55,8 +55,6 @@ public class BlockDetailFragment extends Fragment {
 
         TextView blockNameTextView = view.findViewById(R.id.blockDetailNameTextView);
         blockNameTextView.setText(blockname);
-
-
         return view;
     }
     @Override
@@ -69,11 +67,11 @@ public class BlockDetailFragment extends Fragment {
 
         if (currentUserElement != null) {
             elementsCollectionRef = firestoreElement.collection("blocks").document(currentUserElement.getUid()).collection("elements");
-            loadElementsFromFirestore(currentUserElement.getUid());
+            loadElementsFromFirestore(currentUserElement.getUid(), getArguments().getString("blockName"));
         }
 
         elementList = new ArrayList<>();
-        adapterElement = new ElementAdapter(elementList, elementsCollectionRef);
+        adapterElement = new blockAdapter(elementList, elementsCollectionRef);
 
         recyclerViewElement.setLayoutManager(new LinearLayoutManager(requireContext()));
         recyclerViewElement.setAdapter(adapterElement);
@@ -84,7 +82,7 @@ public class BlockDetailFragment extends Fragment {
                 showAddElementDialog();
             }
         });
-        adapterElement.setOnDeleteClickListener(new ElementAdapter.OnDeleteClickListener() {
+        adapterElement.setOnDeleteClickListener(new blockAdapter.OnDeleteClickListener() {
             @Override
             public void onDeleteClick(String position) {
                 deleteElementFromFirestore(position);
@@ -92,21 +90,24 @@ public class BlockDetailFragment extends Fragment {
         });
     }
 
-    private void loadElementsFromFirestore(String userId) {
-        firestoreElement.collection("blocks").document(userId).collection("elements")
+    private void loadElementsFromFirestore(String userId, String blockName) {
+        firestoreElement.collection("users").document(userId).collection("blocks")
+                .document(blockName) // Utiliza el nombre del bloque como ID del documento
+                .collection("elements") // Accede a la colección de elementos dentro del documento de bloque
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     elementList.clear();
                     for (DocumentSnapshot document : queryDocumentSnapshots) {
-                        Element element = document.toObject(Element.class);
+                        block element = document.toObject(block.class);
                         elementList.add(element);
                     }
                     adapterElement.notifyDataSetChanged();
                 })
                 .addOnFailureListener(e -> {
-                    System.out.println("Error" + e.getMessage());
+                    // Error al cargar los elementos
                 });
     }
+
 
     private void showAddElementDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
@@ -139,7 +140,7 @@ public class BlockDetailFragment extends Fragment {
         builder.show();
     }
     private void addElementToFirestore(String blockName, String elementName) {
-        Element element = new Element(elementName);
+        block element = new block(elementName);
 
         DocumentReference blockDocumentRef = firestoreElement.collection("users")
                 .document(currentUserElement.getUid())
@@ -179,6 +180,13 @@ public class BlockDetailFragment extends Fragment {
                 .addOnFailureListener(e -> {
                     System.out.println("Error al consultar el bloque en Firestore: " + e.getMessage());
                 });
+    }
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (currentUserElement != null) {
+            loadElementsFromFirestore(currentUserElement.getUid(), getArguments().getString("blockName"));
+        }
     }
 }
 /*

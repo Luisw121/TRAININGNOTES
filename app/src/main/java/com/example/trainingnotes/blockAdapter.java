@@ -13,13 +13,13 @@ import com.google.firebase.firestore.CollectionReference;
 
 import java.util.List;
 
-public class ElementAdapter extends RecyclerView.Adapter<ElementAdapter.ElementViewHolder> {
-    private List<Element> elementList;
+public class blockAdapter extends RecyclerView.Adapter<blockAdapter.ElementViewHolder> {
+    private List<block> elementList;
     private CollectionReference elementsCollection;
     private OnDeleteClickListener onDeleteClickListener;
 
 
-    public ElementAdapter(List<Element> elementList, CollectionReference elementsCollection) {
+    public blockAdapter(List<block> elementList, CollectionReference elementsCollection) {
         this.elementList = elementList;
         this.elementsCollection = elementsCollection;
     }
@@ -33,7 +33,7 @@ public class ElementAdapter extends RecyclerView.Adapter<ElementAdapter.ElementV
 
     @Override
     public void onBindViewHolder(@NonNull ElementViewHolder holder, int position) {
-        Element element = elementList.get(position);
+        block element = elementList.get(position);
         holder.bind(element);
 
         holder.deleteButton.setOnClickListener(new View.OnClickListener() {
@@ -74,7 +74,7 @@ public class ElementAdapter extends RecyclerView.Adapter<ElementAdapter.ElementV
             deleteButton = itemView.findViewById(R.id.deleteButton);
         }
 
-        public void bind(Element element) {
+        public void bind(block element) {
             textView.setText(element.getName());
         }
     }

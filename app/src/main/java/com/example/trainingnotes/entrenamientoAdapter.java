@@ -4,23 +4,17 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.List;
 
-public class BlockAdapter extends RecyclerView.Adapter<BlockAdapter.BlockViewHolder> {
-    private List<Block> blockList;
+public class entrenamientoAdapter extends RecyclerView.Adapter<entrenamientoAdapter.BlockViewHolder> {
+    private List<entrenamiento> blockList;
     private Context context;
     private CollectionReference blocksCollection;
     private OnDeleteClickListener onDeleteClickListener;
@@ -32,7 +26,7 @@ public class BlockAdapter extends RecyclerView.Adapter<BlockAdapter.BlockViewHol
     public void setOnItemClickListener(OnItemClickListener listener) {
         this.listener = listener;
     }
-    public BlockAdapter(List<Block> blockList, CollectionReference blocksCollection) {
+    public entrenamientoAdapter(List<entrenamiento> blockList, CollectionReference blocksCollection) {
         this.blockList = blockList;
         this.blocksCollection = blocksCollection;
     }
@@ -46,7 +40,7 @@ public class BlockAdapter extends RecyclerView.Adapter<BlockAdapter.BlockViewHol
 
     @Override
     public void onBindViewHolder(@NonNull BlockViewHolder holder, int position) {
-        Block block = blockList.get(position);
+        entrenamiento block = blockList.get(position);
         holder.bind(block);
 
         holder.deleteButton.setOnClickListener(v -> {
@@ -90,7 +84,7 @@ public class BlockAdapter extends RecyclerView.Adapter<BlockAdapter.BlockViewHol
             deleteButton = itemView.findViewById(R.id.deleteButton);
         }
 
-        public void bind(Block block) {
+        public void bind(entrenamiento block) {
             blockNameTextView.setText(block.getBlockName());
         }
     }

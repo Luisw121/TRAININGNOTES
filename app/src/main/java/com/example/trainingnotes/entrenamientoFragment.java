@@ -29,8 +29,8 @@ import java.util.List;
 
 public class entrenamientoFragment extends Fragment {
     private RecyclerView recyclerView;
-    private BlockAdapter adapter;
-    private List<Block> blockList;
+    private entrenamientoAdapter adapter;
+    private List<entrenamiento> blockList;
     private FirebaseFirestore firestore;
     private FirebaseAuth auth;
     private FirebaseUser currentUser;
@@ -57,7 +57,7 @@ public class entrenamientoFragment extends Fragment {
         }
 
         blockList = new ArrayList<>();
-        adapter = new BlockAdapter(blockList, blocksCollectionRef);
+        adapter = new entrenamientoAdapter(blockList, blocksCollectionRef);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
         recyclerView.setAdapter(adapter);
@@ -69,18 +69,18 @@ public class entrenamientoFragment extends Fragment {
             }
         });
 
-        adapter.setOnDeleteClickListener(new BlockAdapter.OnDeleteClickListener() {
+        adapter.setOnDeleteClickListener(new entrenamientoAdapter.OnDeleteClickListener() {
             @Override
             public void onDeleteClick(String blockName) {
                 deleteBlockFromFirestore(blockName);
             }
         });
-        adapter.setOnBlockClickListener(new BlockAdapter.OnBlockClickListener() {
+        adapter.setOnBlockClickListener(new entrenamientoAdapter.OnBlockClickListener() {
             @Override
             public void onBlockClick(String blockName) {
             }
         });
-        adapter.setOnItemClickListener(new BlockAdapter.OnItemClickListener() {
+        adapter.setOnItemClickListener(new entrenamientoAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(String blockName) {
                 // Navegar al nuevo fragmento y pasar el nombre del elemento como argumento
@@ -102,7 +102,7 @@ public class entrenamientoFragment extends Fragment {
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     blockList.clear();
                     for (DocumentSnapshot document : queryDocumentSnapshots) {
-                        Block block = document.toObject(Block.class);
+                        entrenamiento block = document.toObject(entrenamiento.class);
                         blockList.add(block);
                     }
                     adapter.notifyDataSetChanged();
@@ -139,19 +139,20 @@ public class entrenamientoFragment extends Fragment {
     }
 
     private void addBlockToFirestore(String blockName) {
-        Block block = new Block(blockName);
+        entrenamiento block = new entrenamiento(blockName);
         firestore.collection("users").document(currentUser.getUid()).collection("blocks")
-                .add(block)
+                .document(blockName) // Utiliza el nombre del bloque como ID del documento
+                .set(block)
                 .addOnSuccessListener(documentReference -> {
-                    // Block added successfully
+                    // Documento de bloque agregado exitosamente
                     blockList.add(block);
                     adapter.notifyDataSetChanged();
-
-
                 })
                 .addOnFailureListener(e -> {
+                    // Error al agregar el documento de bloque
                 });
     }
+
     private void deleteBlockFromFirestore(String blockName) {
         blocksCollectionRef.whereEqualTo("blockName", blockName)
                 .get()

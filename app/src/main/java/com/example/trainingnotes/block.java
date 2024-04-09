@@ -1,10 +1,10 @@
 package com.example.trainingnotes;
 
-public class Element {
+public class block {
     private String name;
-    public Element() {}
+    public block() {}
 
-    public Element(String name) {
+    public block(String name) {
         this.name = name;
     }
 

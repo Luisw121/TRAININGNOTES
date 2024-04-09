@@ -1,13 +1,13 @@
 package com.example.trainingnotes;
 
-public class Block {
+public class entrenamiento {
     private String blockName;
 
-    public Block() {
+    public entrenamiento() {
 
     }
 
-    public Block(String blockName) {
+    public entrenamiento(String blockName) {
         this.blockName = blockName;
     }
 
