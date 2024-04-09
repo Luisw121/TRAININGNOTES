@@ -42,13 +42,22 @@ public class blockAdapter extends RecyclerView.Adapter<blockAdapter.ElementViewH
                 // Obtener la posición del elemento
                 int adapterPosition = holder.getAdapterPosition();
                 if (adapterPosition != RecyclerView.NO_POSITION) {
-                    // Eliminar el elemento de la lista y notificar al adaptador
+                    // Eliminar el elemento visualmente
                     elementList.remove(adapterPosition);
                     notifyItemRemoved(adapterPosition);
+
+                    // Obtener el ID del elemento en Firestore
+                    String elementId = element.getName(); // Reemplaza "getElementId()" con el método real para obtener el ID del elemento
+
+                    // Eliminar el elemento de Firestore
+                    if (onDeleteClickListener != null) {
+                        onDeleteClickListener.onDeleteClick(elementId);
+                    }
                 }
             }
         });
     }
+
 
     @Override
     public int getItemCount() {
