@@ -13,15 +13,18 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
+import android.text.InputType;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.trainingnotes.MainActivity;
@@ -106,21 +109,36 @@ public class pantallaPrincipalFragment extends Fragment {
 
     private void mostrarSelectorDePeso() {
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-        builder.setTitle("Selecciona tu peso");
+        builder.setTitle("Cambiar Peso");
 
-        // Define tu adaptador con la lista de pesos disponibles
-        // Aquí debes tener una lista llamada "pesos" con los pesos disponibles
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_list_item_1, pesos);
+        final EditText input = new EditText(getContext());
+        input.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
+        builder.setView(input);
 
-        builder.setAdapter(adapter, new DialogInterface.OnClickListener() {
+        // Configurar botón de "Guardar"
+        builder.setPositiveButton("Guardar", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                String pesoSeleccionado = pesos.get(which);
-                // Llama a la función para guardar el peso seleccionado en Firebase
-                guardarPesoSeleccionadoEnFirebase(pesoSeleccionado);
+                String pesoIngresado = input.getText().toString().trim();
+                // Verificar si se ingresó un peso
+                if (!pesoIngresado.isEmpty()) {
+                    // Guardar el peso en Firebase
+                    guardarPesoSeleccionadoEnFirebase(pesoIngresado);
+                } else {
+                    Toast.makeText(requireContext(), "Por favor, ingresa tu peso", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
+        // Configurar botón de "Cancelar"
+        builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+
+        // Mostrar el cuadro de diálogo
         builder.show();
     }
 
@@ -136,7 +154,7 @@ public class pantallaPrincipalFragment extends Fragment {
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void unused) {
-                            pesoTextView.setText(pesoSeleccionado);
+                            Toast.makeText(requireContext(), "Peso guardado correctamente", Toast.LENGTH_SHORT).show();
                         }
                     })
                     .addOnFailureListener(new OnFailureListener() {
