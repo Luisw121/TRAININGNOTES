@@ -17,6 +17,12 @@ public class blockAdapter extends RecyclerView.Adapter<blockAdapter.ElementViewH
     private List<block> elementList;
     private CollectionReference elementsCollection;
     private OnDeleteClickListener onDeleteClickListener;
+    /*
+    private entrenamientoAdapter.OnItemClickListener listener;
+    public interface OnItemClickListener {
+        void onItemClick(String elementName);
+    }
+     */
 
 
     public blockAdapter(List<block> elementList, CollectionReference elementsCollection) {
@@ -27,7 +33,7 @@ public class blockAdapter extends RecyclerView.Adapter<blockAdapter.ElementViewH
     @NonNull
     @Override
     public ElementViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_block, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_days, parent, false);
         return new ElementViewHolder(view);
     }
 
@@ -36,7 +42,7 @@ public class blockAdapter extends RecyclerView.Adapter<blockAdapter.ElementViewH
         block element = elementList.get(position);
         holder.bind(element);
 
-        holder.deleteButton.setOnClickListener(new View.OnClickListener() {
+        holder.deleteButtonDay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // Obtener la posición del elemento
@@ -44,27 +50,17 @@ public class blockAdapter extends RecyclerView.Adapter<blockAdapter.ElementViewH
                 if (adapterPosition != RecyclerView.NO_POSITION) {
                     // Eliminar el elemento visualmente
                     elementList.remove(adapterPosition);
+                    onDeleteClickListener.onDeleteClick(element.getName());
                     notifyItemRemoved(adapterPosition);
 
-                    // Obtener el ID del elemento en Firestore
-                    String elementId = element.getName(); // Reemplaza "getElementId()" con el método real para obtener el ID del elemento
-
-                    // Eliminar el elemento de Firestore
-                    if (onDeleteClickListener != null) {
-                        onDeleteClickListener.onDeleteClick(elementId);
-                    }
                 }
             }
         });
     }
-
-
     @Override
     public int getItemCount() {
         return elementList.size();
     }
-
-
     public void setOnDeleteClickListener(OnDeleteClickListener listener) {
         this.onDeleteClickListener = listener;
     }
@@ -74,17 +70,18 @@ public class blockAdapter extends RecyclerView.Adapter<blockAdapter.ElementViewH
     }
 
     public static class ElementViewHolder extends RecyclerView.ViewHolder {
-        private TextView textView;
-        ImageView deleteButton;
+
+        TextView textViewDAy;
+        ImageView deleteButtonDay;
 
         public ElementViewHolder(@NonNull View itemView) {
             super(itemView);
-            textView = itemView.findViewById(R.id.blockNameTextView);
-            deleteButton = itemView.findViewById(R.id.deleteButton);
+            textViewDAy = itemView.findViewById(R.id.blockNameTextViewDays);
+            deleteButtonDay = itemView.findViewById(R.id.deleteButtonDays);
         }
 
         public void bind(block element) {
-            textView.setText(element.getName());
+            textViewDAy.setText(element.getName());
         }
     }
 }

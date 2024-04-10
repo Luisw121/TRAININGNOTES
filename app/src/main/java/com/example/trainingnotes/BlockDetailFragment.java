@@ -71,6 +71,7 @@ public class BlockDetailFragment extends Fragment {
         }
 
         elementList = new ArrayList<>();
+
         adapterElement = new blockAdapter(elementList, elementsCollectionRef);
 
         recyclerViewElement.setLayoutManager(new LinearLayoutManager(requireContext()));
@@ -157,15 +158,16 @@ public class BlockDetailFragment extends Fragment {
                     System.out.println("Error al agregar elemento: " + e.getMessage());
                 });
     }
-    private void deleteElementFromFirestore(String blockname) {
-        elementsCollectionRef.whereEqualTo("blockName", blockname)
+    private void deleteElementFromFirestore(String elementName) {
+        elementsCollectionRef.whereEqualTo("name", elementName)
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     for (DocumentSnapshot document : queryDocumentSnapshots) {
                         document.getReference().delete()
                                 .addOnSuccessListener(aVoid -> {
+                                    // Eliminar el elemento de la lista local
                                     for (int i = 0; i < elementList.size(); i++) {
-                                        if (elementList.get(i).getName().equals(blockname)) {
+                                        if (elementList.get(i).getName().equals(elementName)) {
                                             elementList.remove(i);
                                             adapterElement.notifyItemRemoved(i);
                                             break;
@@ -173,14 +175,15 @@ public class BlockDetailFragment extends Fragment {
                                     }
                                 })
                                 .addOnFailureListener(e -> {
-                                    System.out.println("Error al eliminar el bloque de Firestore: "+ e.getMessage());
+                                    System.out.println("Error al eliminar el elemento de Firestore: " + e.getMessage());
                                 });
                     }
                 })
                 .addOnFailureListener(e -> {
-                    System.out.println("Error al consultar el bloque en Firestore: " + e.getMessage());
+                    System.out.println("Error al consultar el elemento en Firestore: " + e.getMessage());
                 });
     }
+
     @Override
     public void onResume() {
         super.onResume();
