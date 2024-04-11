@@ -1,10 +1,10 @@
 package com.example.trainingnotes;
 
-public class Ejercicio {
+public class ListaEjercicio {
     private String nombre;
     private int imagen;
 
-    public Ejercicio(String nombre, int imagen) {
+    public ListaEjercicio(String nombre, int imagen) {
         this.nombre = nombre;
         this.imagen = imagen;
     }

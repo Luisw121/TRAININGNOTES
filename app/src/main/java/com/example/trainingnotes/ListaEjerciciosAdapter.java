@@ -12,12 +12,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
-public class EjerciciosAdapter extends RecyclerView.Adapter<EjerciciosAdapter.EjercicioViewHolder> {
+public class ListaEjerciciosAdapter extends RecyclerView.Adapter<ListaEjerciciosAdapter.EjercicioViewHolder> {
 
     private Context context;
-    private List<Ejercicio> ejercicios;
+    private List<ListaEjercicio> ejercicios;
 
-    public EjerciciosAdapter(Context context, List<Ejercicio> ejercicios) {
+    public ListaEjerciciosAdapter(Context context, List<ListaEjercicio> ejercicios) {
         this.context = context;
         this.ejercicios = ejercicios;
     }
@@ -31,7 +31,7 @@ public class EjerciciosAdapter extends RecyclerView.Adapter<EjerciciosAdapter.Ej
 
     @Override
     public void onBindViewHolder(@NonNull EjercicioViewHolder holder, int position) {
-        Ejercicio ejercicio = ejercicios.get(position);
+        ListaEjercicio ejercicio = ejercicios.get(position);
         holder.nombreTextView.setText(ejercicio.getNombre());
         holder.imagenImageView.setImageResource(ejercicio.getImagen());
     }
