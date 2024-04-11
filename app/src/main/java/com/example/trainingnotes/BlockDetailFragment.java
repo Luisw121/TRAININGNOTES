@@ -42,11 +42,11 @@ public class BlockDetailFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_block_detail, container, false);
-        recyclerViewElement = view.findViewById(R.id.recyclerViewEjercicios);
+        recyclerViewElement = view.findViewById(R.id.recyclerViewDays);
 
         String blockname = getArguments().getString("blockName");
 
-        TextView blockNameTextView = view.findViewById(R.id.blockDetailNameTextViewEjercicios);
+        TextView blockNameTextView = view.findViewById(R.id.blockDetailNameTextViewDays);
         blockNameTextView.setText(blockname);
         return view;
     }
@@ -70,7 +70,7 @@ public class BlockDetailFragment extends Fragment {
         recyclerViewElement.setLayoutManager(new LinearLayoutManager(requireContext()));
         recyclerViewElement.setAdapter(adapterElement);
 
-        view.findViewById(R.id.añadirEjercicio).setOnClickListener(new View.OnClickListener() {
+        view.findViewById(R.id.añadirDay).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 showAddElementDialog();
