@@ -99,7 +99,7 @@ public class BlockDetailFragment extends Fragment {
         Bundle bundle = new Bundle();
         bundle.putString("name", elementName);
         NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
-        navController.navigate(R.id.action_blockDetailFragment_to_ejerciciosFragment);
+        navController.navigate(R.id.action_blockDetailFragment_to_ejerciciosFragment, bundle);
     }
 
     private void loadElementsFromFirestore(String userId, String blockName) {

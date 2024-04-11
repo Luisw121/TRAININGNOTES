@@ -1,15 +1,19 @@
 package com.example.trainingnotes;
 
 public class Ejercicio {
-    private String EjercicioName;
-    public Ejercicio(){}
-    public Ejercicio(String EjercicioName){this.EjercicioName = EjercicioName;}
+    private String nombre;
+    private int imagen;
 
-    public String getEjercicioName() {
-        return EjercicioName;
+    public Ejercicio(String nombre, int imagen) {
+        this.nombre = nombre;
+        this.imagen = imagen;
     }
 
-    public void setEjercicioName(String ejercicioName) {
-        EjercicioName = ejercicioName;
+    public String getNombre() {
+        return nombre;
+    }
+
+    public int getImagen() {
+        return imagen;
     }
 }
