@@ -7,6 +7,8 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -23,6 +25,7 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,25 +38,15 @@ public class BlockDetailFragment extends Fragment {
     private blockAdapter adapterElement;
     private List<block> elementList;
     private CollectionReference elementsCollectionRef;
-
-
-    public static BlockDetailFragment newInstance(String blockName){
-        BlockDetailFragment fragment = new BlockDetailFragment();
-        Bundle args = new Bundle();
-        args.putString("blockName", blockName);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_block_detail, container, false);
-        recyclerViewElement = view.findViewById(R.id.recyclerViewElements);
+        recyclerViewElement = view.findViewById(R.id.recyclerViewEjercicios);
 
         String blockname = getArguments().getString("blockName");
 
-        TextView blockNameTextView = view.findViewById(R.id.blockDetailNameTextView);
+        TextView blockNameTextView = view.findViewById(R.id.blockDetailNameTextViewEjercicios);
         blockNameTextView.setText(blockname);
         return view;
     }
@@ -77,7 +70,7 @@ public class BlockDetailFragment extends Fragment {
         recyclerViewElement.setLayoutManager(new LinearLayoutManager(requireContext()));
         recyclerViewElement.setAdapter(adapterElement);
 
-        view.findViewById(R.id.añadirElemento).setOnClickListener(new View.OnClickListener() {
+        view.findViewById(R.id.añadirEjercicio).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 showAddElementDialog();
@@ -85,10 +78,28 @@ public class BlockDetailFragment extends Fragment {
         });
         adapterElement.setOnDeleteClickListener(new blockAdapter.OnDeleteClickListener() {
             @Override
-            public void onDeleteClick(String position) {
-                deleteElementFromFirestore(position);
+            public void onDeleteClick(String elementName) {
+                deleteElementFromFirestore(elementName);
             }
         });
+        adapterElement.setOnElemntBlockClickListener(new blockAdapter.OnElemntBlockClickListener() {
+            @Override
+            public void onElementClickBlock(String elementName) {
+            }
+        });
+        adapterElement.setOnElementClickListener(new blockAdapter.onElementClickListener() {
+            @Override
+            public void onElementClick(String elementName) {
+                navigateToElemenetFragment(elementName);
+            }
+        });
+    }
+
+    private void navigateToElemenetFragment(String elementName) {
+        Bundle bundle = new Bundle();
+        bundle.putString("name", elementName);
+        NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
+        navController.navigate(R.id.action_blockDetailFragment_to_ejerciciosFragment);
     }
 
     private void loadElementsFromFirestore(String userId, String blockName) {
@@ -159,13 +170,14 @@ public class BlockDetailFragment extends Fragment {
                 });
     }
     private void deleteElementFromFirestore(String elementName) {
-        elementsCollectionRef.whereEqualTo("name", elementName)
+        elementsCollectionRef
+                .whereEqualTo("name", elementName)
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
-                    for (DocumentSnapshot document : queryDocumentSnapshots) {
-                        document.getReference().delete()
+                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                        document.getReference()
+                                .delete()
                                 .addOnSuccessListener(aVoid -> {
-                                    // Eliminar el elemento de la lista local
                                     for (int i = 0; i < elementList.size(); i++) {
                                         if (elementList.get(i).getName().equals(elementName)) {
                                             elementList.remove(i);
@@ -183,6 +195,8 @@ public class BlockDetailFragment extends Fragment {
                     System.out.println("Error al consultar el elemento en Firestore: " + e.getMessage());
                 });
     }
+
+
 
     @Override
     public void onResume() {

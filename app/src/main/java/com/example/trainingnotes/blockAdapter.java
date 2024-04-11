@@ -16,15 +16,13 @@ import java.util.List;
 public class blockAdapter extends RecyclerView.Adapter<blockAdapter.ElementViewHolder> {
     private List<block> elementList;
     private CollectionReference elementsCollection;
-    private OnDeleteClickListener onDeleteClickListener;
-    /*
-    private entrenamientoAdapter.OnItemClickListener listener;
-    public interface OnItemClickListener {
-        void onItemClick(String elementName);
+    private OnDeleteClickListener onDeleteClickListenerBlock;
+    private OnElemntBlockClickListener onElemntBlockClickListener;
+    private onElementClickListener listener;
+    public interface onElementClickListener {
+        void onElementClick(String elementName);
     }
-     */
-
-
+    public void setOnElementClickListener(onElementClickListener listener) {this.listener = listener;}
     public blockAdapter(List<block> elementList, CollectionReference elementsCollection) {
         this.elementList = elementList;
         this.elementsCollection = elementsCollection;
@@ -50,11 +48,17 @@ public class blockAdapter extends RecyclerView.Adapter<blockAdapter.ElementViewH
                 if (adapterPosition != RecyclerView.NO_POSITION) {
                     // Eliminar el elemento visualmente
                     elementList.remove(adapterPosition);
-                    onDeleteClickListener.onDeleteClick(element.getName());
+                    onDeleteClickListenerBlock.onDeleteClick(element.getName());
                     notifyItemRemoved(adapterPosition);
 
                 }
             }
+        });
+        holder.itemView.setOnClickListener(v -> {
+            if (onElemntBlockClickListener != null) {
+                listener.onElementClick(element.getName());
+            }
+
         });
     }
     @Override
@@ -62,15 +66,22 @@ public class blockAdapter extends RecyclerView.Adapter<blockAdapter.ElementViewH
         return elementList.size();
     }
     public void setOnDeleteClickListener(OnDeleteClickListener listener) {
-        this.onDeleteClickListener = listener;
+        this.onDeleteClickListenerBlock = listener;
     }
 
     public interface OnDeleteClickListener {
         void onDeleteClick(String position);
     }
 
-    public static class ElementViewHolder extends RecyclerView.ViewHolder {
+    //metodo para establecer el listener
+    public void setOnElemntBlockClickListener(OnElemntBlockClickListener listener) {
+        this.onElemntBlockClickListener = listener;
+    }
+    public interface OnElemntBlockClickListener {
+        void onElementClickBlock(String elementName);
+    }
 
+    public static class ElementViewHolder extends RecyclerView.ViewHolder {
         TextView textViewDAy;
         ImageView deleteButtonDay;
 
