@@ -21,14 +21,39 @@ import android.content.Context;
 
 
 public class EjercicioAdapter extends RecyclerView.Adapter<EjercicioAdapter.EjercicioViewHolder>{
-    private Context context;
     private List<Ejercicio> ejercicios;
+    private Context context;
+    private CollectionReference ejerciciosCollection;
     private OnExerciseClickListener onExerciseClickListener;
 
 
-    public EjercicioAdapter(Context context, List<Ejercicio> listaEjercicios) {
-        this.context = context;
+    public EjercicioAdapter( List<Ejercicio> listaEjercicios, CollectionReference ejerciciosCollection) {
         this.ejercicios = listaEjercicios;
+        this.ejerciciosCollection = ejerciciosCollection;
+    }
+    @NonNull
+    @Override
+    public EjercicioViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_ejercicios, parent, false);
+        return new EjercicioViewHolder(view);
+    }@Override
+    public void onBindViewHolder(@NonNull EjercicioViewHolder holder, int position) {
+        Ejercicio ejercicio = ejercicios.get(position);
+
+        holder.nombreTextView.setText(ejercicio.getNombre());
+        holder.imagenImageView.setImageResource(ejercicio.getImagen());
+
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onExerciseClickListener.onExerciseClick(ejercicio);
+            }
+        });
+
+    }
+    @Override
+    public int getItemCount() {
+        return ejercicios.size();
     }
 
     // Método para establecer el listener desde fuera de la clase
@@ -36,55 +61,9 @@ public class EjercicioAdapter extends RecyclerView.Adapter<EjercicioAdapter.Ejer
         this.onExerciseClickListener = listener;
     }
 
-    public Filter getFilter() {
-        return new Filter() {
-            @Override
-            protected FilterResults performFiltering(CharSequence constraint) {
-                List<Ejercicio> filteredList = new ArrayList<>();
-                if (constraint == null || constraint.length() == 0) {
-                    filteredList.addAll(ejercicios);
-                } else {
-                    String filterPattern = constraint.toString().toLowerCase().trim();
-                    for (Ejercicio ejercicio : ejercicios) {
-                        if (ejercicio.getNombre().toLowerCase().contains(filterPattern)) {
-                            filteredList.add(ejercicio);
-                        }
-                    }
-                }
-                FilterResults results = new FilterResults();
-                results.values = filteredList;
-                return results;
-            }
-
-            @Override
-            protected void publishResults(CharSequence constraint, FilterResults results) {
-                ejercicios.clear();
-                ejercicios.addAll((List<Ejercicio>) results.values);
-                notifyDataSetChanged();
-            }
-        };
-    }
-
     // Interfaz para el listener
     public interface OnExerciseClickListener {
         void onExerciseClick(Ejercicio ejercicio);
-    }
-    @NonNull
-    @Override
-    public EjercicioViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.item_ejercicios, parent, false);
-        return new EjercicioViewHolder(view);
-    }
-
-    @Override
-    public void onBindViewHolder(@NonNull EjercicioViewHolder holder, int position) {
-        Ejercicio ejercicio = ejercicios.get(position);
-        holder.nombreTextView.setText(ejercicio.getNombre());
-        holder.imagenImageView.setImageResource(ejercicio.getImagen());
-    }
-    @Override
-    public int getItemCount() {
-        return ejercicios.size();
     }
 
     // ViewHolder
