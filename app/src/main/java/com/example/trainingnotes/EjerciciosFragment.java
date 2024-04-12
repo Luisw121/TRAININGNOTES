@@ -96,56 +96,38 @@ public class EjerciciosFragment extends Fragment {
     private void mostrarListaEjercicios() {
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
         builder.setTitle("Añadir ejercicio");
-
-        // Configurar el diálogo de selección de ejercicios
         dialog = new Dialog(requireContext());
         dialog.setContentView(R.layout.dialog_lista_ejercicios);
         RecyclerView recyclerView = dialog.findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
         List<Ejercicio> listaEjercicios = getEjercicios();
 
-        // Crear el adaptador con la lista de ejercicios disponibles
+        // Crear el adaptador
         ejercicioAdapter = new EjercicioAdapter(listaEjercicios, ejerciciosCollectionRef);
         recyclerView.setAdapter(ejercicioAdapter);
 
-        // Agregar un oyente para manejar la selección de ejercicios
+        // Configurar el oyente para el clic en el ejercicio
         ejercicioAdapter.setOnExerciseClickListener(new EjercicioAdapter.OnExerciseClickListener() {
             @Override
             public void onExerciseClick(Ejercicio ejercicio) {
-                // Agregar el ejercicio seleccionado a la lista de ejercicios seleccionados
                 selectedEjercicios.add(ejercicio);
+                // Notificar al adaptador que los datos han cambiado
+                ejercicioAdapter.notifyDataSetChanged();
+                dialog.dismiss();
             }
         });
 
-        // Configurar los botones Aceptar y Cancelar en el diálogo
         builder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
             @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
+            public void onClick(DialogInterface dialog, int which) {
                 // Guardar los ejercicios seleccionados en Firebase
                 saveSelectedExercisesToFirestore();
             }
         });
 
-        builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                // Cancelar la selección de ejercicios y cerrar el diálogo
-                dialog.dismiss();
-            }
-        });
-
-        // Mostrar el diálogo de selección de ejercicios
         dialog.show();
-
-        // Asegurar que el diálogo se cierre solo si se aceptan o cancelan los ejercicios
-        dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
-            @Override
-            public void onDismiss(DialogInterface dialogInterface) {
-                // Limpiar la lista de ejercicios seleccionados si se cancela la selección
-                selectedEjercicios.clear();
-            }
-        });
     }
+
 
 
 
