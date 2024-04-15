@@ -20,37 +20,61 @@ import java.util.List;
 import android.content.Context;
 
 
-public class EjercicioAdapter extends RecyclerView.Adapter<EjercicioAdapter.EjercicioViewHolder>{
+public class EjercicioAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+    private static final int VIEW_TYPE_SELECTION = 1;
+    private static final int VIEW_TYPE_NORMAL = 2;
+
     private List<Ejercicio> ejercicios;
     private Context context;
     private CollectionReference ejerciciosCollection;
     private OnExerciseClickListener onExerciseClickListener;
+    private boolean isSelectionMode;
 
-
-    public EjercicioAdapter( List<Ejercicio> listaEjercicios, CollectionReference ejerciciosCollection) {
+    public EjercicioAdapter(List<Ejercicio> listaEjercicios, CollectionReference ejerciciosCollection, boolean isSelectionMode) {
         this.ejercicios = listaEjercicios;
         this.ejerciciosCollection = ejerciciosCollection;
+        this.isSelectionMode = isSelectionMode;
     }
+
+    @Override
+    public int getItemViewType(int position) {
+        return isSelectionMode ? VIEW_TYPE_SELECTION : VIEW_TYPE_NORMAL;
+    }
+
     @NonNull
     @Override
-    public EjercicioViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_ejercicios, parent, false);
-        return new EjercicioViewHolder(view);
-    }@Override
-    public void onBindViewHolder(@NonNull EjercicioViewHolder holder, int position) {
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+        if (viewType == VIEW_TYPE_SELECTION) {
+            View view = inflater.inflate(R.layout.item_ejercicios, parent, false);
+            return new EjercicioViewHolder(view);
+        } else {
+            View view = inflater.inflate(R.layout.item_ejercicios2, parent, false);
+            return new EjercicioViewHolder2(view);
+        }
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         Ejercicio ejercicio = ejercicios.get(position);
 
-        holder.nombreTextView.setText(ejercicio.getNombre());
-        holder.imagenImageView.setImageResource(ejercicio.getImagen());
-
+        if (isSelectionMode) {
+            EjercicioViewHolder viewHolder = (EjercicioViewHolder) holder;
+            viewHolder.nombreTextView.setText(ejercicio.getNombre());
+            viewHolder.imagenImageView.setImageResource(ejercicio.getImagen());
+        } else {
+            EjercicioViewHolder2 viewHolder = (EjercicioViewHolder2) holder;
+            viewHolder.nombreTextView.setText(ejercicio.getNombre());
+            viewHolder.imagenImageView.setImageResource(ejercicio.getImagen());
+        }
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 onExerciseClickListener.onExerciseClick(ejercicio);
             }
         });
-
     }
+
     @Override
     public int getItemCount() {
         return ejercicios.size();
@@ -66,7 +90,7 @@ public class EjercicioAdapter extends RecyclerView.Adapter<EjercicioAdapter.Ejer
         void onExerciseClick(Ejercicio ejercicio);
     }
 
-    // ViewHolder
+    // ViewHolder para el modo de selección
     static class EjercicioViewHolder extends RecyclerView.ViewHolder {
         TextView nombreTextView;
         ImageView imagenImageView;
@@ -78,7 +102,19 @@ public class EjercicioAdapter extends RecyclerView.Adapter<EjercicioAdapter.Ejer
         }
     }
 
+    // ViewHolder para el modo normal
+    static class EjercicioViewHolder2 extends RecyclerView.ViewHolder {
+        TextView nombreTextView;
+        ImageView imagenImageView;
+
+        public EjercicioViewHolder2(@NonNull View itemView) {
+            super(itemView);
+            nombreTextView = itemView.findViewById(R.id.textEjecicios2);
+            imagenImageView = itemView.findViewById(R.id.imageEjercicios2);
+        }
+    }
 }
+
 
 /*
 <EditText

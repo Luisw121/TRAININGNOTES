@@ -29,13 +29,13 @@ import java.util.List;
 
 public class EjerciciosFragment extends Fragment {
     //private TextView blockDetailNameTextViewEjercicios;
-    private RecyclerView recyclerViewEJ;
-    private EjercicioAdapter ejercicioAdapter;
     private Dialog dialog;
-    private List<Ejercicio> selectedEjercicios;
+    private RecyclerView recyclerViewEJ;
     private FirebaseFirestore firestore;
     private FirebaseAuth auth;
     private FirebaseUser currentUser;
+    private EjercicioAdapter ejercicioAdapter;
+    private List<Ejercicio> selectedEjercicios;
     private CollectionReference ejerciciosCollectionRef;
 
     @Override
@@ -43,6 +43,7 @@ public class EjerciciosFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_ejercicios, container, false);
         recyclerViewEJ = view.findViewById(R.id.recyclerViewEjercicios);
+
         String elementName = getArguments().getString("name");
 
         TextView blockNameTextView = view.findViewById(R.id.blockDetailNameTextViewEjercicios);
@@ -65,7 +66,7 @@ public class EjerciciosFragment extends Fragment {
 
         selectedEjercicios = new ArrayList<>();
 
-        ejercicioAdapter = new EjercicioAdapter(selectedEjercicios, ejerciciosCollectionRef);
+        ejercicioAdapter = new EjercicioAdapter(selectedEjercicios, ejerciciosCollectionRef, false);
 
         recyclerViewEJ.setLayoutManager(new LinearLayoutManager(requireContext()));
         recyclerViewEJ.setAdapter(ejercicioAdapter);
@@ -106,15 +107,14 @@ public class EjerciciosFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
         List<Ejercicio> listaEjercicios = getEjercicios();
 
-        EjercicioAdapter dialogAdapter = new EjercicioAdapter(listaEjercicios, null); // null porque no necesitas la referencia a Firestore aquí
+        EjercicioAdapter dialogAdapter = new EjercicioAdapter(listaEjercicios, null, true); // null porque no necesitas la referencia a Firestore aquí
         recyclerView.setAdapter(dialogAdapter);
 
         dialogAdapter.setOnExerciseClickListener(ejercicio -> {
-            String ejName = getArguments().getString("nombre");
             if (!selectedEjercicios.contains(ejercicio)) {
                 selectedEjercicios.add(ejercicio);
-                ejercicioAdapter.notifyDataSetChanged();
                 saveSelectedExercisesToFirestore();
+                ejercicioAdapter.notifyDataSetChanged();
             }
             dialog.dismiss();
         });
