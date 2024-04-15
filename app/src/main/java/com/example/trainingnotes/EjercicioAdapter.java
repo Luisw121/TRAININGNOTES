@@ -25,8 +25,29 @@ public class EjercicioAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     private static final int VIEW_TYPE_NORMAL = 2;
 
     private List<Ejercicio> ejercicios;
-    private Context context;
     private CollectionReference ejerciciosCollection;
+    private OnDeleteClickListener onDeleteClickListenerEjercicioBlock;
+    private OnEjercicioBlockListener OnEjercicioBlockListener;
+    public void setOnEjercicioBlockListener(OnEjercicioBlockListener listener) {
+        this.OnEjercicioBlockListener = listener;
+    }
+    public interface OnEjercicioBlockListener{
+        void onjercicioClickBLock(String ejercicioName);
+    }
+
+    private onEjercicioCliclListener listener;
+    public interface onEjercicioCliclListener {
+        void onEjercicioClick(String ejercicioName);
+    }
+    public void setOnEjercicioClickListener(onEjercicioCliclListener listener){this.listener = listener;}
+    public void setOnDeleteClickListenerEjercicioBlock(OnDeleteClickListener listener) {
+        this.onDeleteClickListenerEjercicioBlock = listener;
+    }
+    public interface OnDeleteClickListener {
+        void onDeleteClick(String position);
+    }
+
+    private Context context;
     private OnExerciseClickListener onExerciseClickListener;
     private boolean isSelectionMode;
 
