@@ -58,7 +58,6 @@ public class blockAdapter extends RecyclerView.Adapter<blockAdapter.ElementViewH
             if (onElemntBlockClickListener != null) {
                 listener.onElementClick(element.getName());
             }
-
         });
     }
     @Override
@@ -85,10 +84,12 @@ public class blockAdapter extends RecyclerView.Adapter<blockAdapter.ElementViewH
         TextView textViewDAy;
         ImageView deleteButtonDay;
 
+
         public ElementViewHolder(@NonNull View itemView) {
             super(itemView);
             textViewDAy = itemView.findViewById(R.id.blockNameTextViewDays);
             deleteButtonDay = itemView.findViewById(R.id.deleteButtonDays);
+
         }
 
         public void bind(block element) {

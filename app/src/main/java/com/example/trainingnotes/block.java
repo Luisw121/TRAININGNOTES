@@ -2,6 +2,7 @@ package com.example.trainingnotes;
 
 public class block {
     private String name;
+
     public block() {}
 
     public block(String name) {

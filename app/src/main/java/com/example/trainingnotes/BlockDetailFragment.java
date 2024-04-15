@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.text.InputType;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,6 +39,7 @@ public class BlockDetailFragment extends Fragment {
     private blockAdapter adapterElement;
     private List<block> elementList;
     private CollectionReference elementsCollectionRef;
+    private static final String TAG = "BlockDetailFragment";
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -64,7 +66,6 @@ public class BlockDetailFragment extends Fragment {
         }
 
         elementList = new ArrayList<>();
-
         adapterElement = new blockAdapter(elementList, elementsCollectionRef);
 
         recyclerViewElement.setLayoutManager(new LinearLayoutManager(requireContext()));
@@ -159,7 +160,7 @@ public class BlockDetailFragment extends Fragment {
                 .collection("blocks")
                 .document(blockName);
 
-        blockDocumentRef.collection("elements").add(element)
+        blockDocumentRef.collection("elements").document(elementName).set(element)
                 .addOnSuccessListener(documentReference -> {
                     // Manejar el éxito, si es necesario
                     elementList.add(element);
@@ -170,31 +171,24 @@ public class BlockDetailFragment extends Fragment {
                 });
     }
     private void deleteElementFromFirestore(String elementName) {
-        elementsCollectionRef
-                .whereEqualTo("name", elementName)
-                .get()
-                .addOnSuccessListener(queryDocumentSnapshots -> {
-                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
-                        document.getReference()
-                                .delete()
-                                .addOnSuccessListener(aVoid -> {
-                                    for (int i = 0; i < elementList.size(); i++) {
-                                        if (elementList.get(i).getName().equals(elementName)) {
-                                            elementList.remove(i);
-                                            adapterElement.notifyItemRemoved(i);
-                                            break;
-                                        }
-                                    }
-                                })
-                                .addOnFailureListener(e -> {
-                                    System.out.println("Error al eliminar el elemento de Firestore: " + e.getMessage());
-                                });
-                    }
+        DocumentReference documentRef = firestoreElement.collection("users")
+                .document(currentUserElement.getUid())
+                .collection("blocks")
+                .document(getArguments().getString("blockName"))
+                .collection("elements")
+                .document(elementName);
+
+        documentRef.delete()
+                .addOnSuccessListener(aVoid -> {
+
                 })
                 .addOnFailureListener(e -> {
-                    System.out.println("Error al consultar el elemento en Firestore: " + e.getMessage());
+
                 });
     }
+
+
+
 
 
 
