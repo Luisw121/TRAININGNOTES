@@ -86,6 +86,8 @@ public class pantallaPrincipalFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 navController.navigate(R.id.action_pantallaPrincipalFragment_to_entrenamientoFragment);
+
+                ((MainActivity) requireActivity()).actualizarElementoSeleccionado(R.id.entrenamiento);
             }
         });
         ConstraintLayout buttonListaEjercicios = view.findViewById(R.id.buttonListaEjercicios);
@@ -94,7 +96,6 @@ public class pantallaPrincipalFragment extends Fragment {
             public void onClick(View v) {
                 navController.navigate(R.id.action_pantallaPrincipalFragment_to_listaEjerciciosFragment);
 
-                ((MainActivity) requireActivity()).actualizarElementoSeleccionado(R.id.entrenamiento);
             }
         });
 
