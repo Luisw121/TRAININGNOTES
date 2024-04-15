@@ -8,7 +8,7 @@
         android:id="@+id/buttonEntrenamientoDays"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="@drawable/selector_background"
+        android:background="@drawable/rounded_backgroundwhite"
         android:padding="16dp"
         app:layout_constraintEnd_toStartOf="@id/deleteButtonDays"
         app:layout_constraintHorizontal_chainStyle="spread_inside"
@@ -31,13 +31,15 @@
 
     <ImageView
         android:id="@+id/deleteButtonDays"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:background="@drawable/borrar"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_marginStart="16dp"
+        android:background="@drawable/papelera"
         android:onClick="deleteBlock"
         android:text="Eliminar"
         app:layout_constraintBottom_toBottomOf="@id/buttonEntrenamientoDays"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/buttonEntrenamientoDays"
         app:layout_constraintTop_toTopOf="@id/buttonEntrenamientoDays" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

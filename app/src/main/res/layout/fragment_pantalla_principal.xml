@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/marronfloko"
+    android:background="@color/black"
     tools:context=".views.pantallaPrincipalFragment">
 
     <ImageView
@@ -23,7 +23,7 @@
         android:layout_width="324dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="200dp"
-        android:background="@drawable/selector_background"
+        android:background="@drawable/rounded_backgroundwhite"
         android:padding="16dp"
         android:clickable="true"
         app:layout_constraintEnd_toEndOf="parent"
@@ -59,7 +59,7 @@
         android:layout_width="324dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="60dp"
-        android:background="@drawable/selector_background"
+        android:background="@drawable/rounded_backgroundwhite"
         android:padding="16dp"
         android:clickable="true"
         app:layout_constraintEnd_toEndOf="parent"
@@ -91,7 +91,7 @@
         android:layout_width="324dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="60dp"
-        android:background="@drawable/selector_background"
+        android:background="@drawable/rounded_backgroundwhite"
         android:padding="16dp"
         android:clickable="true"
         app:layout_constraintEnd_toEndOf="parent"
