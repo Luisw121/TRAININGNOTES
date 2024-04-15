@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -46,12 +47,12 @@ public class EjerciciosFragment extends Fragment {
 
         TextView blockNameTextView = view.findViewById(R.id.blockDetailNameTextViewEjercicios);
         blockNameTextView.setText(elementName);
-
         return view;
     }
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
         firestore = FirebaseFirestore.getInstance();
         auth = FirebaseAuth.getInstance();
         currentUser = auth.getCurrentUser();
@@ -61,25 +62,27 @@ public class EjerciciosFragment extends Fragment {
             ejerciciosCollectionRef = firestore.collection("elements").document(currentUser.getUid()).collection("ejercicios");
             loadEjerciciosFromFirestore(currentUser.getUid(), getArguments().getString("nameEjercicio"));
         }
+
         selectedEjercicios = new ArrayList<>();
+
         ejercicioAdapter = new EjercicioAdapter(selectedEjercicios, ejerciciosCollectionRef);
 
         recyclerViewEJ.setLayoutManager(new LinearLayoutManager(requireContext()));
         recyclerViewEJ.setAdapter(ejercicioAdapter);
+
         view.findViewById(R.id.añadirEjercicio).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mostrarListaEjercicios();
             }
         });
-
     }
 
     private void loadEjerciciosFromFirestore(String userId, String nameEjercicio) {
         firestore.collection("elements").document(userId).collection("ejercicios")
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
-                    selectedEjercicios.clear();
+                    selectedEjercicios.clear(); // Asegura que la lista esté vacía antes de añadir elementos
                     for (DocumentSnapshot document : queryDocumentSnapshots) {
                         Ejercicio ejercicio = document.toObject(Ejercicio.class);
                         selectedEjercicios.add(ejercicio);
@@ -87,44 +90,36 @@ public class EjerciciosFragment extends Fragment {
                     ejercicioAdapter.notifyDataSetChanged();
                 })
                 .addOnFailureListener(e -> {
-                    // Manejar cualquier error al cargar los ejercicios desde Firestore
                     Log.e("Firestore", "Error al cargar los ejercicios desde Firestore: " + e.getMessage());
                 });
     }
 
 
+
     private void mostrarListaEjercicios() {
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
         builder.setTitle("Añadir ejercicio");
+
         dialog = new Dialog(requireContext());
         dialog.setContentView(R.layout.dialog_lista_ejercicios);
         RecyclerView recyclerView = dialog.findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
         List<Ejercicio> listaEjercicios = getEjercicios();
 
-        // Crear el adaptador
-        ejercicioAdapter = new EjercicioAdapter(listaEjercicios, ejerciciosCollectionRef);
-        recyclerView.setAdapter(ejercicioAdapter);
+        EjercicioAdapter dialogAdapter = new EjercicioAdapter(listaEjercicios, null); // null porque no necesitas la referencia a Firestore aquí
+        recyclerView.setAdapter(dialogAdapter);
 
-        // Configurar el oyente para el clic en el ejercicio
-        ejercicioAdapter.setOnExerciseClickListener(new EjercicioAdapter.OnExerciseClickListener() {
-            @Override
-            public void onExerciseClick(Ejercicio ejercicio) {
+        dialogAdapter.setOnExerciseClickListener(ejercicio -> {
+            String ejName = getArguments().getString("nombre");
+            if (!selectedEjercicios.contains(ejercicio)) {
                 selectedEjercicios.add(ejercicio);
-                // Notificar al adaptador que los datos han cambiado
                 ejercicioAdapter.notifyDataSetChanged();
-                dialog.dismiss();
-            }
-        });
-
-        builder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                // Guardar los ejercicios seleccionados en Firebase
                 saveSelectedExercisesToFirestore();
             }
+            dialog.dismiss();
         });
 
+        builder.setPositiveButton("Aceptar", (dialog, which) -> saveSelectedExercisesToFirestore());
         dialog.show();
     }
 
@@ -133,18 +128,17 @@ public class EjerciciosFragment extends Fragment {
 
     private void saveSelectedExercisesToFirestore() {
         if (currentUser != null && !selectedEjercicios.isEmpty()) {
-            for (Ejercicio ejercicio : selectedEjercicios) {
-                ejerciciosCollectionRef.add(ejercicio)
-                        .addOnSuccessListener(documentReference -> {
-                            // Ejercicio agregado correctamente a Firebase
-                        })
-                        .addOnFailureListener(e -> {
-                            // Error al agregar el ejercicio a Firebase
-                            Log.e("Firestore", "Error al agregar el ejercicio a Firebase: " + e.getMessage());
-                        });
-            }
+            Ejercicio newEjercicio = selectedEjercicios.get(selectedEjercicios.size() - 1);  // Asume que el último es el nuevo
+            ejerciciosCollectionRef.add(newEjercicio)
+                    .addOnSuccessListener(documentReference -> {
+                        // Manejar éxito
+                    })
+                    .addOnFailureListener(e -> {
+                        Log.e("Firestore", "Error al agregar el ejercicio: " + e.getMessage());
+                    });
         }
     }
+
     private List<Ejercicio> getEjercicios() {
         List<Ejercicio> ejercicios = new ArrayList<>();
 
