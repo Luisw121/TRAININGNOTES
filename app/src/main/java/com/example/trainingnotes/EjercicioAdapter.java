@@ -136,18 +136,3 @@ public class EjercicioAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     }
 }
 
-
-/*
-<EditText
-        android:id="@+id/editTextSearch"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Buscar ejercicio..."
-        android:textColor="@color/black"
-        android:textColorHint="@color/white"
-        android:imeOptions="actionDone"
-        android:inputType="text"
-        android:visibility="invisible"
-        tools:layout_editor_absoluteX="-20dp"
-        tools:layout_editor_absoluteY="706dp" />
- */
