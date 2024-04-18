@@ -1,31 +1,41 @@
 package com.example.trainingnotes;
 
 public class DatoInicial {
-    private String dato1;
-    private int dato2;
+    private int repeticiones;
+    private double peso;
+    private double rpe;
 
     public DatoInicial() {
         // Constructor vacío necesario para Firestore
     }
 
-    public DatoInicial(String dato1, int dato2) {
-        this.dato1 = dato1;
-        this.dato2 = dato2;
+    public DatoInicial(int repeticiones, double peso, double rpe) {
+        this.repeticiones = repeticiones;
+        this.peso = peso;
+        this.rpe = rpe;
     }
 
-    public String getDato1() {
-        return dato1;
+    public int getRepeticiones() {
+        return repeticiones;
     }
 
-    public void setDato1(String dato1) {
-        this.dato1 = dato1;
+    public void setRepeticiones(int repeticiones) {
+        this.repeticiones = repeticiones;
     }
 
-    public int getDato2() {
-        return dato2;
+    public double getPeso() {
+        return peso;
     }
 
-    public void setDato2(int dato2) {
-        this.dato2 = dato2;
+    public void setPeso(double peso) {
+        this.peso = peso;
+    }
+
+    public double getRpe() {
+        return rpe;
+    }
+
+    public void setRpe(double rpe) {
+        this.rpe = rpe;
     }
 }
