@@ -22,7 +22,8 @@ import android.content.Context;
 public class EjercicioAdapter extends RecyclerView.Adapter<EjercicioAdapter.EjercicioViewHolder> {
     private List<Ejercicio> ejerciciosList;
     private CollectionReference ejerciciosCollectionRef;
-
+    private OnDeleteClickListener onDeleteClickListenerEjercicio;
+    private OnEjercicioClickListener onEjercicioClickListener;
     public EjercicioAdapter(List<Ejercicio> ejerciciosList, CollectionReference ejerciciosCollectionRef) {
         this.ejerciciosList = ejerciciosList;
         this.ejerciciosCollectionRef = ejerciciosCollectionRef;
@@ -39,19 +40,50 @@ public class EjercicioAdapter extends RecyclerView.Adapter<EjercicioAdapter.Ejer
     public void onBindViewHolder(@NonNull EjercicioViewHolder holder, int position) {
         Ejercicio ejercicio = ejerciciosList.get(position);
         holder.bind(ejercicio);
+
+        holder.deleteButtonEjercicio.setOnClickListener(v -> {
+            int adapterPosition = holder.getAdapterPosition();
+            if (adapterPosition != RecyclerView.NO_POSITION) {
+                Ejercicio ejercicioToDelete = ejerciciosList.get(adapterPosition);
+                onDeleteClickListenerEjercicio.onDeleteClick(ejercicioToDelete.getNombre());
+            }
+        });
+
+        holder.itemView.setOnClickListener(v -> {
+            int adapterPosition = holder.getAdapterPosition();
+            if (adapterPosition != RecyclerView.NO_POSITION) {
+                Ejercicio ejercicioClicked = ejerciciosList.get(adapterPosition);
+                onEjercicioClickListener.onEjercicioClick(ejercicioClicked);
+            }
+        });
     }
 
     @Override
     public int getItemCount() {
         return ejerciciosList.size();
     }
+    public void setOnDeleteClickListener(OnDeleteClickListener listener) {
+        this.onDeleteClickListenerEjercicio = listener;
+    }
+    public interface OnDeleteClickListener {
+        void onDeleteClick(String ejercicioName);
+    }
+
+    public void setOnEjercicioClickListener(OnEjercicioClickListener listener) {
+        this.onEjercicioClickListener = listener;
+    }
+
+    public interface OnEjercicioClickListener {
+        void onEjercicioClick(Ejercicio ejercicio);
+    }
 
     public class EjercicioViewHolder extends RecyclerView.ViewHolder {
         private TextView textViewNombreEjercicio;
-
+        private ImageView deleteButtonEjercicio;
         public EjercicioViewHolder(@NonNull View itemView) {
             super(itemView);
             textViewNombreEjercicio = itemView.findViewById(R.id.blockNameTextViewDays);
+            deleteButtonEjercicio = itemView.findViewById(R.id.deleteButtonDays);
         }
 
         public void bind(Ejercicio ejercicio) {

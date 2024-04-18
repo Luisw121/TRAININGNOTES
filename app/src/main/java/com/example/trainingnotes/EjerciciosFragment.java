@@ -16,6 +16,8 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -85,7 +87,32 @@ public class EjerciciosFragment extends Fragment {
                 showAddEjercicioDialog();
             }
         });
+        adapterEjercicios.setOnDeleteClickListener(new EjercicioAdapter.OnDeleteClickListener() {
+            @Override
+            public void onDeleteClick(String ejercicioName) {
+                deleteEjercicioFromFirestore(ejercicioName);
+            }
+        });
+        adapterEjercicios.setOnEjercicioClickListener(new EjercicioAdapter.OnEjercicioClickListener() {
+            @Override
+            public void onEjercicioClick(Ejercicio ejercicio) {
+                String blockName = getArguments().getString("blockName");
+                String elementName = getArguments().getString("name");
+                String ejercicioName = ejercicio.getNombre();
+                navigateToDatosEjerciciosFragment(blockName, elementName, ejercicioName);
+            }
+        });
     }
+    private void navigateToDatosEjerciciosFragment(String blockName, String elementName, String ejercicioName) {
+        Bundle bundle = new Bundle();
+        bundle.putString("blockName", blockName);
+        bundle.putString("elementName", elementName);
+        bundle.putString("ejercicioName", ejercicioName);
+
+        NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
+        navController.navigate(R.id.action_ejerciciosFragment_to_datosEjerciciosFragment, bundle);
+    }
+
     private void loadEjerciciosFromFirestore() {
         // Obtener el nombre del bloque y el elemento
         String blockName = getArguments().getString("blockName");
@@ -183,4 +210,41 @@ public class EjerciciosFragment extends Fragment {
                     Log.e("Firestore", "Error al agregar el ejercicio: " + e.getMessage());
                 });
     }
+    private void deleteEjercicioFromFirestore(String ejercicioName) {
+        // Obtener el nombre del bloque y el elemento
+        String blockName = getArguments().getString("blockName");
+        String elementName = getArguments().getString("name");
+
+        // Verificar que el usuario actual y los nombres del bloque y el elemento no sean nulos
+        if (currentUser != null && blockName != null && elementName != null) {
+            // Construir la referencia al documento del elemento en Firestore
+            DocumentReference elementDocumentRef = firestore.collection("users")
+                    .document(currentUser.getUid())
+                    .collection("blocks")
+                    .document(blockName)
+                    .collection("elements")
+                    .document(elementName);
+
+            // Construir la referencia al documento del ejercicio en Firestore
+            DocumentReference ejercicioDocumentRef = elementDocumentRef.collection("ejercicios").document(ejercicioName);
+
+            // Eliminar el ejercicio de Firestore
+            ejercicioDocumentRef.delete()
+                    .addOnSuccessListener(aVoid -> {
+                        // Manejar la eliminación exitosa, si es necesario
+                        Log.d("Firestore", "Ejercicio eliminado exitosamente");
+                        // También puedes actualizar la lista de ejercicios si lo deseas
+                        loadEjerciciosFromFirestore();
+                    })
+                    .addOnFailureListener(e -> {
+                        // Manejar el fallo en la eliminación
+                        Log.e("Firestore", "Error al eliminar el ejercicio: " + e.getMessage());
+                    });
+        } else {
+            // Manejar el caso en que el usuario, el nombre del bloque o el nombre del elemento sean nulos
+            Log.e("Firestore", "El usuario, el nombre del bloque o el nombre del elemento son nulos");
+            // También puedes mostrar un mensaje de error al usuario si lo deseas
+        }
+    }
+
 }
