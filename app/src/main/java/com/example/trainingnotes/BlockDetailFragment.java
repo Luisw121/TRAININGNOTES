@@ -91,6 +91,7 @@ public class BlockDetailFragment extends Fragment {
         adapterElement.setOnElementClickListener(new blockAdapter.onElementClickListener() {
             @Override
             public void onElementClick(String elementName) {
+                //Importante pasar las refencias ya que asi se puede encontrar las colections.
                 String blockName = getArguments().getString("blockName");
                 navigateToElemenetFragment(elementName, blockName);
             }
