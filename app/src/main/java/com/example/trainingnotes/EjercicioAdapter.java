@@ -19,120 +19,43 @@ import java.util.List;
 
 import android.content.Context;
 
+public class EjercicioAdapter extends RecyclerView.Adapter<EjercicioAdapter.EjercicioViewHolder> {
+    private List<Ejercicio> ejerciciosList;
+    private CollectionReference ejerciciosCollectionRef;
 
-public class EjercicioAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-    private static final int VIEW_TYPE_SELECTION = 1;
-    private static final int VIEW_TYPE_NORMAL = 2;
-
-    private List<Ejercicio> ejercicios;
-    private CollectionReference ejerciciosCollection;
-    private OnDeleteClickListener onDeleteClickListenerEjercicioBlock;
-    private OnEjercicioBlockListener OnEjercicioBlockListener;
-    public void setOnEjercicioBlockListener(OnEjercicioBlockListener listener) {
-        this.OnEjercicioBlockListener = listener;
-    }
-    public interface OnEjercicioBlockListener{
-        void onjercicioClickBLock(String ejercicioName);
-    }
-
-    private onEjercicioCliclListener listener;
-    public interface onEjercicioCliclListener {
-        void onEjercicioClick(String ejercicioName);
-    }
-    public void setOnEjercicioClickListener(onEjercicioCliclListener listener){this.listener = listener;}
-    public void setOnDeleteClickListenerEjercicioBlock(OnDeleteClickListener listener) {
-        this.onDeleteClickListenerEjercicioBlock = listener;
-    }
-    public interface OnDeleteClickListener {
-        void onDeleteClick(String position);
-    }
-
-    private Context context;
-    private OnExerciseClickListener onExerciseClickListener;
-    private boolean isSelectionMode;
-
-    public EjercicioAdapter(List<Ejercicio> listaEjercicios, CollectionReference ejerciciosCollection, boolean isSelectionMode) {
-        this.ejercicios = listaEjercicios;
-        this.ejerciciosCollection = ejerciciosCollection;
-        this.isSelectionMode = isSelectionMode;
-    }
-
-    @Override
-    public int getItemViewType(int position) {
-        return isSelectionMode ? VIEW_TYPE_SELECTION : VIEW_TYPE_NORMAL;
+    public EjercicioAdapter(List<Ejercicio> ejerciciosList, CollectionReference ejerciciosCollectionRef) {
+        this.ejerciciosList = ejerciciosList;
+        this.ejerciciosCollectionRef = ejerciciosCollectionRef;
     }
 
     @NonNull
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        if (viewType == VIEW_TYPE_SELECTION) {
-            View view = inflater.inflate(R.layout.item_ejercicios, parent, false);
-            return new EjercicioViewHolder(view);
-        } else {
-            View view = inflater.inflate(R.layout.item_ejercicios2, parent, false);
-            return new EjercicioViewHolder2(view);
-        }
+    public EjercicioViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_days, parent, false);
+        return new EjercicioViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        Ejercicio ejercicio = ejercicios.get(position);
-
-        if (isSelectionMode) {
-            EjercicioViewHolder viewHolder = (EjercicioViewHolder) holder;
-            viewHolder.nombreTextView.setText(ejercicio.getNombre());
-            viewHolder.imagenImageView.setImageResource(ejercicio.getImagen());
-        } else {
-            EjercicioViewHolder2 viewHolder = (EjercicioViewHolder2) holder;
-            viewHolder.nombreTextView.setText(ejercicio.getNombre());
-            viewHolder.imagenImageView.setImageResource(ejercicio.getImagen());
-        }
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onExerciseClickListener.onExerciseClick(ejercicio);
-            }
-        });
+    public void onBindViewHolder(@NonNull EjercicioViewHolder holder, int position) {
+        Ejercicio ejercicio = ejerciciosList.get(position);
+        holder.bind(ejercicio);
     }
 
     @Override
     public int getItemCount() {
-        return ejercicios.size();
+        return ejerciciosList.size();
     }
 
-    // Método para establecer el listener desde fuera de la clase
-    public void setOnExerciseClickListener(OnExerciseClickListener listener) {
-        this.onExerciseClickListener = listener;
-    }
-
-    // Interfaz para el listener
-    public interface OnExerciseClickListener {
-        void onExerciseClick(Ejercicio ejercicio);
-    }
-
-    // ViewHolder para el modo de selección
-    static class EjercicioViewHolder extends RecyclerView.ViewHolder {
-        TextView nombreTextView;
-        ImageView imagenImageView;
+    public class EjercicioViewHolder extends RecyclerView.ViewHolder {
+        private TextView textViewNombreEjercicio;
 
         public EjercicioViewHolder(@NonNull View itemView) {
             super(itemView);
-            nombreTextView = itemView.findViewById(R.id.textEjecicios);
-            imagenImageView = itemView.findViewById(R.id.imageEjercicios);
+            textViewNombreEjercicio = itemView.findViewById(R.id.blockNameTextViewDays);
         }
-    }
 
-    // ViewHolder para el modo normal
-    static class EjercicioViewHolder2 extends RecyclerView.ViewHolder {
-        TextView nombreTextView;
-        ImageView imagenImageView;
-
-        public EjercicioViewHolder2(@NonNull View itemView) {
-            super(itemView);
-            nombreTextView = itemView.findViewById(R.id.textEjecicios2);
-            imagenImageView = itemView.findViewById(R.id.imageEjercicios2);
+        public void bind(Ejercicio ejercicio) {
+            textViewNombreEjercicio.setText(ejercicio.getNombre());
         }
     }
 }
-

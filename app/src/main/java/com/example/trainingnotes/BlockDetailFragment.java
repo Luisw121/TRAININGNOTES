@@ -91,17 +91,20 @@ public class BlockDetailFragment extends Fragment {
         adapterElement.setOnElementClickListener(new blockAdapter.onElementClickListener() {
             @Override
             public void onElementClick(String elementName) {
-                navigateToElemenetFragment(elementName);
+                String blockName = getArguments().getString("blockName");
+                navigateToElemenetFragment(elementName, blockName);
             }
         });
     }
 
-    private void navigateToElemenetFragment(String elementName) {
+    private void navigateToElemenetFragment(String elementName, String blockName) {
         Bundle bundle = new Bundle();
         bundle.putString("name", elementName);
+        bundle.putString("blockName", blockName); // Agregar el nombre del bloque al Bundle
         NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
         navController.navigate(R.id.action_blockDetailFragment_to_ejerciciosFragment, bundle);
     }
+
 
     private void loadElementsFromFirestore(String userId, String blockName) {
         firestoreElement.collection("users").document(userId).collection("blocks")
