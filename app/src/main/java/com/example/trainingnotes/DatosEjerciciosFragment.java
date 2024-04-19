@@ -1,5 +1,7 @@
 package com.example.trainingnotes;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -7,13 +9,17 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.text.InputType;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.trainingnotes.views.DatoAdapter;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -21,6 +27,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
@@ -34,6 +41,7 @@ public class DatosEjerciciosFragment extends Fragment {
     private List<DatoInicial> serieDatosList = new ArrayList<>();
     private RecyclerView recyclerViewSerieDatos;
     private DatoAdapter serieDatosAdapter;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -90,7 +98,7 @@ public class DatosEjerciciosFragment extends Fragment {
                 eliminarUltimaSerie(); 
             }
         });
-        
+
         loadDatosFromFirebase(); 
         return view;
     }
@@ -134,13 +142,17 @@ public class DatosEjerciciosFragment extends Fragment {
                 List<Map<String, Object>> serieDatosMapList = (List<Map<String, Object>>) datosEjercicio.get("series");
                 if (serieDatosMapList != null) {
                     // Limpiar la lista local antes de agregar las series de Firebase
-                    serieDatosList.clear();
+                    serieDatosList.clear(); // Limpiar la lista antes de agregar las nuevas series
                     for (Map<String, Object> serieDatosMap : serieDatosMapList) {
                         Long repeticionesLong = (Long) serieDatosMap.get("repeticiones");
-                        int repeticiones = repeticionesLong.intValue();
+                        int repeticiones = repeticionesLong != null ? repeticionesLong.intValue() : 0;
 
-                        double peso = (double) serieDatosMap.get("peso");
-                        double rpe = (double) serieDatosMap.get("rpe");
+                        Long pesoLong = (Long) serieDatosMap.get("peso");
+                        int peso = pesoLong != null ? pesoLong.intValue() : 0;
+
+                        Long rpeLong = (Long) serieDatosMap.get("rpe");
+                        int rpe = rpeLong != null ? rpeLong.intValue() : 0;
+
                         DatoInicial serieDatos = new DatoInicial(repeticiones, peso, rpe);
                         serieDatosList.add(serieDatos);
                     }
@@ -154,20 +166,67 @@ public class DatosEjerciciosFragment extends Fragment {
     }
 
 
+
     private void agregarSerieInicial() {
-        // Generar un ID único para la nueva serie
-        String serieId = FirebaseFirestore.getInstance().collection("users").document().getId();
+        // Inflar el layout con los EditText
+        View inflatedView = getLayoutInflater().inflate(R.layout.item_dato, null);
+        EditText repsEditText = inflatedView.findViewById(R.id.textViewReps);
+        EditText pesoEditText = inflatedView.findViewById(R.id.textViewPeso);
+        EditText rpeEditText = inflatedView.findViewById(R.id.textViewRpe);
 
-        // Agregar la nueva serie a la lista con el ID único
-        DatoInicial nuevaSerie = new DatoInicial(0, 0.0, 5.0);
-        nuevaSerie.setId(serieId); // Asumiendo que tienes un método setId en tu clase DatoInicial
-        serieDatosList.add(nuevaSerie);
-        serieDatosAdapter.notifyDataSetChanged();
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+        builder.setTitle("Agregar Serie");
+        repsEditText.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
+        pesoEditText.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
+        rpeEditText.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
+        builder.setView(inflatedView);
 
-        // Marcar los datos como modificados
-        datosCambiados = true;
-        guardarDatosEnFirebase();
+        builder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // Obtener los valores de los EditText después de hacer clic en Aceptar
+                String repsString = repsEditText.getText().toString();
+                String pesoString = pesoEditText.getText().toString();
+                String rpeString = rpeEditText.getText().toString();
+
+                // Verificar si los campos no están vacíos
+                if (!TextUtils.isEmpty(repsString) && !TextUtils.isEmpty(pesoString) && !TextUtils.isEmpty(rpeString)) {
+                    // Convertir los valores a enteros
+                    int reps = Integer.parseInt(repsString);
+                    int peso = Integer.parseInt(pesoString);
+                    int rpe = Integer.parseInt(rpeString);
+
+                    // Generar un ID único para la nueva serie
+                    String serieId = FirebaseFirestore.getInstance().collection("users").document().getId();
+
+                    // Agregar la nueva serie a la lista con el ID único
+                    DatoInicial nuevaSerie = new DatoInicial(reps, peso, rpe);
+                    nuevaSerie.setId(serieId); // Asumiendo que tienes un método setId en tu clase DatoInicial
+                    serieDatosList.add(nuevaSerie);
+                    serieDatosAdapter.notifyDataSetChanged();
+
+                    // Marcar los datos como modificados
+                    datosCambiados = true;
+                    guardarDatosEnFirebase();
+                } else {
+                    // Mostrar un mensaje de error si algún campo está vacío
+                    Toast.makeText(requireContext(), "Por favor, completa todos los campos", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
+
+
 
 
     private void eliminarSerieSeleccionada(int position) {
@@ -222,9 +281,9 @@ public class DatosEjerciciosFragment extends Fragment {
             return;
         }
 
-        String ejercicioName = getArguments().getString("ejercicioName");
         String blockName = getArguments().getString("blockName");
         String elementName = getArguments().getString("elementName");
+        String ejercicioName = getArguments().getString("ejercicioName"); // Guardar la referencia localmente
 
         // Referencia al documento de ejercicios en Firestore
         DocumentReference ejercicioDocRef = FirebaseFirestore.getInstance()
@@ -236,50 +295,39 @@ public class DatosEjerciciosFragment extends Fragment {
                 .document(elementName)
                 .collection("ejercicios")
                 .document(ejercicioName);
-        if (!datosCambiados) {
-            // Si no hay cambios, salir del método sin guardar
-            return;
-        }
 
-        // Obtener los datos existentes del documento de ejercicios en Firestore
-        ejercicioDocRef.get().addOnSuccessListener(documentSnapshot -> {
-            if (documentSnapshot.exists()) {
-                Map<String, Object> datosEjercicio = documentSnapshot.getData();
-                List<Map<String, Object>> serieDatosMapList = new ArrayList<>();
-                // Obtener los datos de series existentes
-                List<Map<String, Object>> existingSerieDatosList = (List<Map<String, Object>>) datosEjercicio.get("series");
+        // Eliminar todas las series existentes del documento
+        ejercicioDocRef.update("series", FieldValue.delete())
+                .addOnSuccessListener(aVoid -> {
+                    // Agregar las nuevas series al documento
+                    Map<String, Object> data = new HashMap<>();
+                    List<Map<String, Object>> serieDatosMapList = new ArrayList<>();
+                    for (DatoInicial serieDatos : serieDatosList) {
+                        Map<String, Object> serieDatosMap = new HashMap<>();
+                        serieDatosMap.put("repeticiones", serieDatos.getRepeticiones());
+                        serieDatosMap.put("peso", serieDatos.getPeso());
+                        serieDatosMap.put("rpe", serieDatos.getRpe());
+                        serieDatosMapList.add(serieDatosMap);
+                    }
+                    data.put("nombre", ejercicioName);
+                    data.put("series", serieDatosMapList);
+                    ejercicioDocRef.set(data)
+                            .addOnSuccessListener(aVoid1 -> {
+                                System.out.println("Datos de series actualizados en el documento de ejercicios en Firestore");
 
-                // Agregar los datos existentes a la lista de mapas
-                if (existingSerieDatosList != null) {
-                    serieDatosMapList.addAll(existingSerieDatosList);
-                }
+                                // Restaurar la referencia después de la actualización
 
-                // Agregar los nuevos datos de series a la lista de mapas
-                for (DatoInicial serieDatos : serieDatosList) {
-                    Map<String, Object> serieDatosMap = new HashMap<>();
-                    serieDatosMap.put("repeticiones", serieDatos.getRepeticiones());
-                    serieDatosMap.put("peso", serieDatos.getPeso());
-                    serieDatosMap.put("rpe", serieDatos.getRpe());
-                    serieDatosMapList.add(serieDatosMap);
-                }
-
-                // Actualizar los datos de series en el documento de ejercicios en Firestore
-                datosEjercicio.put("series", serieDatosMapList);
-                ejercicioDocRef.set(datosEjercicio)
-                        .addOnSuccessListener(aVoid -> {
-                            System.out.println("Datos de series actualizados en el documento de ejercicios en Firestore");
-                        })
-                        .addOnFailureListener(e -> {
-                            System.out.println("Error al actualizar datos de series en el documento de ejercicios en Firestore: " + e.getMessage());
-                        });
-            }
-        }).addOnFailureListener(e -> {
-            System.out.println("Error al obtener los datos existentes del documento de ejercicios en Firestore: " + e.getMessage());
-        });
+                            })
+                            .addOnFailureListener(e -> {
+                                System.out.println("Error al actualizar datos de series en el documento de ejercicios en Firestore: " + e.getMessage());
+                            });
+                })
+                .addOnFailureListener(e -> {
+                    System.out.println("Error al eliminar las series existentes del documento de ejercicios en Firestore: " + e.getMessage());
+                });
     }
 
-
-    private void agregarDatosSerie(int repeticiones, double peso, double rpe) {
+    private void agregarDatosSerie(int repeticiones, int peso, int rpe) {
         DatoInicial serieDatos = new DatoInicial();
         serieDatos.setRepeticiones(repeticiones);
         serieDatos.setPeso(peso);
