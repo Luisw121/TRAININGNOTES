@@ -3,6 +3,7 @@ package com.example.trainingnotes.views;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -16,29 +17,17 @@ import java.util.List;
 
 public class DatoAdapter extends RecyclerView.Adapter<DatoAdapter.DatoViewHolder> {
     private List<DatoInicial> serieDatosList;
-    private int posicionSeleccionada = RecyclerView.NO_POSITION;
-
     private OnSerieClickListener onSerieClickListener;
+
     public interface OnSerieClickListener {
         void onSerieDeleteClick(int position);
         void onSerieAddClick();
     }
 
-    public DatoAdapter(List<DatoInicial> serieDatosList) {
+    public DatoAdapter(List<DatoInicial> serieDatosList, OnSerieClickListener listener) {
         this.serieDatosList = serieDatosList;
-    }public void setOnSerieClickListener(OnSerieClickListener listener) {
         this.onSerieClickListener = listener;
     }
-
-    public void setPosicionSeleccionada(int posicion) {
-        posicionSeleccionada = posicion;
-        notifyDataSetChanged();
-    }
-
-    public int getPosicionSeleccionada() {
-        return posicionSeleccionada;
-    }
-
 
     @NonNull
     @Override
@@ -51,26 +40,6 @@ public class DatoAdapter extends RecyclerView.Adapter<DatoAdapter.DatoViewHolder
     public void onBindViewHolder(@NonNull DatoViewHolder holder, int position) {
         DatoInicial dato = serieDatosList.get(position);
         holder.bind(dato);
-
-        holder.addButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                int clickedPosition = holder.getAdapterPosition();
-                if (clickedPosition != RecyclerView.NO_POSITION) {
-                    setPosicionSeleccionada(clickedPosition);
-                }
-            }
-        });
-
-        holder.deleteButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                int clickedPosition = holder.getAdapterPosition();
-                if (clickedPosition != RecyclerView.NO_POSITION && onSerieClickListener != null) {
-                    onSerieClickListener.onSerieDeleteClick(clickedPosition);
-                }
-            }
-        });
     }
 
     @Override
@@ -79,19 +48,15 @@ public class DatoAdapter extends RecyclerView.Adapter<DatoAdapter.DatoViewHolder
     }
 
     public class DatoViewHolder extends RecyclerView.ViewHolder {
-        private TextView textViewReps;
-        private TextView textViewPeso;
-        private TextView textViewRpe;
-        private ImageView deleteButton;
-        private ImageView addButton;
+        private EditText textViewReps;
+        private EditText textViewPeso;
+        private EditText textViewRpe;
+
         public DatoViewHolder(@NonNull View itemView) {
             super(itemView);
             textViewReps = itemView.findViewById(R.id.textViewReps);
             textViewPeso = itemView.findViewById(R.id.textViewPeso);
             textViewRpe = itemView.findViewById(R.id.textViewRpe);
-            deleteButton = itemView.findViewById(R.id.deleteButton1);
-            addButton = itemView.findViewById(R.id.addButton);
-
         }
 
         public void bind(DatoInicial dato) {
@@ -101,3 +66,4 @@ public class DatoAdapter extends RecyclerView.Adapter<DatoAdapter.DatoViewHolder
         }
     }
 }
+

@@ -1,0 +1,6 @@
+<!-- background_rounded.xml -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <corners android:radius="12dp" /> <!-- Define el radio de los bordes -->
+    <solid android:color="@color/marroncontenedor" /> <!-- Color de fondo -->
+</shape>
