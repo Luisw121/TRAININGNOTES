@@ -79,6 +79,18 @@ public class DatosEjerciciosFragment extends Fragment {
         recyclerViewSerieDatos.setLayoutManager(new LinearLayoutManager(requireContext()));
         recyclerViewSerieDatos.setAdapter(serieDatosAdapter);
 
+
+        serieDatosAdapter.setOnDeleteClickListener(new DatoAdapter.OnSerieClickListener() {
+            @Override
+            public void onSerieDeleteClick(int position) {
+                eliminarSerieSeleccionada(position);
+            }
+
+            @Override
+            public void onSerieAddClick() {
+                // No necesitas implementar esto aquí si ya lo has hecho en el constructor del adaptador
+            }
+        });
         //elementNameTextView.setText(elementName);
         //ejercicioNameTextView.setText(ejercicioName);
 
@@ -95,7 +107,7 @@ public class DatosEjerciciosFragment extends Fragment {
         deleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                eliminarUltimaSerie(); 
+                eliminarUltimaSerie();
             }
         });
 
@@ -309,11 +321,18 @@ public class DatosEjerciciosFragment extends Fragment {
                         .addOnSuccessListener(aVoid -> {
                             // Éxito al eliminar la serie de Firebase
                             System.out.println("Serie eliminada de Firebase");
+
+                            // Eliminar la serie de la lista local
+                            serieDatosList.remove(position);
+
+                            // Notificar al adaptador del cambio
+                            serieDatosAdapter.notifyDataSetChanged();
                         })
                         .addOnFailureListener(e -> {
                             // Error al eliminar la serie de Firebase
                             System.out.println("Error al eliminar serie de Firebase: " + e.getMessage());
                         });
+
             }
         }
     }

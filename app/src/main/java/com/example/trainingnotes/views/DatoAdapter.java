@@ -18,6 +18,10 @@ import java.util.List;
 public class DatoAdapter extends RecyclerView.Adapter<DatoAdapter.DatoViewHolder> {
     private List<DatoInicial> serieDatosList;
     private OnSerieClickListener onSerieClickListener;
+    public void setOnDeleteClickListener(OnSerieClickListener listener) {
+        this.onSerieClickListener = listener;
+    }
+
 
     public interface OnSerieClickListener {
         void onSerieDeleteClick(int position);
@@ -40,7 +44,6 @@ public class DatoAdapter extends RecyclerView.Adapter<DatoAdapter.DatoViewHolder
     public void onBindViewHolder(@NonNull DatoViewHolder holder, int position) {
         DatoInicial dato = serieDatosList.get(position);
         holder.bind(dato);
-
     }
 
     @Override
@@ -59,13 +62,15 @@ public class DatoAdapter extends RecyclerView.Adapter<DatoAdapter.DatoViewHolder
             textViewReps = itemView.findViewById(R.id.textViewReps);
             textViewPeso = itemView.findViewById(R.id.textViewPeso);
             textViewRpe = itemView.findViewById(R.id.textViewRpe);
+
+            // Buscar deleteButton en el diseño principal
             deleteButton = itemView.findViewById(R.id.deleteButton1);
-            // Si deleteButton es nulo, inflar el layout correcto y obtener la referencia al botón
             if (deleteButton == null) {
-                View layout = LayoutInflater.from(itemView.getContext()).inflate(R.layout.fragment_datos_ejercicios, (ViewGroup) itemView, false);
-                deleteButton = layout.findViewById(R.id.deleteButton1);
+                // Si deleteButton no se encuentra en el diseño principal, buscar en el diseño específico
+                deleteButton = itemView.findViewById(R.id.deleteButton1);
             }
 
+            // Aquí puedes configurar el click listener para deleteButton
             if (deleteButton != null) {
                 deleteButton.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -78,6 +83,7 @@ public class DatoAdapter extends RecyclerView.Adapter<DatoAdapter.DatoViewHolder
                 });
             }
         }
+
 
 
         public void bind(DatoInicial dato) {
