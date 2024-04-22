@@ -4,29 +4,25 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 
-import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.text.InputType;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.trainingnotes.views.DatoAdapter;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -34,7 +30,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
+import androidx.recyclerview.widget.DividerItemDecoration;
 
 public class DatosEjerciciosFragment extends Fragment {
 
@@ -46,7 +42,6 @@ public class DatosEjerciciosFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_datos_ejercicios, container, false);
-
 
         //TextView blockNameTextView = view.findViewById(R.id.nameDetailNameTextViewDatos);
         //TextView elementNameTextView = view.findViewById(R.id.elementNameTextViewDatos);
@@ -62,6 +57,8 @@ public class DatosEjerciciosFragment extends Fragment {
         ejercicioNameTextView.setText(ejercicioName);
 
         recyclerViewSerieDatos = view.findViewById(R.id.recyclerViewSerieDatos);
+        recyclerViewSerieDatos.setLayoutManager(new LinearLayoutManager(requireContext()));
+        recyclerViewSerieDatos.addItemDecoration(new DividerItemDecoration(requireContext(), LinearLayoutManager.VERTICAL));
 
         serieDatosList = new ArrayList<>();
 
@@ -79,18 +76,6 @@ public class DatosEjerciciosFragment extends Fragment {
         recyclerViewSerieDatos.setLayoutManager(new LinearLayoutManager(requireContext()));
         recyclerViewSerieDatos.setAdapter(serieDatosAdapter);
 
-
-        serieDatosAdapter.setOnDeleteClickListener(new DatoAdapter.OnSerieClickListener() {
-            @Override
-            public void onSerieDeleteClick(int position) {
-                eliminarSerieSeleccionada(position);
-            }
-
-            @Override
-            public void onSerieAddClick() {
-                // No necesitas implementar esto aquí si ya lo has hecho en el constructor del adaptador
-            }
-        });
         //elementNameTextView.setText(elementName);
         //ejercicioNameTextView.setText(ejercicioName);
 
@@ -108,12 +93,13 @@ public class DatosEjerciciosFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 eliminarUltimaSerie();
+
             }
         });
-
-        loadDatosFromFirebase(); 
+        loadDatosFromFirebase();
         return view;
     }
+
 
     private void eliminarUltimaSerie() {
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -146,6 +132,7 @@ public class DatosEjerciciosFragment extends Fragment {
                                 .addOnSuccessListener(aVoid -> {
                                     // Actualización exitosa
                                     datosCambiados = true;
+                                    loadDatosFromFirebase();//importante, elimina visualmente
                                     System.out.println("Última serie eliminada con éxito.");
                                 })
                                 .addOnFailureListener(e -> {
@@ -279,24 +266,11 @@ public class DatosEjerciciosFragment extends Fragment {
         AlertDialog dialog = builder.create();
         dialog.show();
     }
-
-
-
-
     private void eliminarSerieSeleccionada(int position) {
         // Verificar si hay elementos en la lista antes de intentar eliminar
         if (!serieDatosList.isEmpty()) {
             // Obtener la serie a eliminar
             DatoInicial serieAEliminar = serieDatosList.get(position);
-
-            // Eliminar la serie de la lista local
-            serieDatosList.remove(position);
-
-            // Notificar al adaptador del cambio
-            serieDatosAdapter.notifyDataSetChanged();
-
-            // Actualizar la bandera
-            datosCambiados = true;
 
             // Eliminar la serie de Firebase
             FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -326,18 +300,15 @@ public class DatosEjerciciosFragment extends Fragment {
                             serieDatosList.remove(position);
 
                             // Notificar al adaptador del cambio
-                            serieDatosAdapter.notifyDataSetChanged();
+                            serieDatosAdapter.notifyItemRemoved(position);
                         })
                         .addOnFailureListener(e -> {
                             // Error al eliminar la serie de Firebase
                             System.out.println("Error al eliminar serie de Firebase: " + e.getMessage());
                         });
-
             }
         }
     }
-
-
 
     private void guardarDatosEnFirebase() {
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();

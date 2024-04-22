@@ -1,27 +1,26 @@
-package com.example.trainingnotes.views;
+package com.example.trainingnotes;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
-import com.example.trainingnotes.DatoInicial;
-import com.example.trainingnotes.R;
 
 import java.util.List;
 
 public class DatoAdapter extends RecyclerView.Adapter<DatoAdapter.DatoViewHolder> {
     private List<DatoInicial> serieDatosList;
     private OnSerieClickListener onSerieClickListener;
+    private OnDeleteClickListener onDeleteClickListener;
     public void setOnDeleteClickListener(OnSerieClickListener listener) {
         this.onSerieClickListener = listener;
     }
-
+    public interface OnDeleteClickListener {
+        void onDeleteClick(int datoName);
+    }
 
     public interface OnSerieClickListener {
         void onSerieDeleteClick(int position);
@@ -40,10 +39,12 @@ public class DatoAdapter extends RecyclerView.Adapter<DatoAdapter.DatoViewHolder
         return new DatoViewHolder(view);
     }
 
+
     @Override
     public void onBindViewHolder(@NonNull DatoViewHolder holder, int position) {
         DatoInicial dato = serieDatosList.get(position);
         holder.bind(dato);
+
     }
 
     @Override
@@ -62,26 +63,6 @@ public class DatoAdapter extends RecyclerView.Adapter<DatoAdapter.DatoViewHolder
             textViewReps = itemView.findViewById(R.id.textViewReps);
             textViewPeso = itemView.findViewById(R.id.textViewPeso);
             textViewRpe = itemView.findViewById(R.id.textViewRpe);
-
-            // Buscar deleteButton en el diseño principal
-            deleteButton = itemView.findViewById(R.id.deleteButton1);
-            if (deleteButton == null) {
-                // Si deleteButton no se encuentra en el diseño principal, buscar en el diseño específico
-                deleteButton = itemView.findViewById(R.id.deleteButton1);
-            }
-
-            // Aquí puedes configurar el click listener para deleteButton
-            if (deleteButton != null) {
-                deleteButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        int position = getAdapterPosition(); // Obtener la posición del elemento
-                        if (position != RecyclerView.NO_POSITION) {
-                            onSerieClickListener.onSerieDeleteClick(position);
-                        }
-                    }
-                });
-            }
         }
 
 
