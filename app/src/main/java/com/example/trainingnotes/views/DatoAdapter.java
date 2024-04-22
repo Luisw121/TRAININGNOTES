@@ -40,6 +40,7 @@ public class DatoAdapter extends RecyclerView.Adapter<DatoAdapter.DatoViewHolder
     public void onBindViewHolder(@NonNull DatoViewHolder holder, int position) {
         DatoInicial dato = serieDatosList.get(position);
         holder.bind(dato);
+
     }
 
     @Override
@@ -51,13 +52,33 @@ public class DatoAdapter extends RecyclerView.Adapter<DatoAdapter.DatoViewHolder
         private EditText textViewReps;
         private EditText textViewPeso;
         private EditText textViewRpe;
+        private ImageView deleteButton;
 
         public DatoViewHolder(@NonNull View itemView) {
             super(itemView);
             textViewReps = itemView.findViewById(R.id.textViewReps);
             textViewPeso = itemView.findViewById(R.id.textViewPeso);
             textViewRpe = itemView.findViewById(R.id.textViewRpe);
+            deleteButton = itemView.findViewById(R.id.deleteButton1);
+            // Si deleteButton es nulo, inflar el layout correcto y obtener la referencia al botón
+            if (deleteButton == null) {
+                View layout = LayoutInflater.from(itemView.getContext()).inflate(R.layout.fragment_datos_ejercicios, (ViewGroup) itemView, false);
+                deleteButton = layout.findViewById(R.id.deleteButton1);
+            }
+
+            if (deleteButton != null) {
+                deleteButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        int position = getAdapterPosition(); // Obtener la posición del elemento
+                        if (position != RecyclerView.NO_POSITION) {
+                            onSerieClickListener.onSerieDeleteClick(position);
+                        }
+                    }
+                });
+            }
         }
+
 
         public void bind(DatoInicial dato) {
             textViewReps.setText(String.valueOf(dato.getRepeticiones()));

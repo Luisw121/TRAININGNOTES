@@ -279,6 +279,8 @@ public class DatosEjerciciosFragment extends Fragment {
 
             // Eliminar la serie de la lista local
             serieDatosList.remove(position);
+
+            // Notificar al adaptador del cambio
             serieDatosAdapter.notifyDataSetChanged();
 
             // Actualizar la bandera
@@ -315,6 +317,7 @@ public class DatosEjerciciosFragment extends Fragment {
             }
         }
     }
+
 
 
     private void guardarDatosEnFirebase() {
