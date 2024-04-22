@@ -1,6 +1,7 @@
 package com.example.trainingnotes;
 
 import android.app.AlertDialog;
+import android.app.DatePickerDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 
@@ -10,9 +11,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.text.InputType;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -27,6 +31,7 @@ import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,11 +43,23 @@ public class DatosEjerciciosFragment extends Fragment {
     private RecyclerView recyclerViewSerieDatos;
     private DatoAdapter serieDatosAdapter;
 
+    private Button saveButton;
+    private ImageView addButton;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_datos_ejercicios, container, false);
 
+
+        saveButton = view.findViewById(R.id.saveButton);
+        
+        saveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mostrarCalendario();
+            }
+        });
         //TextView blockNameTextView = view.findViewById(R.id.nameDetailNameTextViewDatos);
         //TextView elementNameTextView = view.findViewById(R.id.elementNameTextViewDatos);
         TextView ejercicioNameTextView = view.findViewById(R.id.nameDetailNameTextViewDatos);
@@ -99,6 +116,68 @@ public class DatosEjerciciosFragment extends Fragment {
         loadDatosFromFirebase();
         return view;
     }
+
+    private void mostrarCalendario() {
+        Calendar calendar = Calendar.getInstance();
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH);
+        int dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
+
+        // Crear un DatePickerDialog
+        DatePickerDialog datePickerDialog = new DatePickerDialog(requireContext(),
+                new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                        // Aquí puedes guardar la fecha seleccionada en el calendario
+                        String selectedDate = dayOfMonth + "/" + (month + 1) + "/" + year;
+                        // Luego puedes guardar las series en la fecha seleccionada
+                        guardarEjercicioEnCalendario(selectedDate);
+                    }
+                }, year, month, dayOfMonth);
+
+        // Mostrar el DatePickerDialog
+        datePickerDialog.show();
+    }
+
+    private void guardarEjercicioEnCalendario(String selectedDate) {
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (currentUser != null) {
+            String ejercicioName = getArguments().getString("ejercicioName");
+            String blockName = getArguments().getString("blockName");
+            String elementName = getArguments().getString("elementName");
+
+            // Referencia al documento del usuario en la colección "users"
+            DocumentReference userDocRef = FirebaseFirestore.getInstance()
+                    .collection("users")
+                    .document(currentUser.getUid());
+
+            // Referencia al documento en la colección "calendario" del usuario actual
+            DocumentReference calendarDocRef = userDocRef.collection("calendario")
+                    .document(selectedDate);
+
+            // Crear un mapa con los datos del ejercicio
+            Map<String, Object> ejercicioMap = new HashMap<>();
+            ejercicioMap.put("nombre", ejercicioName);
+            ejercicioMap.put("block", blockName);
+            ejercicioMap.put("elemento", elementName);
+
+            // Guardar el ejercicio en el documento correspondiente en "calendario"
+            calendarDocRef.collection("ejercicios")
+                    .add(ejercicioMap)
+                    .addOnSuccessListener(documentReference -> {
+                        // Éxito al guardar el ejercicio
+                        Toast.makeText(requireContext(), "Ejercicio guardado en calendario", Toast.LENGTH_SHORT).show();
+                    })
+                    .addOnFailureListener(e -> {
+                        // Error al guardar el ejercicio
+                        Toast.makeText(requireContext(), "Error al guardar el ejercicio en calendario", Toast.LENGTH_SHORT).show();
+                        System.out.println( "Error al guardar el ejercicio en calendario: " + e.getMessage());
+                    });
+        }
+    }
+
+
+
 
 
     private void eliminarUltimaSerie() {
