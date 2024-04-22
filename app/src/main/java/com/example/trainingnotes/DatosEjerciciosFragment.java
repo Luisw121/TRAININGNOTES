@@ -104,17 +104,59 @@ public class DatosEjerciciosFragment extends Fragment {
     }
 
     private void eliminarUltimaSerie() {
-        // Verificar si hay elementos en la lista antes de intentar eliminar
-        if (!serieDatosList.isEmpty()) {
-            // Obtener la posición del último elemento en la lista
-            int position = serieDatosList.size() - 1;
-            // Eliminar el elemento en esa posición
-            serieDatosList.remove(position);
-            // Notificar al adaptador del cambio
-            serieDatosAdapter.notifyItemRemoved(position);
-            datosCambiados = true;
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (currentUser != null) {
+            String ejercicioName = getArguments().getString("ejercicioName");
+            String blockName = getArguments().getString("blockName");
+            String elementName = getArguments().getString("elementName");
+
+            // Referencia al documento de ejercicios en Firestore
+            DocumentReference ejercicioDocRef = FirebaseFirestore.getInstance()
+                    .collection("users")
+                    .document(currentUser.getUid())
+                    .collection("blocks")
+                    .document(blockName)
+                    .collection("elements")
+                    .document(elementName)
+                    .collection("ejercicios")
+                    .document(ejercicioName);
+
+            // Obtener el array actual de series
+            ejercicioDocRef.get().addOnSuccessListener(documentSnapshot -> {
+                if (documentSnapshot.exists()) {
+                    List<Map<String, Object>> seriesList = (List<Map<String, Object>>) documentSnapshot.get("series");
+                    if (seriesList != null && !seriesList.isEmpty()) {
+                        // Eliminar el último elemento del array
+                        seriesList.remove(seriesList.size() - 1);
+
+                        // Actualizar el documento con el nuevo array
+                        ejercicioDocRef.update("series", seriesList)
+                                .addOnSuccessListener(aVoid -> {
+                                    // Actualización exitosa
+                                    datosCambiados = true;
+                                    System.out.println("Última serie eliminada con éxito.");
+                                })
+                                .addOnFailureListener(e -> {
+                                    // Error al actualizar el documento
+                                    System.out.println("Error al eliminar la última serie: " + e.getMessage());
+                                });
+                    } else {
+                        // No hay series para eliminar
+                        System.out.println("No hay series para eliminar.");
+                    }
+                } else {
+                    // El documento no existe
+                    System.out.println("El documento no existe.");
+                }
+            }).addOnFailureListener(e -> {
+                // Error al obtener el documento
+                System.out.println("Error al obtener el documento: " + e.getMessage());
+            });
         }
     }
+
+
+
     private boolean datosCambiados = false;
     private void loadDatosFromFirebase() {
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
