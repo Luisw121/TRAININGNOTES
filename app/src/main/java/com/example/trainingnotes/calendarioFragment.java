@@ -7,6 +7,8 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -33,18 +35,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class calendarioFragment extends Fragment {
-    NavController navController = Navigation.findNavController(requireView());
 
+    private NavController navController;
     private CalendarView calendarView;
     private String stringDateSelected;
     private FirebaseDatabase db;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_calendario, container, false);
     }
+
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -56,39 +59,46 @@ public class calendarioFragment extends Fragment {
         calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
             @Override
             public void onSelectedDayChange(@NonNull CalendarView view, int year, int month, int dayOfMonth) {
-                stringDateSelected = Integer.toString(year) + Integer.toString(month+1) + Integer.toString(dayOfMonth);
+                stringDateSelected = Integer.toString(year) + Integer.toString(month + 1) + Integer.toString(dayOfMonth);
                 mostrarEjercicios(stringDateSelected);
             }
         });
     }
+
     private void mostrarEjercicios(String fechaSeleccionada) {
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         if (currentUser != null) {
-            // Referencia al documento del usuario en la colección "users"
             DocumentReference userDocRef = FirebaseFirestore.getInstance()
                     .collection("users")
                     .document(currentUser.getUid());
 
-            // Referencia al documento en la colección "calendario" del usuario actual
             DocumentReference calendarDocRef = userDocRef.collection("calendario")
                     .document(fechaSeleccionada);
 
-            // Consultar los ejercicios almacenados en el documento
             calendarDocRef.collection("ejercicios")
                     .get()
                     .addOnSuccessListener(queryDocumentSnapshots -> {
-                        List<String> ejerciciosList = new ArrayList<>();
+                        List<Ejercicio2> ejerciciosList = new ArrayList<>();
                         for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
                             String ejercicioName = documentSnapshot.getString("nombre");
                             String blockName = documentSnapshot.getString("block");
                             String elementoName = documentSnapshot.getString("elemento");
-                            ejerciciosList.add(ejercicioName + " - " + blockName + " - " + elementoName);
+
+                            Ejercicio2 ejercicio = new Ejercicio2();
+                            ejercicio.setNombre(ejercicioName);
+                            ejercicio.setBlock(blockName);
+                            ejercicio.setElemento(elementoName);
+
+                            ejerciciosList.add(ejercicio);
                         }
-                        // Aquí puedes mostrar los ejercicios en tu RecyclerView o en cualquier otro lugar
+
+                        RecyclerView recyclerView = requireView().findViewById(R.id.recyclerViewEjercicios1);
+                        recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
+                        EjercicioAdapter2 adapter = new EjercicioAdapter2(ejerciciosList);
+                        recyclerView.setAdapter(adapter);
                     })
                     .addOnFailureListener(e -> {
-                        // Manejar el error al consultar los ejercicios
-                        System.out.println( "Error al consultar los ejercicios en calendario: " + e.getMessage());
+                        Log.e("CalendarioFragment", "Error al consultar los ejercicios en calendario: " + e.getMessage());
                     });
         }
     }

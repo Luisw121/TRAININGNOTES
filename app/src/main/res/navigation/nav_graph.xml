@@ -160,17 +160,5 @@
         <action
             android:id="@+id/action_calendarioEjercicios_Fragment_to_calendarioFragment"
             app:destination="@id/calendarioFragment" />
-        <action
-            android:id="@+id/action_calendarioEjercicios_Fragment_to_calenarioDatos_Fragment"
-            app:destination="@id/calenarioDatos_Fragment" />
-    </fragment>
-    <fragment
-        android:id="@+id/calenarioDatos_Fragment"
-        android:name="com.example.trainingnotes.CalenarioDatos_Fragment"
-        android:label="fragment_calenario_datos_"
-        tools:layout="@layout/fragment_calenario_datos_" >
-        <action
-            android:id="@+id/action_calenarioDatos_Fragment_to_calendarioEjercicios_Fragment"
-            app:destination="@id/calendarioEjercicios_Fragment" />
     </fragment>
 </navigation>
