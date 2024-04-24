@@ -162,6 +162,12 @@ public class DatosEjerciciosFragment extends Fragment {
         DocumentReference ejercicioDocRef = calendarDocRef.collection("ejercicios")
                 .document(elementName);
 
+        DocumentReference ejercicioDocRef2 = calendarDocRef.collection("ejercicios")
+                .document(elementName)
+                .collection("ejercicios")
+                .document(ejercicioName);
+
+
         // Crear un mapa con los datos de las series
         List<Map<String, Object>> serieDatosMapList = new ArrayList<>();
         for (DatoInicial serieDatos : serieDatosList) {
@@ -178,7 +184,7 @@ public class DatosEjerciciosFragment extends Fragment {
         ejercicioMap.put("series", serieDatosMapList);
 
         // Guardar los datos del ejercicio en el documento correspondiente en "calendario"
-        ejercicioDocRef.set(ejercicioMap)
+        ejercicioDocRef2.set(ejercicioMap)
                 .addOnSuccessListener(aVoid -> {
                     // Éxito al guardar las series
                     Toast.makeText(requireContext(), "Series guardadas en calendario", Toast.LENGTH_SHORT).show();

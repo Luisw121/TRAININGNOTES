@@ -41,5 +41,14 @@
         android:paddingBottom="8dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/calendarView" />
+    <TextView
+        android:id="@+id/textViewFechaSeleccionada"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="No hay ejercicios para esta fecha"
+        android:textColor="@color/white"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/recyclerViewEjercicios1" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

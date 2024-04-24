@@ -9,6 +9,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.firestore.CollectionReference;
+
 import java.util.List;
 
 public class EjercicioAdapter2 extends RecyclerView.Adapter<EjercicioAdapter2.EjercicioViewHolder> {
@@ -16,9 +18,11 @@ public class EjercicioAdapter2 extends RecyclerView.Adapter<EjercicioAdapter2.Ej
     private List<Ejercicio2> ejerciciosList;
     private OnDeleteClickListener onDeleteClickListenerEjercicio;
     private OnEjercicioClickListener onEjercicioClickListener;
+    private CollectionReference ejercicios2Ref;
 
-    public EjercicioAdapter2(List<Ejercicio2> ejerciciosList) {
+    public EjercicioAdapter2(List<Ejercicio2> ejerciciosList, CollectionReference ejercicios2Ref) {
         this.ejerciciosList = ejerciciosList;
+        this.ejercicios2Ref = ejercicios2Ref;
     }
 
     @NonNull
