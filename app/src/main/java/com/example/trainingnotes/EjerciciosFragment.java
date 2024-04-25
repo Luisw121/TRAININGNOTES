@@ -30,6 +30,8 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
@@ -139,6 +141,15 @@ public class EjerciciosFragment extends Fragment {
                             Ejercicio ejercicio = document.toObject(Ejercicio.class);
                             ejerciciosList.add(ejercicio);
                         }
+                        // Ordenar la lista de ejercicios por algún criterio, por ejemplo, el nombre del ejercicio
+                        Collections.sort(ejerciciosList, new Comparator<Ejercicio>() {
+                            @Override
+                            public int compare(Ejercicio ejercicio1, Ejercicio ejercicio2) {
+                                return ejercicio1.getNombre().compareTo(ejercicio2.getNombre());
+                            }
+                        });
+
+                        // Notificar al adaptador sobre los cambios en la lista
                         adapterEjercicios.notifyDataSetChanged();
                     })
                     .addOnFailureListener(e -> {

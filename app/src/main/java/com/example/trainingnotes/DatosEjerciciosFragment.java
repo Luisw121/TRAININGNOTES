@@ -158,15 +158,10 @@ public class DatosEjerciciosFragment extends Fragment {
         DocumentReference calendarDocRef = userDocRef.collection("calendario")
                 .document(selectedDate);
 
-        // Referencia al documento del ejercicio en la colección "ejercicios" de "calendario"
-        DocumentReference ejercicioDocRef = calendarDocRef.collection("ejercicios")
-                .document(elementName);
-
-        DocumentReference ejercicioDocRef2 = calendarDocRef.collection("ejercicios")
+        DocumentReference ejercicioDocRef2 = calendarDocRef.collection("elements")
                 .document(elementName)
                 .collection("ejercicios")
                 .document(ejercicioName);
-
 
         // Crear un mapa con los datos de las series
         List<Map<String, Object>> serieDatosMapList = new ArrayList<>();

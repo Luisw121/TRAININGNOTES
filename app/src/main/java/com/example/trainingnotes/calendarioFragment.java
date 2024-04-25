@@ -85,14 +85,13 @@ public class calendarioFragment extends Fragment {
                 String selectedDate = year + "-" + (month + 1) + "-" + dayOfMonth; // Ajusta el formato según tu estructura
 
                 // Cargar el nombre del documento correspondiente a la fecha seleccionada
-                loadDocumentNameFromFirestore(selectedDate);
+                loadEjerciciosFromFirestore(selectedDate);
             }
         });
 
         return view;
     }
 
-    // Método para cargar el nombre del documento desde Firestore
     // Método para cargar el nombre del documento desde Firestore
     private void loadDocumentNameFromFirestore(String selectedDate) {
         if (currentUser != null) {
@@ -102,64 +101,110 @@ public class calendarioFragment extends Fragment {
             String month = parts[1];
             String day = parts[2];
 
-            // Construir la referencia a la colección de ejercicios dentro de la estructura de la fecha seleccionada
-            DocumentReference dayDocumentRef = firestore.collection("users")
-                    .document(currentUser.getUid())
-                    .collection("calendario")
-                    .document(day);
-            DocumentReference monthDocumentRef = dayDocumentRef.collection(month).document(year);
-            CollectionReference ejerciciosCollectionRef = monthDocumentRef.collection("ejercicios");
+            // Construir la referencia al documento en la colección "calendario" correspondiente a la fecha seleccionada
+            DocumentReference userDocRef = firestore.collection("users")
+                    .document(currentUser.getUid());
 
-            // Obtener el nombre del documento de la colección "ejercicios"
-            ejerciciosCollectionRef.get()
+            CollectionReference dayDocumentRef = userDocRef.collection("calendario")
+                    .document(day)
+                    .collection(month)
+                    .document(year)
+                    .collection("elements");
+
+
+            // Obtener todos los documentos dentro de la colección "elements"
+            dayDocumentRef.get()
                     .addOnSuccessListener(querySnapshot -> {
                         if (!querySnapshot.isEmpty()) {
-                            // Suponiendo que solo hay un documento en la colección de ejercicios
-                            DocumentSnapshot documentSnapshot = querySnapshot.getDocuments().get(0);
-                            // Obtener el nombre del documento y mostrarlo en textViewFechaSeleccionada
-                            String documentName = documentSnapshot.getId();
-                            textViewFechaSeleccionada.setText(documentName);
+                            // Iterar sobre los documentos y obtener los nombres
+                            StringBuilder documentNames = new StringBuilder();
+                            for (QueryDocumentSnapshot documentSnapshot : querySnapshot) {
+                                String documentName = documentSnapshot.getId();
+                                documentNames.append(documentName).append(", ");
+                            }
+                            // Eliminar la última coma y espacio del StringBuilder
+                            String documentNamesString = documentNames.toString();
+                            if (documentNamesString.length() > 2) {
+                                documentNamesString = documentNamesString.substring(0, documentNamesString.length() - 2);
+                            }
+                            // Mostrar los nombres de los documentos en textViewFechaSeleccionada
+                            textViewFechaSeleccionada.setText(documentNamesString);
                         } else {
                             textViewFechaSeleccionada.setText("No hay ejercicios para esta fecha");
                         }
                     })
                     .addOnFailureListener(e -> {
-                        Log.e("CalendarioFragment", "Error al obtener el nombre del documento desde Firestore: " + e.getMessage());
+                        Log.e("CalendarioFragment", "Error al obtener los nombres de los documentos desde Firestore: " + e.getMessage());
                     });
         }
     }
-
 
 
 
     // Método para cargar los ejercicios desde Firestore
-    private void loadEjerciciosFromFirestore(String documentName) {
+    // Método para cargar los ejercicios desde Firestore
+    private void loadEjerciciosFromFirestore(String selectedDate) {
         if (currentUser != null) {
-            // Construir la referencia al documento de la fecha seleccionada en Firestore
-            DocumentReference fechaDocumentRef = firestore.collection("users")
-                    .document(currentUser.getUid())
-                    .collection("calendario")
-                    .document(documentName);
+            // Dividir la fecha seleccionada en año, mes y día
+            String[] parts = selectedDate.split("-");
+            String year = parts[0];
+            String month = parts[1];
+            String day = parts[2];
 
-            // Obtener los ejercicios de Firestore
-            fechaDocumentRef.collection("ejercicios")
-                    .get()
-                    .addOnSuccessListener(queryDocumentSnapshots -> {
-                        ejerciciosList.clear();
-                        for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
-                            // Obtener el nombre del documento (o cualquier otro dato necesario) y agregarlo a la lista
-                            String ejercicioName = documentSnapshot.getId();
-                            Ejercicio2 ejercicio = new Ejercicio2();
-                            ejercicio.setNombre(ejercicioName);
-                            ejerciciosList.add(ejercicio);
+            // Construir la referencia al documento en la colección "calendario" correspondiente a la fecha seleccionada
+            DocumentReference userDocRef = firestore.collection("users")
+                    .document(currentUser.getUid());
+
+            DocumentReference dayDocumentRef = userDocRef.collection("calendario")
+                    .document(day)
+                    .collection(month)
+                    .document(year);
+
+            // Obtener la colección "elements" dentro del documento
+            CollectionReference elementsCollectionRef = dayDocumentRef.collection("elements");
+
+            // Obtener los documentos dentro de la colección "elements"
+            elementsCollectionRef.get()
+                    .addOnSuccessListener(querySnapshot -> {
+                        if (!querySnapshot.isEmpty()) {
+                            // Iterar sobre los documentos
+                            for (QueryDocumentSnapshot documentSnapshot : querySnapshot) {
+                                // Obtener el nombre del documento de "elements"
+                                String elementName = documentSnapshot.getId();
+
+                                // Obtener la referencia a la colección "ejercicios" dentro de cada documento de "elements"
+                                CollectionReference ejerciciosCollectionRef = documentSnapshot
+                                        .getReference()
+                                        .collection("ejercicios");
+
+                                // Obtener los documentos dentro de la colección "ejercicios"
+                                ejerciciosCollectionRef.get()
+                                        .addOnSuccessListener(ejerciciosQuerySnapshot -> {
+                                            // Iterar sobre los documentos de "ejercicios"
+                                            for (QueryDocumentSnapshot ejercicioDocument : ejerciciosQuerySnapshot) {
+                                                // Obtener el nombre del ejercicio
+                                                String ejercicioName = ejercicioDocument.getString("nombre");
+
+                                                // Aquí puedes hacer lo que quieras con el nombre del ejercicio
+                                                // Por ahora, lo mostraré en el TextView
+                                                textViewFechaSeleccionada.setText(ejercicioName);
+                                            }
+                                        })
+                                        .addOnFailureListener(e -> {
+                                            Log.e("CalendarioFragment", "Error al obtener los ejercicios desde Firestore: " + e.getMessage());
+                                        });
+                            }
+                        } else {
+                            textViewFechaSeleccionada.setText("No hay ejercicios para esta fecha");
                         }
-                        adapterEjercicios.notifyDataSetChanged();
                     })
                     .addOnFailureListener(e -> {
-                        Log.e("CalendarioFragment", "Error al cargar los ejercicios desde Firestore: " + e.getMessage());
+                        Log.e("CalendarioFragment", "Error al obtener los nombres de los documentos desde Firestore: " + e.getMessage());
                     });
         }
     }
+
+
 }
 
 
