@@ -30,8 +30,6 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
@@ -141,15 +139,6 @@ public class EjerciciosFragment extends Fragment {
                             Ejercicio ejercicio = document.toObject(Ejercicio.class);
                             ejerciciosList.add(ejercicio);
                         }
-                        // Ordenar la lista de ejercicios por algún criterio, por ejemplo, el nombre del ejercicio
-                        Collections.sort(ejerciciosList, new Comparator<Ejercicio>() {
-                            @Override
-                            public int compare(Ejercicio ejercicio1, Ejercicio ejercicio2) {
-                                return ejercicio1.getNombre().compareTo(ejercicio2.getNombre());
-                            }
-                        });
-
-                        // Notificar al adaptador sobre los cambios en la lista
                         adapterEjercicios.notifyDataSetChanged();
                     })
                     .addOnFailureListener(e -> {
@@ -259,3 +248,41 @@ public class EjerciciosFragment extends Fragment {
     }
 
 }
+/*
+ private void loadEjerciciosFromFirestore() {
+        // Obtener el nombre del bloque y el elemento
+        String blockName = getArguments().getString("blockName");
+        String elementName = getArguments().getString("name");
+
+        // Verificar que el usuario actual y los nombres del bloque y el elemento no sean nulos
+        if (currentUser != null && blockName != null && elementName != null) {
+            // Construir la referencia al documento del elemento en Firestore
+            DocumentReference elementDocumentRef = firestore.collection("users")
+                    .document(currentUser.getUid())
+                    .collection("blocks")
+                    .document(blockName)
+                    .collection("elements")
+                    .document(elementName);
+
+            // Construir la referencia a la colección de ejercicios del elemento
+            CollectionReference ejerciciosCollectionRef = elementDocumentRef.collection("ejercicios");
+
+            // Obtener los ejercicios de Firestore
+            ejerciciosCollectionRef.orderBy("timestamp", Query.Direction.DESCENDING)
+                    .get()
+                    .addOnSuccessListener(queryDocumentSnapshots -> {
+                        ejerciciosList.clear();
+                        for (DocumentSnapshot document : queryDocumentSnapshots) {
+                            Ejercicio ejercicio = document.toObject(Ejercicio.class);
+                            ejerciciosList.add(ejercicio);
+                        }
+                        adapterEjercicios.notifyDataSetChanged();
+                    })
+                    .addOnFailureListener(e -> {
+                        Log.e("Firestore", "Error al cargar los ejercicios desde Firestore: " + e.getMessage());
+                    });
+        } else {
+            Log.e("Firestore", "El usuario, el nombre del bloque o el nombre del elemento son nulos");
+        }
+    }
+ */
