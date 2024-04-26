@@ -5,6 +5,7 @@ import android.app.DatePickerDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -22,6 +23,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
@@ -115,9 +118,58 @@ public class DatosEjerciciosFragment extends Fragment {
 
             }
         });
+        Button clearAllButton = view.findViewById(R.id.clearALL);
+        clearAllButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                eliminarTodasLasSeries();
+            }
+        });
+
         loadDatosFromFirebase();
         return view;
     }
+
+    private void eliminarTodasLasSeries() {
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (currentUser != null) {
+            String blockName = getArguments().getString("blockName");
+            String elementName = getArguments().getString("elementName");
+            String ejercicioName = getArguments().getString("ejercicioName");
+
+            // Referencia al documento de ejercicios en Firestore
+            DocumentReference ejercicioDocRef = FirebaseFirestore.getInstance()
+                    .collection("users")
+                    .document(currentUser.getUid())
+                    .collection("blocks")
+                    .document(blockName)
+                    .collection("elements")
+                    .document(elementName)
+                    .collection("ejercicios")
+                    .document(ejercicioName);
+
+            // Eliminar todas las series existentes del documento
+            ejercicioDocRef.update("series", FieldValue.delete())
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            // Éxito al eliminar todas las series
+                            serieDatosList.clear();
+                            serieDatosAdapter.notifyDataSetChanged();
+                            Toast.makeText(requireContext(), "Todas las series eliminadas con éxito", Toast.LENGTH_SHORT).show();
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            // Error al eliminar las series
+                            Log.e(TAG, "Error al eliminar todas las series: " + e.getMessage());
+                            Toast.makeText(requireContext(), "Error al eliminar todas las series", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+        }
+    }
+
 
     private void mostrarCalendario() {
         Calendar calendar = Calendar.getInstance();
