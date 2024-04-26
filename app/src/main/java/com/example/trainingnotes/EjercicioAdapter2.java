@@ -25,6 +25,23 @@ public class EjercicioAdapter2 extends RecyclerView.Adapter<EjercicioAdapter2.Ej
         this.ejercicios2Ref = ejercicios2Ref;
     }
 
+    // ViewHolder para cada elemento de la lista
+    public class EjercicioViewHolder extends RecyclerView.ViewHolder {
+        private TextView textViewNombreEjercicio;
+        private ImageView deleteButtonEjercicio;
+
+        public EjercicioViewHolder(@NonNull View itemView) {
+            super(itemView);
+            textViewNombreEjercicio = itemView.findViewById(R.id.blockNameTextViewDays);
+            deleteButtonEjercicio = itemView.findViewById(R.id.deleteButtonDays);
+        }
+
+        public void bind(Ejercicio2 ejercicio) {
+            textViewNombreEjercicio.setText(ejercicio.getNombre());
+        }
+    }
+
+    // Métodos de RecyclerView.Adapter
     @NonNull
     @Override
     public EjercicioViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -37,6 +54,7 @@ public class EjercicioAdapter2 extends RecyclerView.Adapter<EjercicioAdapter2.Ej
         Ejercicio2 ejercicio = ejerciciosList.get(position);
         holder.bind(ejercicio);
 
+        // Manejar clics en el botón de eliminar
         holder.deleteButtonEjercicio.setOnClickListener(v -> {
             int adapterPosition = holder.getAdapterPosition();
             if (adapterPosition != RecyclerView.NO_POSITION) {
@@ -45,6 +63,7 @@ public class EjercicioAdapter2 extends RecyclerView.Adapter<EjercicioAdapter2.Ej
             }
         });
 
+        // Manejar clics en el elemento de la lista
         holder.itemView.setOnClickListener(v -> {
             int adapterPosition = holder.getAdapterPosition();
             if (adapterPosition != RecyclerView.NO_POSITION) {
@@ -59,35 +78,22 @@ public class EjercicioAdapter2 extends RecyclerView.Adapter<EjercicioAdapter2.Ej
         return ejerciciosList.size();
     }
 
-    public void setOnDeleteClickListener(OnDeleteClickListener listener) {
-        this.onDeleteClickListenerEjercicio = listener;
-    }
-
+    // Interfaz para manejar clics en el botón de eliminar
     public interface OnDeleteClickListener {
         void onDeleteClick(String ejercicioName);
     }
 
-    public void setOnEjercicioClickListener(OnEjercicioClickListener listener) {
-        this.onEjercicioClickListener = listener;
+    public void setOnDeleteClickListener(OnDeleteClickListener listener) {
+        this.onDeleteClickListenerEjercicio = listener;
     }
 
+    // Interfaz para manejar clics en el elemento de la lista
     public interface OnEjercicioClickListener {
         void onEjercicioClick(Ejercicio2 ejercicio);
     }
 
-    public class EjercicioViewHolder extends RecyclerView.ViewHolder {
-        private TextView textViewNombreEjercicio;
-        private ImageView deleteButtonEjercicio;
-
-        public EjercicioViewHolder(@NonNull View itemView) {
-            super(itemView);
-            textViewNombreEjercicio = itemView.findViewById(R.id.blockNameTextViewDays);
-            deleteButtonEjercicio = itemView.findViewById(R.id.deleteButtonDays);
-        }
-
-        public void bind(Ejercicio2 ejercicio) {
-            textViewNombreEjercicio.setText(ejercicio.getNombre());
-        }
+    public void setOnEjercicioClickListener(OnEjercicioClickListener listener) {
+        this.onEjercicioClickListener = listener;
     }
 }
 
