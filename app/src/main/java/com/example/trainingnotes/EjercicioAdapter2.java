@@ -7,6 +7,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.firestore.CollectionReference;
@@ -29,11 +30,13 @@ public class EjercicioAdapter2 extends RecyclerView.Adapter<EjercicioAdapter2.Ej
     public class EjercicioViewHolder extends RecyclerView.ViewHolder {
         private TextView textViewNombreEjercicio;
         private ImageView deleteButtonEjercicio;
+        private ConstraintLayout buttonNavigatetoCalendarioEjercicioFragment;
 
         public EjercicioViewHolder(@NonNull View itemView) {
             super(itemView);
             textViewNombreEjercicio = itemView.findViewById(R.id.blockNameTextViewDays);
             deleteButtonEjercicio = itemView.findViewById(R.id.deleteButtonDays);
+            buttonNavigatetoCalendarioEjercicioFragment = itemView.findViewById(R.id.buttonNavigatetoCalendarioEjercicioFragment);
         }
 
         public void bind(Ejercicio2 ejercicio) {
@@ -64,12 +67,11 @@ public class EjercicioAdapter2 extends RecyclerView.Adapter<EjercicioAdapter2.Ej
         });
 
         // Manejar clics en el elemento de la lista
-        holder.itemView.setOnClickListener(v -> {
+        holder.buttonNavigatetoCalendarioEjercicioFragment.setOnClickListener(v -> {
             int adapterPosition = holder.getAdapterPosition();
-            if (adapterPosition != RecyclerView.NO_POSITION) {
-                Ejercicio2 ejercicioClicked = ejerciciosList.get(adapterPosition);
-                onEjercicioClickListener.onEjercicioClick(ejercicioClicked);
-            }
+            Ejercicio2 ejercicioCLicked = ejerciciosList.get(adapterPosition);
+            onEjercicioClickListener.onEjercicioClick(ejercicioCLicked);
+
         });
     }
 

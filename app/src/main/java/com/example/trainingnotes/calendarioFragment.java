@@ -4,6 +4,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -53,7 +54,7 @@ public class calendarioFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_calendario, container, false);
-        recyclerViewEjercicios = view.findViewById(R.id.recyclerViewEjercicios1);
+        //recyclerViewEjercicios = view.findViewById(R.id.recyclerViewEjercicios1);
         textViewFechaSeleccionada = view.findViewById(R.id.textViewFechaSeleccionada); // Agrega este TextView
 
         // Obtener la referencia al Firestore y al usuario actual
@@ -73,8 +74,8 @@ public class calendarioFragment extends Fragment {
         adapterEjercicios = new EjercicioAdapter2(ejerciciosList, ejerciciosCollectionRef);
 
         // Configurar el RecyclerView
-        recyclerViewEjercicios.setLayoutManager(new LinearLayoutManager(requireContext()));
-        recyclerViewEjercicios.setAdapter(adapterEjercicios);
+        //recyclerViewEjercicios.setLayoutManager(new LinearLayoutManager(requireContext()));
+        //recyclerViewEjercicios.setAdapter(adapterEjercicios);
 
         // Configurar el evento de selección de fecha en el calendario
         CalendarView calendarView = view.findViewById(R.id.calendarView);
@@ -88,9 +89,38 @@ public class calendarioFragment extends Fragment {
                 loadDocumentNameFromFirestore(selectedDate);
             }
         });
+        ConstraintLayout buttonNavigationEj = view.findViewById(R.id.buttonNavigatetoCalendarioEjercicioFragment);
+        buttonNavigationEj.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                /*
+                Ejercicio2 ejercicio2 = new Ejercicio2();
+                String blockName = getArguments().getString("blockName");
+                String elementName = getArguments().getString("name");
+                String ejercicioName = ejercicio2.getNombre();
+                 */
+                String ejercicioName = getArguments().getString("ejercicioName");
+                /*
+                DocumentReference ejercicioRef = getArguments("ejercicioRef");
+                navigateToCalendarioEjercicios(ejercicioName, ejercicioRef);
+                 */
+
+            }
+        });
 
         return view;
     }
+
+    private void navigateToCalendarioEjercicios(String ejercicioName, DocumentReference ejercicioRef) {
+        Bundle bundle = new Bundle();
+        bundle.putString("ejercicioName", ejercicioName);
+        bundle.putString("ejercicioRef", ejercicioRef.getPath()); // Guarda la referencia como una cadena
+
+        NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
+        navController.navigate(R.id.action_calendarioFragment_to_calendarioEjercicios_Fragment, bundle);
+    }
+
+
 
     // Método para cargar el nombre del primer documento de la colección "elements" dentro del documento de "calendario" desde Firestore
     private void loadDocumentNameFromFirestore(String selectedDate) {

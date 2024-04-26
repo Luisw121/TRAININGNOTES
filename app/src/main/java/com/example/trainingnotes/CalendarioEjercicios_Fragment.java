@@ -7,19 +7,28 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
+
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+
 public class CalendarioEjercicios_Fragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_calendario_ejercicios_, container, false);
+        TextView nameDetailNameTextViewDatosCal = view.findViewById(R.id.nameDetailNameTextViewDatosCal);
 
-        String elementName = getArguments().getString("elementName");
+        String ejercicioName = getArguments().getString("ejercicioName");
+        String ejercicioRefPath = getArguments().getString("ejercicioRef");
 
-        calendarioFragment calendarioFragment = new calendarioFragment();
-        Bundle bundle = new Bundle();
-        bundle.putString("elementName", elementName); // Reemplaza "valor" con el valor que desees pasar
-        calendarioFragment.setArguments(bundle);
+        // Convertir la cadena de ruta a una referencia de documento
+        DocumentReference ejercicioRef = FirebaseFirestore.getInstance().document(ejercicioRefPath);
 
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_calendario_ejercicios_, container, false);
+        // Ahora puedes usar el ejercicioRef según sea necesario
+
+        nameDetailNameTextViewDatosCal.setText(ejercicioName);
+
+        return view;
     }
 }
