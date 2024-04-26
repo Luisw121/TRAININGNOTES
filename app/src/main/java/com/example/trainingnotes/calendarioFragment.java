@@ -40,7 +40,6 @@ import java.util.List;
 import java.util.Locale;
 
 public class calendarioFragment extends Fragment {
-
     private RecyclerView recyclerViewEjercicios;
     private FirebaseFirestore firestore;
     private FirebaseAuth auth;
