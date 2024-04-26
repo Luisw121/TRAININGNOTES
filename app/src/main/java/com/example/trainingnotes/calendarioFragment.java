@@ -91,7 +91,8 @@ public class calendarioFragment extends Fragment {
 
         return view;
     }
-    // Método para cargar el nombre del documento desde Firestore
+
+    // Método para cargar el nombre del primer documento de la colección "elements" dentro del documento de "calendario" desde Firestore
     private void loadDocumentNameFromFirestore(String selectedDate) {
         if (currentUser != null) {
             // Dividir la fecha seleccionada en año, mes y día
@@ -109,16 +110,16 @@ public class calendarioFragment extends Fragment {
                     .document(year)
                     .collection("elements");
 
-            // Obtener el nombre del documento de la colección "elements"
+            // Obtener el nombre del documento de la colección "ejercicios"
             ejerciciosCollectionRef.get()
                     .addOnSuccessListener(querySnapshot -> {
                         if (!querySnapshot.isEmpty()) {
-                            // Obtener el nombre del primer documento y mostrarlo en textViewFechaSeleccionada
+                            // Suponiendo que solo hay un documento en la colección de ejercicios
                             DocumentSnapshot documentSnapshot = querySnapshot.getDocuments().get(0);
+                            // Obtener el nombre del documento y mostrarlo en textViewFechaSeleccionada
                             String documentName = documentSnapshot.getId();
                             textViewFechaSeleccionada.setText(documentName);
                         } else {
-                            // Si no hay documentos, establecer un mensaje indicando que no hay datos
                             textViewFechaSeleccionada.setText("No hay ejercicios para esta fecha");
                         }
                     })
@@ -127,7 +128,6 @@ public class calendarioFragment extends Fragment {
                     });
         }
     }
-
 }
 /*private void loadEjerciciosFromFirestore(String selectedDate) {
         if (currentUser != null) {

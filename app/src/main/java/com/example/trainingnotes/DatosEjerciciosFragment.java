@@ -45,6 +45,8 @@ public class DatosEjerciciosFragment extends Fragment {
 
     private Button saveButton;
     private ImageView addButton;
+    private static final String TAG = "CalendarioFragment";
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -146,7 +148,6 @@ public class DatosEjerciciosFragment extends Fragment {
         }
 
         String ejercicioName = getArguments().getString("ejercicioName");
-        String blockName = getArguments().getString("blockName");
         String elementName = getArguments().getString("elementName");
 
         // Referencia al documento del usuario en la colección "users"
@@ -158,9 +159,89 @@ public class DatosEjerciciosFragment extends Fragment {
         DocumentReference calendarDocRef = userDocRef.collection("calendario")
                 .document(selectedDate);
 
-        DocumentReference ejercicioDocRef2 = calendarDocRef.collection("elements")
-                .document(elementName)
-                .collection("ejercicios")
+        // Referencia al documento en la colección "elements" dentro de "calendario"
+        DocumentReference elementDocRef = calendarDocRef.collection("elements")
+                .document(elementName);
+
+        // Crear un mapa con los datos del elemento, incluyendo la colección de ejercicios
+        Map<String, Object> elementMap = new HashMap<>();
+        elementMap.put("name", elementName);
+
+        // Crear una subcolección para los ejercicios dentro del documento de elementos
+        CollectionReference ejerciciosCollectionRef = elementDocRef.collection("ejercicios");
+
+        // Guardar los datos del elemento en el documento correspondiente en "calendario"
+        elementDocRef.set(elementMap)
+                .addOnSuccessListener(aVoid -> {
+                    // Éxito al guardar los datos del elemento
+                    Toast.makeText(requireContext(), "Elemento guardado en calendario", Toast.LENGTH_SHORT).show();
+
+                    // Ahora, guarda los datos del ejercicio en la subcolección "ejercicios"
+                    guardarEjercicioEnElemento(ejerciciosCollectionRef, ejercicioName);
+                })
+                .addOnFailureListener(e -> {
+                    // Error al guardar los datos del elemento
+                    Toast.makeText(requireContext(), "Error al guardar el elemento en calendario", Toast.LENGTH_SHORT).show();
+                    Log.e(TAG, "Error al guardar el elemento en calendario: " + e.getMessage());
+                });
+    }
+
+    // Método para guardar los datos del ejercicio en la subcolección "ejercicios" dentro del documento de elementos
+    private void guardarEjercicioEnElemento(CollectionReference ejerciciosCollectionRef, String ejercicioName) {
+        // Crear un mapa con los datos de las series
+        List<Map<String, Object>> serieDatosMapList = new ArrayList<>();
+        for (DatoInicial serieDatos : serieDatosList) {
+            Map<String, Object> serieDatosMap = new HashMap<>();
+            serieDatosMap.put("repeticiones", serieDatos.getRepeticiones());
+            serieDatosMap.put("peso", serieDatos.getPeso());
+            serieDatosMap.put("rpe", serieDatos.getRpe());
+            serieDatosMapList.add(serieDatosMap);
+        }
+        // Crear un mapa con los datos del ejercicio
+        Map<String, Object> ejercicioMap = new HashMap<>();
+        ejercicioMap.put("nombre", ejercicioName);
+        ejercicioMap.put("series", serieDatosMapList);
+
+        // Guardar los datos del ejercicio en la subcolección "ejercicios"
+        ejerciciosCollectionRef.document(ejercicioName)
+                .set(ejercicioMap)
+                .addOnSuccessListener(aVoid -> {
+                    // Éxito al guardar los datos del ejercicio
+                    Toast.makeText(requireContext(), "Ejercicio guardado en el elemento", Toast.LENGTH_SHORT).show();
+                })
+                .addOnFailureListener(e -> {
+                    // Error al guardar los datos del ejercicio
+                    Toast.makeText(requireContext(), "Error al guardar el ejercicio en el elemento", Toast.LENGTH_SHORT).show();
+                    Log.e(TAG, "Error al guardar el ejercicio en el elemento: " + e.getMessage());
+                });
+    }
+
+
+
+/*
+private void guardarSeriesEnCalendario(String selectedDate) {
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (currentUser == null) {
+            return;
+        }
+
+        String ejercicioName = getArguments().getString("ejercicioName");
+        //String blockName = getArguments().getString("blockName");
+        String elementName = getArguments().getString("elementName");
+
+        // Referencia al documento del usuario en la colección "users"
+        DocumentReference userDocRef = FirebaseFirestore.getInstance()
+                .collection("users")
+                .document(currentUser.getUid());
+
+        // Referencia al documento en la colección "calendario" del usuario actual
+        DocumentReference calendarDocRef = userDocRef.collection("calendario")
+                .document(selectedDate);
+
+        DocumentReference elementDocRef = calendarDocRef.collection("elements")
+                .document(elementName);
+
+        DocumentReference ejercicioDocRef2 = elementDocRef.collection("ejercicios")
                 .document(ejercicioName);
 
         // Crear un mapa con los datos de las series
@@ -190,8 +271,7 @@ public class DatosEjerciciosFragment extends Fragment {
                     System.out.println("Error al guardar las series en calendario: " + e.getMessage());
                 });
     }
-
-
+ */
 
 
     private void eliminarUltimaSerie() {
