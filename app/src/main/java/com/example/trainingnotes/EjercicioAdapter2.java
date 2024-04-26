@@ -57,23 +57,14 @@ public class EjercicioAdapter2 extends RecyclerView.Adapter<EjercicioAdapter2.Ej
         Ejercicio2 ejercicio = ejerciciosList.get(position);
         holder.bind(ejercicio);
 
-        // Manejar clics en el botón de eliminar
-        holder.deleteButtonEjercicio.setOnClickListener(v -> {
-            int adapterPosition = holder.getAdapterPosition();
-            if (adapterPosition != RecyclerView.NO_POSITION) {
-                Ejercicio2 ejercicioToDelete = ejerciciosList.get(adapterPosition);
-                onDeleteClickListenerEjercicio.onDeleteClick(ejercicioToDelete.getNombre());
-            }
-        });
-
-        // Manejar clics en el elemento de la lista
+        // Manejar clics en el ConstraintLayout
         holder.buttonNavigatetoCalendarioEjercicioFragment.setOnClickListener(v -> {
             int adapterPosition = holder.getAdapterPosition();
             Ejercicio2 ejercicioCLicked = ejerciciosList.get(adapterPosition);
             onEjercicioClickListener.onEjercicioClick(ejercicioCLicked);
-
         });
     }
+
 
     @Override
     public int getItemCount() {

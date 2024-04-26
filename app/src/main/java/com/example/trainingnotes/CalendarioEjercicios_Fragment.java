@@ -19,16 +19,11 @@ public class CalendarioEjercicios_Fragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_calendario_ejercicios_, container, false);
         TextView nameDetailNameTextViewDatosCal = view.findViewById(R.id.nameDetailNameTextViewDatosCal);
 
+
         String ejercicioName = getArguments().getString("ejercicioName");
-        String ejercicioRefPath = getArguments().getString("ejercicioRef");
 
-        // Convertir la cadena de ruta a una referencia de documento
-        DocumentReference ejercicioRef = FirebaseFirestore.getInstance().document(ejercicioRefPath);
-
-        // Ahora puedes usar el ejercicioRef según sea necesario
 
         nameDetailNameTextViewDatosCal.setText(ejercicioName);
-
         return view;
     }
 }
