@@ -94,21 +94,22 @@ public class calendarioFragment extends Fragment {
             }
         });
 
-        adapterEjercicios.setOnEjercicioClickListener(new EjercicioAdapter2.OnEjercicioClickListener() {
+        textViewFechaSeleccionada.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onEjercicioClick(Ejercicio2 ejercicio) {
-
-                String ejercicioName = ejercicio.getNombre();
-
-                navigateToEjercicios(ejercicioName);
+            public void onClick(View v) {
+                String ejercicioName = textViewFechaSeleccionada.getText().toString();
+                Bundle args = new Bundle();
+                args.putString("ejercicioName", ejercicioName);
+                NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
+                navController.navigate(R.id.action_calendarioFragment_to_calendarioEjercicios_Fragment, args);
             }
         });
 
+
     }
 
-    private void navigateToEjercicios(String ejercicioName) {
-        Bundle args = new Bundle();
-        args.putString("ejercicioName", ejercicioName);
+    private void navigateToCalendarioEjerciciosFragment() {
+
 
         NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
         navController.navigate(R.id.action_calendarioFragment_to_calendarioEjercicios_Fragment);
