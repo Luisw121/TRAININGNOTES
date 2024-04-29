@@ -100,6 +100,7 @@ public class calendarioFragment extends Fragment {
                 String ejercicioName = textViewFechaSeleccionada.getText().toString();
                 Bundle args = new Bundle();
                 args.putString("ejercicioName", ejercicioName);
+                args.putString("selectedDate", selectedDate);
                 NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
                 navController.navigate(R.id.action_calendarioFragment_to_calendarioEjercicios_Fragment, args);
             }

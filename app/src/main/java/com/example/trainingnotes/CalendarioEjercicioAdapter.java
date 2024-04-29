@@ -8,14 +8,18 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.firestore.CollectionReference;
+
+import java.util.Collections;
 import java.util.List;
 
 public class CalendarioEjercicioAdapter extends RecyclerView.Adapter<CalendarioEjercicioAdapter.CalendarioEjercicioViewHolder> {
 
-    private List<String> nombresEjercicios;
-
-    public CalendarioEjercicioAdapter(List<String> nombresEjercicios) {
+    private List<CalendarioEjercicios> nombresEjercicios;
+    private CollectionReference collectionReference;
+    public CalendarioEjercicioAdapter(List<CalendarioEjercicios> nombresEjercicios, CollectionReference collectionReference) {
         this.nombresEjercicios = nombresEjercicios;
+        this.collectionReference = collectionReference;
     }
 
     @NonNull
@@ -27,7 +31,7 @@ public class CalendarioEjercicioAdapter extends RecyclerView.Adapter<CalendarioE
 
     @Override
     public void onBindViewHolder(@NonNull CalendarioEjercicioViewHolder holder, int position) {
-        String ejercicioName = nombresEjercicios.get(position);
+        CalendarioEjercicios ejercicioName = nombresEjercicios.get(position);
         holder.bind(ejercicioName);
     }
 
@@ -44,8 +48,8 @@ public class CalendarioEjercicioAdapter extends RecyclerView.Adapter<CalendarioE
             textViewNombreEjercicio = itemView.findViewById(R.id.nameDetailNameTextViewDatosCal);
         }
 
-        public void bind(String ejercicioName) {
-            textViewNombreEjercicio.setText(ejercicioName);
+        public void bind(CalendarioEjercicios ejercicioName) {
+            textViewNombreEjercicio.setText(ejercicioName.getNombre());
         }
     }
 }
