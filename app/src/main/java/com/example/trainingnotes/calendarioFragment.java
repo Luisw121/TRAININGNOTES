@@ -49,6 +49,13 @@ public class calendarioFragment extends Fragment {
     private CollectionReference ejerciciosCollectionRef;
     private TextView textViewFechaSeleccionada;
     private String selectedDate;
+
+    // Interfaz para manejar la selección de fecha
+    public interface OnDateSelectedListener {
+        void onDateSelected(String selectedDate, String ejercicioName);
+    }
+    private OnDateSelectedListener dateSelectedListener;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -58,9 +65,10 @@ public class calendarioFragment extends Fragment {
 
         return view;
     }
+
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savesInstanceState) {
-        super.onViewCreated(view, savesInstanceState);
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
         firestore = FirebaseFirestore.getInstance();
         auth = FirebaseAuth.getInstance();
@@ -71,15 +79,6 @@ public class calendarioFragment extends Fragment {
                     .document(currentUser.getUid())
                     .collection("calendario");
         }
-
-
-        ejerciciosList = new ArrayList<>();
-        adapterEjercicios = new EjercicioAdapter2(ejerciciosList, ejerciciosCollectionRef);
-
-        recyclerViewEjercicios = view.findViewById(R.id.recyclerViewEjercicios1);
-        recyclerViewEjercicios.setLayoutManager(new LinearLayoutManager(requireContext()));
-        recyclerViewEjercicios.setAdapter(adapterEjercicios);
-
 
         // Configurar el evento de selección de fecha en el calendario
         CalendarView calendarView = view.findViewById(R.id.calendarView);
@@ -98,22 +97,25 @@ public class calendarioFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 String ejercicioName = textViewFechaSeleccionada.getText().toString();
-                Bundle args = new Bundle();
-                args.putString("ejercicioName", ejercicioName);
-                args.putString("selectedDate", selectedDate);
-                NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
-                navController.navigate(R.id.action_calendarioFragment_to_calendarioEjercicios_Fragment, args);
+                // Llamar al método de la interfaz para manejar la selección de fecha
+                if (dateSelectedListener != null) {
+                    dateSelectedListener.onDateSelected(selectedDate, ejercicioName);
+                }
+                navigateToCalendarioEjerciciosFragment(selectedDate, ejercicioName);
             }
         });
-
-
+    }
+    private void navigateToCalendarioEjerciciosFragment(String selectedDate, String ejercicioName) {
+        Bundle args = new Bundle();
+        args.putString("selectedDate", selectedDate);
+        args.putString("ejercicioName", ejercicioName);
+        NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
+        navController.navigate(R.id.action_calendarioFragment_to_calendarioEjercicios_Fragment, args);
     }
 
-    private void navigateToCalendarioEjerciciosFragment() {
-
-
-        NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
-        navController.navigate(R.id.action_calendarioFragment_to_calendarioEjercicios_Fragment);
+    // Método para configurar el listener de selección de fecha
+    public void setOnDateSelectedListener(OnDateSelectedListener listener) {
+        this.dateSelectedListener = listener;
     }
 
     // Método para cargar el nombre del primer documento de la colección "elements" dentro del documento de "calendario" desde Firestore
@@ -153,6 +155,26 @@ public class calendarioFragment extends Fragment {
         }
     }
 }
+/*
+textViewFechaSeleccionada.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String ejercicioName = textViewFechaSeleccionada.getText().toString();
+                navigateToCalendarioEjerciciosFragment(selectedDate, ejercicioName);
+
+            }
+        });
+
+    }
+
+    private void navigateToCalendarioEjerciciosFragment(String selectedDate, String ejercicioName) {
+        Bundle args = new Bundle();
+        args.putString("selectedDate", selectedDate);
+        args.putString("ejercicioName", ejercicioName);
+        NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
+        navController.navigate(R.id.action_calendarioFragment_to_calendarioEjercicios_Fragment, args);
+    }
+ */
 /*private void loadEjerciciosFromFirestore(String selectedDate) {
         if (currentUser != null) {
             // Obtener la referencia al documento "calendario" correspondiente a la fecha seleccionada
@@ -193,6 +215,4 @@ public class calendarioFragment extends Fragment {
     }
 
  */
-
-
 

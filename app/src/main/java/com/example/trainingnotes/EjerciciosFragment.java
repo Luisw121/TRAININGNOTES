@@ -74,7 +74,6 @@ public class EjerciciosFragment extends Fragment {
             loadEjerciciosFromFirestore();
         }
 
-
         ejerciciosList = new ArrayList<>();
         adapterEjercicios = new EjercicioAdapter(ejerciciosList, ejerciciosCollectionRef);
 

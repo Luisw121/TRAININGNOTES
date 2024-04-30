@@ -6,7 +6,6 @@ public class CalendarioEjercicios {
     public CalendarioEjercicios(){}
     public CalendarioEjercicios(String nombre){
         this.nombre = nombre;
-
     }
 
     public String getNombre() {

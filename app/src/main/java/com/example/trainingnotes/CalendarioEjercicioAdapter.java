@@ -17,9 +17,13 @@ import java.util.List;
 public class CalendarioEjercicioAdapter extends RecyclerView.Adapter<CalendarioEjercicioAdapter.CalendarioEjercicioViewHolder> {
 
     private List<CalendarioEjercicios> ejerciciosList;
+    private CollectionReference ejerciciosCollectionCal;
+    private OndeleteClickListener ondeleteClickListener;
+    private OnEjercicioClickListener onEjercicioClickListener;
 
-    public CalendarioEjercicioAdapter(List<CalendarioEjercicios> ejerciciosList) {
+    public CalendarioEjercicioAdapter(List<CalendarioEjercicios> ejerciciosList, CollectionReference ejerciciosCollectionCal) {
         this.ejerciciosList = ejerciciosList;
+        this.ejerciciosCollectionCal = ejerciciosCollectionCal;
     }
 
     @NonNull
@@ -33,19 +37,48 @@ public class CalendarioEjercicioAdapter extends RecyclerView.Adapter<CalendarioE
     public void onBindViewHolder(@NonNull CalendarioEjercicioViewHolder holder, int position) {
         CalendarioEjercicios ejercicio = ejerciciosList.get(position);
         holder.bind(ejercicio);
+
+        holder.deleteButtonEjercicio.setOnClickListener(v -> {
+            int adapterPosition = holder.getAdapterPosition();
+            if (adapterPosition != RecyclerView.NO_POSITION) {
+                CalendarioEjercicios ejercicioToDelete = ejerciciosList.get(adapterPosition);
+                ondeleteClickListener.onDeleteClick(ejercicioToDelete.getNombre());
+            }
+        });
+        holder.itemView.setOnClickListener(v -> {
+            int adapterPosition = holder.getAdapterPosition();
+            if (adapterPosition != RecyclerView.NO_POSITION) {
+                CalendarioEjercicios ejercicioClicked = ejerciciosList.get(adapterPosition);
+                onEjercicioClickListener.onEjercicioClick(ejercicioClicked);
+            }
+        });
     }
 
     @Override
     public int getItemCount() {
         return ejerciciosList.size();
     }
+    public void setOndeleteClickListener(OndeleteClickListener listener) {
+        this.ondeleteClickListener = listener;
+    }
+    public interface OndeleteClickListener {
+        void onDeleteClick(String ejercicioName);
+    }
+    public void setOnEjercicioClickListener(OnEjercicioClickListener listener) {
+        this.onEjercicioClickListener = listener;
+    }
+    public interface OnEjercicioClickListener {
+        void onEjercicioClick(CalendarioEjercicios calendarioEjercicios);
+    }
 
     public static class CalendarioEjercicioViewHolder extends RecyclerView.ViewHolder {
         private TextView exerciseNameTextView;
+        private ImageView deleteButtonEjercicio;
 
         public CalendarioEjercicioViewHolder(@NonNull View itemView) {
             super(itemView);
             exerciseNameTextView = itemView.findViewById(R.id.blockNameTextViewDays);
+            deleteButtonEjercicio = itemView.findViewById(R.id.deleteButtonDays);
         }
 
         public void bind(CalendarioEjercicios ejercicio) {
