@@ -66,6 +66,8 @@ public class CalendarioEjercicios_Fragment extends Fragment {
                 if (elementName != null) {
                     collectionReference = firestore.collection("users")
                             .document(currentUser.getUid())
+                            .collection("calendario")
+                            .document(elementName)
                             .collection("elements")
                             .document(elementName)
                             .collection("ejercicios");
@@ -120,8 +122,4 @@ public class CalendarioEjercicios_Fragment extends Fragment {
             });
         }
     }
-
-
-
-
 }

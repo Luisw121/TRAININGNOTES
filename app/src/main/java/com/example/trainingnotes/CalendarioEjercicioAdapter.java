@@ -3,6 +3,7 @@ package com.example.trainingnotes;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -15,11 +16,10 @@ import java.util.List;
 
 public class CalendarioEjercicioAdapter extends RecyclerView.Adapter<CalendarioEjercicioAdapter.CalendarioEjercicioViewHolder> {
 
-    private List<CalendarioEjercicios> nombresEjercicios;
-    private CollectionReference collectionReference;
-    public CalendarioEjercicioAdapter(List<CalendarioEjercicios> nombresEjercicios, CollectionReference collectionReference) {
-        this.nombresEjercicios = nombresEjercicios;
-        this.collectionReference = collectionReference;
+    private List<CalendarioEjercicios> ejerciciosList;
+
+    public CalendarioEjercicioAdapter(List<CalendarioEjercicios> ejerciciosList) {
+        this.ejerciciosList = ejerciciosList;
     }
 
     @NonNull
@@ -31,26 +31,27 @@ public class CalendarioEjercicioAdapter extends RecyclerView.Adapter<CalendarioE
 
     @Override
     public void onBindViewHolder(@NonNull CalendarioEjercicioViewHolder holder, int position) {
-        CalendarioEjercicios ejercicioName = nombresEjercicios.get(position);
-        holder.bind(ejercicioName);
+        CalendarioEjercicios ejercicio = ejerciciosList.get(position);
+        holder.bind(ejercicio);
     }
 
     @Override
     public int getItemCount() {
-        return nombresEjercicios.size();
+        return ejerciciosList.size();
     }
 
     public static class CalendarioEjercicioViewHolder extends RecyclerView.ViewHolder {
-        private TextView textViewNombreEjercicio;
+        private TextView exerciseNameTextView;
 
         public CalendarioEjercicioViewHolder(@NonNull View itemView) {
             super(itemView);
-            textViewNombreEjercicio = itemView.findViewById(R.id.nameDetailNameTextViewDatosCal);
+            exerciseNameTextView = itemView.findViewById(R.id.blockNameTextViewDays);
         }
 
-        public void bind(CalendarioEjercicios ejercicioName) {
-            textViewNombreEjercicio.setText(ejercicioName.getNombre());
+        public void bind(CalendarioEjercicios ejercicio) {
+            exerciseNameTextView.setText(ejercicio.getNombre());
         }
     }
 }
+
 
