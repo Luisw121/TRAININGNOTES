@@ -50,7 +50,6 @@ public class DatosEjerciciosFragment extends Fragment {
     private ImageView addButton;
     private static final String TAG = "CalendarioFragment";
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -267,65 +266,6 @@ public class DatosEjerciciosFragment extends Fragment {
                     Log.e(TAG, "Error al guardar el ejercicio en el elemento: " + e.getMessage());
                 });
     }
-
-
-
-/*
-private void guardarSeriesEnCalendario(String selectedDate) {
-        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-        if (currentUser == null) {
-            return;
-        }
-
-        String ejercicioName = getArguments().getString("ejercicioName");
-        //String blockName = getArguments().getString("blockName");
-        String elementName = getArguments().getString("elementName");
-
-        // Referencia al documento del usuario en la colección "users"
-        DocumentReference userDocRef = FirebaseFirestore.getInstance()
-                .collection("users")
-                .document(currentUser.getUid());
-
-        // Referencia al documento en la colección "calendario" del usuario actual
-        DocumentReference calendarDocRef = userDocRef.collection("calendario")
-                .document(selectedDate);
-
-        DocumentReference elementDocRef = calendarDocRef.collection("elements")
-                .document(elementName);
-
-        DocumentReference ejercicioDocRef2 = elementDocRef.collection("ejercicios")
-                .document(ejercicioName);
-
-        // Crear un mapa con los datos de las series
-        List<Map<String, Object>> serieDatosMapList = new ArrayList<>();
-        for (DatoInicial serieDatos : serieDatosList) {
-            Map<String, Object> serieDatosMap = new HashMap<>();
-            serieDatosMap.put("repeticiones", serieDatos.getRepeticiones());
-            serieDatosMap.put("peso", serieDatos.getPeso());
-            serieDatosMap.put("rpe", serieDatos.getRpe());
-            serieDatosMapList.add(serieDatosMap);
-        }
-
-        // Crear un mapa con los datos del ejercicio
-        Map<String, Object> ejercicioMap = new HashMap<>();
-        ejercicioMap.put("nombre", ejercicioName);
-        ejercicioMap.put("series", serieDatosMapList);
-
-        // Guardar los datos del ejercicio en el documento correspondiente en "calendario"
-        ejercicioDocRef2.set(ejercicioMap)
-                .addOnSuccessListener(aVoid -> {
-                    // Éxito al guardar las series
-                    Toast.makeText(requireContext(), "Series guardadas en calendario", Toast.LENGTH_SHORT).show();
-                })
-                .addOnFailureListener(e -> {
-                    // Error al guardar las series
-                    Toast.makeText(requireContext(), "Error al guardar las series en calendario", Toast.LENGTH_SHORT).show();
-                    System.out.println("Error al guardar las series en calendario: " + e.getMessage());
-                });
-    }
- */
-
-
     private void eliminarUltimaSerie() {
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         if (currentUser != null) {

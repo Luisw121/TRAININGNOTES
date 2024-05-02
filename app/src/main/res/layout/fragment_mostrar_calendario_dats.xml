@@ -5,10 +5,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/black"
-    tools:context=".CalendarioEjercicios_Fragment">
+    tools:context=".MostrarCalendarioDatsFragment">
 
     <TextView
-        android:id="@+id/nameDetailNameTextViewDatosCal"
+        android:id="@+id/nameDetailNameTextViewDatos2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
@@ -20,32 +20,25 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerViewSerieDatosCal"
+        android:id="@+id/recyclerViewSerieDatos2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="60dp"
-        android:background="@android:color/transparent"
         android:padding="8dp"
-        android:clipToPadding="false"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/nameDetailNameTextViewDatosCal"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintTop_toBottomOf="@+id/nameDetailNameTextViewDatos2" />
 
     <CalendarView
-        android:id="@+id/calendarView1"
-        android:layout_width="106dp"
-        android:layout_height="59dp"
-        android:layout_marginTop="656dp"
-        android:layout_marginBottom="16dp"
+        android:id="@+id/calendarView2"
+        android:layout_width="75dp"
+        android:layout_height="212dp"
+        android:layout_marginTop="471dp"
+        android:layout_marginBottom="48dp"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

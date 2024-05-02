@@ -1,16 +1,16 @@
 package com.example.trainingnotes;
 
-public class DatoInicial {
+public class MostrarCalendarioDats {
     private String id;
     private int repeticiones;
     private int peso;
     private int rpe;
 
-    public DatoInicial() {
+    public MostrarCalendarioDats() {
         // Constructor vacío necesario para Firestore
     }
 
-    public DatoInicial( int repeticiones, int peso, int rpe) {
+    public MostrarCalendarioDats( int repeticiones, int peso, int rpe) {
         this.repeticiones = repeticiones;
         this.peso = peso;
         this.rpe = rpe;

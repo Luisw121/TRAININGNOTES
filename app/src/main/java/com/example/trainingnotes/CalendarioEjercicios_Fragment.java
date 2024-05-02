@@ -38,6 +38,7 @@ public class CalendarioEjercicios_Fragment extends Fragment {
     private CalendarioEjercicioAdapter calendarioEjercicioAdapter;
     private List<CalendarioEjercicios> calendarioEjerciciosList;
     private CollectionReference ejerciciosCollectionRef;
+    private String selectedDate;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstaceState) {
@@ -67,26 +68,36 @@ public class CalendarioEjercicios_Fragment extends Fragment {
 
         // Verificar si se recibieron los datos seleccionados desde CalendarioFragment
         Bundle args = getArguments();
+        selectedDate = getArguments().getString("selectedDate");
+        String ejercicioName = getArguments().getString("ejercicioName");
 
         if (currentUser != null) {
-            // Obtener el nombre del ejercicio desde los argumentos
-            String ejercicioName = getArguments().getString("ejercicioName");
-            String selectedDate = getArguments().getString("selectedDate");
-
-            // Construir la referencia a la colección de ejercicios dentro de la estructura de la fecha seleccionada
-            DocumentReference ejerciciosDocumentRef = firestore.collection("users")
+            // Construir la referencia a la colección de ejercicios
+            ejerciciosCollectionRef = firestore.collection("users")
                     .document(currentUser.getUid())
                     .collection("calendario")
                     .document(selectedDate)
                     .collection("elements")
-                    .document(ejercicioName);
-
-            // Obtener la referencia a la subcolección "ejercicios" dentro del documento de ejercicios
-            ejerciciosCollectionRef = ejerciciosDocumentRef.collection("ejercicios");
+                    .document(ejercicioName)
+                    .collection("ejercicios");
 
             // Cargar los ejercicios desde Firestore
-            loadEjerciciosFromFirestore();
+            loadEjerciciosFromFirestore(selectedDate);
+        } else {
+            // Si no hay usuario autenticado, puedes manejar el caso aquí
+            Log.e("CalendarioEjercicios", "No hay usuario autenticado");
         }
+        CalendarView calendarView = view.findViewById(R.id.calendarView1);
+        calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
+            @Override
+            public void onSelectedDayChange(@NonNull CalendarView view, int year, int month, int dayOfMonth) {
+                // Formatear la fecha seleccionada
+                selectedDate = year + "-" + (month + 1) + "-" + dayOfMonth; // Ajusta el formato según tu estructura
+
+                // Cargar el nombre del documento correspondiente a la fecha seleccionada
+                loadEjerciciosFromFirestore(selectedDate);
+            }
+        });
 
         calendarioEjercicioAdapter.setOnEjercicioClickListener(new CalendarioEjercicioAdapter.OnEjercicioClickListener() {
             @Override
@@ -105,106 +116,51 @@ public class CalendarioEjercicios_Fragment extends Fragment {
         bundle.putString("elementName", elementName);
         bundle.putString("ejercicioName", ejercicioName);
 
+        MostrarCalendarioDatsFragment fragment = new MostrarCalendarioDatsFragment();
+        fragment.setArguments(bundle);
+
         NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
+        navController.navigate(R.id.action_calendarioEjercicios_Fragment_to_mostrarCalendarioDatsFragment);
     }
 
-    private void loadEjerciciosFromFirestore() {
+    private void loadEjerciciosFromFirestore(String selectedDate) {
         String ejercicioName = getArguments().getString("ejercicioName");
-        String selectedDate = getArguments().getString("selectedDate");
+
         if (currentUser != null) {
-            // Construir la referencia a la colección de ejercicios dentro de la estructura de la fecha seleccionada
-            DocumentReference ejerciciosCollectionRef = firestore.collection("users")
-                    .document(currentUser.getUid())
-                    .collection("calendario")
-                    .document(selectedDate)
-                    .collection("elements")
-                    .document(ejercicioName);
-
-            CollectionReference ejerciciosCollectionREf = ejerciciosCollectionRef.collection("ejercicios");
-
-            // Obtener los ejercicios de Firestore
-            ejerciciosCollectionREf.get()
-                    .addOnSuccessListener(queryDocumentSnapshots -> {
-                        calendarioEjerciciosList.clear();
-                        for (DocumentSnapshot document : queryDocumentSnapshots) {
-                            CalendarioEjercicios ejercicio = document.toObject(CalendarioEjercicios.class);
-                            calendarioEjerciciosList.add(ejercicio);
-                        }
-                        calendarioEjercicioAdapter.notifyDataSetChanged();
-                    })
-                    .addOnFailureListener(e -> {
-                        Log.e("Firestore", "Error al cargar los ejercicios desde Firestore: " + e.getMessage());
-                    });
-        } else {
-            // Manejar el caso en que el usuario sea nulo
-            Log.e("Firestore", "El usuario es nulo");
-            // También puedes mostrar un mensaje de error al usuario si lo deseas
-        }
-    }
-}
-
-
-/*
-if (currentUser != null) {
-            Bundle args = getArguments();
-            if (args != null && args.containsKey("name")) {
-                String elementName = args.getString("name");
-                if (elementName != null) {
-                    collectionReference = firestore.collection("users")
-                            .document(currentUser.getUid())
-                            .collection("calendario")
-                            .document(elementName)
-                            .collection("elements")
-                            .document(elementName)
-                            .collection("ejercicios");
-
-                    // Obtén la fecha seleccionada
-                    String selectedDate = args.getString("selectedDate");
-
-                    // Carga los datos del RecyclerView usando la fecha seleccionada
-                    cargarDatosDelRecyclerView(selectedDate);
-                }
-            }
-        }
- */
-/*
-private void cargarDatosDelRecyclerView(String selectedDate) {
-        String elementName = getArguments().getString("name");
-        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-        if (currentUser != null) {
+            // Dividir la fecha seleccionada en año, mes y día
             String[] parts = selectedDate.split("-");
             String year = parts[0];
             String month = parts[1];
             String day = parts[2];
-            // Obtener la referencia de Firestore
-            CollectionReference ejerciciosRef = firestore
-                    .collection("users")
-                    .document(currentUser.getUid())
-                    .collection("calendario")
-                    .document(day)
-                    .collection(month)
-                    .document(year)
-                    .collection("elements")
-                    .document(elementName)
-                    .collection("ejercicios");
 
-            // Obtener y mostrar los ejercicios en el RecyclerView
-            ejerciciosRef.get().addOnSuccessListener(queryDocumentSnapshots -> {
-                // Limpiar la lista de ejercicios existente
-                calendarioEjerciciosList.clear();
+            if (currentUser != null) {
+                // Construir la referencia a la colección de ejercicios dentro de la estructura de la fecha seleccionada
+                CollectionReference ejerciciosCollectionREf = firestore.collection("users")
+                        .document(currentUser.getUid())
+                        .collection("calendario")
+                        .document(day).collection(month).document(year)
+                        .collection("elements")
+                        .document(ejercicioName)
+                        .collection("ejercicios");
 
-                // Agregar los nuevos ejercicios a la lista
-                for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
-                    CalendarioEjercicios ejercicio = document.toObject(CalendarioEjercicios.class);
-                    calendarioEjerciciosList.add(ejercicio);
-                }
-
-                // Notificar al adaptador sobre los cambios en los datos
-                ejercicioAdapter.notifyDataSetChanged();
-            }).addOnFailureListener(e -> {
-                // Manejar errores al obtener los ejercicios desde Firebase
-                Log.e("CalendarioEjercicios_Fragment", "Error al cargar los ejercicios desde Firebase: " + e.getMessage());
-            });
+                // Obtener los ejercicios de Firestore
+                ejerciciosCollectionREf.get()
+                        .addOnSuccessListener(queryDocumentSnapshots -> {
+                            calendarioEjerciciosList.clear();
+                            for (DocumentSnapshot document : queryDocumentSnapshots) {
+                                CalendarioEjercicios ejercicio = document.toObject(CalendarioEjercicios.class);
+                                calendarioEjerciciosList.add(ejercicio);
+                            }
+                            calendarioEjercicioAdapter.notifyDataSetChanged();
+                        })
+                        .addOnFailureListener(e -> {
+                            Log.e("Firestore", "Error al cargar los ejercicios desde Firestore: " + e.getMessage());
+                        });
+            } else {
+                // Manejar el caso en que el usuario sea nulo
+                Log.e("Firestore", "El usuario es nulo");
+                // También puedes mostrar un mensaje de error al usuario si lo deseas
+            }
         }
     }
- */
+}
