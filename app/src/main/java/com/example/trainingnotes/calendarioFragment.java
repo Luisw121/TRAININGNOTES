@@ -19,8 +19,11 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CalendarView;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -54,6 +57,7 @@ public class calendarioFragment extends Fragment {
     public interface OnDateSelectedListener {
         void onDateSelected(String selectedDate, String ejercicioName);
     }
+
     private OnDateSelectedListener dateSelectedListener;
 
     @Override
@@ -104,7 +108,15 @@ public class calendarioFragment extends Fragment {
                 navigateToCalendarioEjerciciosFragment(selectedDate, ejercicioName);
             }
         });
+        ImageView papeleraCalendario = view.findViewById(R.id.papeleraCalendario);
+        papeleraCalendario.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                deleteFirstDocumentFromCalendario(selectedDate);
+            }
+        });
     }
+
     private void navigateToCalendarioEjerciciosFragment(String selectedDate, String ejercicioName) {
         Bundle args = new Bundle();
         args.putString("selectedDate", selectedDate);
@@ -154,65 +166,35 @@ public class calendarioFragment extends Fragment {
                     });
         }
     }
-}
-/*
-textViewFechaSeleccionada.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String ejercicioName = textViewFechaSeleccionada.getText().toString();
-                navigateToCalendarioEjerciciosFragment(selectedDate, ejercicioName);
 
-            }
-        });
-
-    }
-
-    private void navigateToCalendarioEjerciciosFragment(String selectedDate, String ejercicioName) {
-        Bundle args = new Bundle();
-        args.putString("selectedDate", selectedDate);
-        args.putString("ejercicioName", ejercicioName);
-        NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
-        navController.navigate(R.id.action_calendarioFragment_to_calendarioEjercicios_Fragment, args);
-    }
- */
-/*private void loadEjerciciosFromFirestore(String selectedDate) {
+    private void deleteFirstDocumentFromCalendario(String selectedDate) {
         if (currentUser != null) {
-            // Obtener la referencia al documento "calendario" correspondiente a la fecha seleccionada
-            DocumentReference calendarioDocumentRef = firestore.collection("users")
+            // Dividir la fecha seleccionada en año, mes y día
+            String[] parts = selectedDate.split("-");
+            String year = parts[0];
+            String month = parts[1];
+            String day = parts[2];
+
+            // Construir la referencia al documento de la fecha seleccionada en "calendario"
+            DocumentReference calendarioDocRef = firestore.collection("users")
                     .document(currentUser.getUid())
                     .collection("calendario")
-                    .document(selectedDate);
+                    .document(day)
+                    .collection(month)
+                    .document(year);
 
-            // Obtener la colección "elements" dentro del documento "calendario"
-            CollectionReference elementsCollectionRef = calendarioDocumentRef.collection("elements");
-
-            // Obtener los documentos dentro de la colección "elements"
-            elementsCollectionRef.get()
-                    .addOnSuccessListener(querySnapshot -> {
-                        if (!querySnapshot.isEmpty()) {
-                            // Iterar sobre los documentos
-                            StringBuilder documentNames = new StringBuilder();
-                            for (QueryDocumentSnapshot documentSnapshot : querySnapshot) {
-                                // Obtener el nombre del documento de "elements"
-                                String elementName = documentSnapshot.getId();
-                                documentNames.append(elementName).append(", ");
-                            }
-                            // Eliminar la última coma y espacio del StringBuilder
-                            String documentNamesString = documentNames.toString();
-                            if (documentNamesString.length() > 2) {
-                                documentNamesString = documentNamesString.substring(0, documentNamesString.length() - 2);
-                            }
-                            // Mostrar los nombres de los documentos en textViewFechaSeleccionada
-                            textViewFechaSeleccionada.setText(documentNamesString);
-                        } else {
-                            textViewFechaSeleccionada.setText("No hay ejercicios para esta fecha");
-                        }
+            // Eliminar el documento
+            calendarioDocRef.delete()
+                    .addOnSuccessListener(aVoid -> {
+                        System.out.println("Documento eliminado correctamente");
+                        // Actualizar la interfaz de usuario o hacer cualquier otra acción necesaria
                     })
                     .addOnFailureListener(e -> {
-                        Log.e("CalendarioFragment", "Error al obtener los nombres de los documentos desde Firestore: " + e.getMessage());
+                        System.out.println( "Error al eliminar el documento: " + e.getMessage());
                     });
         }
     }
 
- */
+
+}
 
