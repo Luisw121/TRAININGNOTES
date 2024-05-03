@@ -35,20 +35,21 @@ public class MostrarCalendarioDatsFragment extends Fragment {
     private RecyclerView recyclerViewSerieDatos;
     private MostratCalendarioDatsAdapter serieDatosAdapter;
     private static final String TAG = "MostrarCalendarioDatsFragment";
+    private String ejercicioName;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_mostrar_calendario_dats, container, false);
 
+        String blockName = getArguments().getString("blockName"); // Utiliza el mismo nombre aquí, nombre de la colection ejercicios
+        String ejercicioName = getArguments().getString("ejercicioName");//nombre de la colection elements
+
+        String elementName = getArguments().getString("elementName");
+
         TextView ejercicioNameTextView = view.findViewById(R.id.nameDetailNameTextViewDatos2);
-        //ejercicioNameTextView.setText(ejercicioName);
+        ejercicioNameTextView.setText(blockName);
 
-        recyclerViewSerieDatos = view.findViewById(R.id.recyclerViewSerieDatos2);
-        recyclerViewSerieDatos.setLayoutManager(new LinearLayoutManager(requireContext()));
-        recyclerViewSerieDatos.addItemDecoration(new DividerItemDecoration(requireContext(), LinearLayoutManager.VERTICAL));
-        recyclerViewSerieDatos.setAdapter(serieDatosAdapter);
-
-        return  view;
+        return view;
     }
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -58,17 +59,18 @@ public class MostrarCalendarioDatsFragment extends Fragment {
         currentUser = auth.getCurrentUser();
 
         Bundle args = getArguments();
-        //selectedDate = getArguments().getString("selectedDate");
-        String ejercicioName = getArguments().getString("ejercicioName");
+        selectedDate = getArguments().getString("selectedDate");
+        String ejercicioName = args.getString("ejercicioName");
+        String blockName = getArguments().getString("blockName");
         if (currentUser != null) {
             // Construir la referencia a la colección de ejercicios
-            ejerciciosCollectionRef = firestore.collection("users")
+             ejerciciosCollectionRef = firestore.collection("users")
                     .document(currentUser.getUid())
                     .collection("calendario")
                     .document(selectedDate)
                     .collection("elements")
                     .document(ejercicioName)
-                    .collection("ejercicios");
+                     .collection("ejercicios");
 
             // Cargar los ejercicios desde Firestore
             loadDatosFromFirebase(selectedDate);
@@ -77,7 +79,7 @@ public class MostrarCalendarioDatsFragment extends Fragment {
             Log.e("CalendarioEjercicios", "No hay usuario autenticado");
         }
 
-        CalendarView calendarView = view.findViewById(R.id.calendarView1);
+        CalendarView calendarView = view.findViewById(R.id.calendarView2);
         calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
             @Override
             public void onSelectedDayChange(@NonNull CalendarView view, int year, int month, int dayOfMonth) {
@@ -85,7 +87,7 @@ public class MostrarCalendarioDatsFragment extends Fragment {
                 selectedDate = year + "-" + (month + 1) + "-" + dayOfMonth; // Ajusta el formato según tu estructura
 
                 // Cargar el nombre del documento correspondiente a la fecha seleccionada
-                loadDatosFromFirebase(selectedDate);
+                //loadDatosFromFirebase(selectedDate);
             }
         });
 
@@ -103,15 +105,13 @@ public class MostrarCalendarioDatsFragment extends Fragment {
 
         String ejercicioName = getArguments().getString("ejercicioName");
         String blockName = getArguments().getString("blockName");
-        String elementName = getArguments().getString("elementName");
-
         DocumentReference ejercicioDocRef = FirebaseFirestore.getInstance()
                 .collection("users")
                 .document(currentUser.getUid())
                 .collection("calendario")
                 .document(day).collection(month).document(year)
                 .collection("elements")
-                .document(elementName)
+                .document(ejercicioName)
                 .collection("ejercicios")
                 .document(blockName);
 
@@ -135,8 +135,6 @@ public class MostrarCalendarioDatsFragment extends Fragment {
                         MostrarCalendarioDats serieDatos = new MostrarCalendarioDats(repeticiones, peso, rpe);
                         seriesDatosList.add(serieDatos);
                     }
-                    // Notificar al adaptador del cambio
-                    serieDatosAdapter.notifyDataSetChanged();
                 }
             }
         }).addOnFailureListener(e -> {
@@ -144,3 +142,6 @@ public class MostrarCalendarioDatsFragment extends Fragment {
         });
     }
 }
+/*
+
+ */

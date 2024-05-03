@@ -101,10 +101,10 @@ public class CalendarioEjercicios_Fragment extends Fragment {
 
         calendarioEjercicioAdapter.setOnEjercicioClickListener(new CalendarioEjercicioAdapter.OnEjercicioClickListener() {
             @Override
-            public void onEjercicioClick(CalendarioEjercicios calendarioEjercicios) {
-                String blockName = getArguments().getString("calendario");
+            public void onEjercicioClick(String blockName) {
+                selectedDate = getArguments().getString("selectedDate");
+                String ejercicioName = getArguments().getString("ejercicioName");
                 String elementName = getArguments().getString("name");
-                String ejercicioName = calendarioEjercicios.getNombre();
                 navigateToDatosEjerciciosFragment(blockName, elementName, ejercicioName);
             }
         });
@@ -112,16 +112,14 @@ public class CalendarioEjercicios_Fragment extends Fragment {
 
     private void navigateToDatosEjerciciosFragment(String blockName, String elementName, String ejercicioName) {
         Bundle bundle = new Bundle();
-        bundle.putString("calendario", blockName);
+        bundle.putString("blockName", blockName); // Corregido el nombre del argumento aquí
         bundle.putString("elementName", elementName);
         bundle.putString("ejercicioName", ejercicioName);
-
-        MostrarCalendarioDatsFragment fragment = new MostrarCalendarioDatsFragment();
-        fragment.setArguments(bundle);
-
+        bundle.putString("selectedDate", selectedDate);
         NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
-        navController.navigate(R.id.action_calendarioEjercicios_Fragment_to_mostrarCalendarioDatsFragment);
+        navController.navigate(R.id.action_calendarioEjercicios_Fragment_to_mostrarCalendarioDatsFragment, bundle);
     }
+
 
     private void loadEjerciciosFromFirestore(String selectedDate) {
         String ejercicioName = getArguments().getString("ejercicioName");

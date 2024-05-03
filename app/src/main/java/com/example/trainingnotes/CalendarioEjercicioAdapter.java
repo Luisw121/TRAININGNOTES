@@ -46,10 +46,8 @@ public class CalendarioEjercicioAdapter extends RecyclerView.Adapter<CalendarioE
             }
         });
         holder.itemView.setOnClickListener(v -> {
-            int adapterPosition = holder.getAdapterPosition();
-            if (adapterPosition != RecyclerView.NO_POSITION) {
-                CalendarioEjercicios ejercicioClicked = ejerciciosList.get(adapterPosition);
-                onEjercicioClickListener.onEjercicioClick(ejercicioClicked);
+            if (onEjercicioClickListener != null) {
+                onEjercicioClickListener.onEjercicioClick(ejercicio.getNombre());
             }
         });
     }
@@ -68,7 +66,7 @@ public class CalendarioEjercicioAdapter extends RecyclerView.Adapter<CalendarioE
         this.onEjercicioClickListener = listener;
     }
     public interface OnEjercicioClickListener {
-        void onEjercicioClick(CalendarioEjercicios calendarioEjercicios);
+        void onEjercicioClick(String blockName);
     }
 
     public static class CalendarioEjercicioViewHolder extends RecyclerView.ViewHolder {
