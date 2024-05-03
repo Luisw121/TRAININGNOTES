@@ -78,7 +78,9 @@ public class MostrarCalendarioDatsFragment extends Fragment {
             // Si no hay usuario autenticado, puedes manejar el caso aquí
             Log.e("CalendarioEjercicios", "No hay usuario autenticado");
         }
-
+        recyclerViewSerieDatos = view.findViewById(R.id.recyclerViewSerieDatos2);
+        recyclerViewSerieDatos.setLayoutManager(new LinearLayoutManager(requireContext()));
+        recyclerViewSerieDatos.addItemDecoration(new DividerItemDecoration(requireContext(), LinearLayoutManager.VERTICAL));
         CalendarView calendarView = view.findViewById(R.id.calendarView2);
         calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
             @Override
@@ -90,6 +92,7 @@ public class MostrarCalendarioDatsFragment extends Fragment {
                 //loadDatosFromFirebase(selectedDate);
             }
         });
+        recyclerViewSerieDatos.setAdapter(serieDatosAdapter);
 
     }
 
