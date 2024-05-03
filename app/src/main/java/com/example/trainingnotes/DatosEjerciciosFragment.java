@@ -171,6 +171,8 @@ public class DatosEjerciciosFragment extends Fragment {
 
 
     private void mostrarCalendario() {
+        String ejercicioName = getArguments().getString("ejercicioName");
+        String elementName = getArguments().getString("elementName");
         Calendar calendar = Calendar.getInstance();
         int year = calendar.get(Calendar.YEAR);
         int month = calendar.get(Calendar.MONTH);
@@ -184,7 +186,7 @@ public class DatosEjerciciosFragment extends Fragment {
                         // Aquí puedes guardar la fecha seleccionada en el calendario
                         String selectedDate = dayOfMonth + "/" + (month + 1) + "/" + year;
                         // Luego puedes guardar las series en la fecha seleccionada
-                        guardarSeriesEnCalendario(selectedDate);
+                        guardarSeriesEnCalendario(selectedDate, ejercicioName, elementName);
                     }
                 }, year, month, dayOfMonth);
 
@@ -192,14 +194,11 @@ public class DatosEjerciciosFragment extends Fragment {
         datePickerDialog.show();
     }
 
-    private void guardarSeriesEnCalendario(String selectedDate) {
+    private void guardarSeriesEnCalendario(String selectedDate, String ejercicioName, String elementName) {
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         if (currentUser == null) {
             return;
         }
-
-        String ejercicioName = getArguments().getString("ejercicioName");
-        String elementName = getArguments().getString("elementName");
 
         // Referencia al documento del usuario en la colección "users"
         DocumentReference userDocRef = FirebaseFirestore.getInstance()

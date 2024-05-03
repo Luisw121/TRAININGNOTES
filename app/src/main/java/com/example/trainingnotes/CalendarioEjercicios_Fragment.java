@@ -71,7 +71,7 @@ public class CalendarioEjercicios_Fragment extends Fragment {
         selectedDate = getArguments().getString("selectedDate");
         String ejercicioName = getArguments().getString("ejercicioName");
 
-        if (currentUser != null) {
+        if (currentUser != null && ejercicioName != null && selectedDate != null) {
             // Construir la referencia a la colección de ejercicios
             ejerciciosCollectionRef = firestore.collection("users")
                     .document(currentUser.getUid())
