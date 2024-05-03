@@ -81,6 +81,7 @@ public class MostrarCalendarioDatsFragment extends Fragment {
         recyclerViewSerieDatos = view.findViewById(R.id.recyclerViewSerieDatos2);
         recyclerViewSerieDatos.setLayoutManager(new LinearLayoutManager(requireContext()));
         recyclerViewSerieDatos.addItemDecoration(new DividerItemDecoration(requireContext(), LinearLayoutManager.VERTICAL));
+
         CalendarView calendarView = view.findViewById(R.id.calendarView2);
         calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
             @Override
@@ -92,6 +93,18 @@ public class MostrarCalendarioDatsFragment extends Fragment {
                 //loadDatosFromFirebase(selectedDate);
             }
         });
+        serieDatosAdapter = new MostratCalendarioDatsAdapter(seriesDatosList, new MostratCalendarioDatsAdapter.OnserieClickListener() {
+            @Override
+            public void onSerieDeleteClick(int position) {
+
+            }
+
+            @Override
+            public void onSerieAddClick() {
+
+            }
+        });
+        recyclerViewSerieDatos.setLayoutManager(new LinearLayoutManager(requireContext()));
         recyclerViewSerieDatos.setAdapter(serieDatosAdapter);
 
     }
@@ -108,6 +121,7 @@ public class MostrarCalendarioDatsFragment extends Fragment {
 
         String ejercicioName = getArguments().getString("ejercicioName");
         String blockName = getArguments().getString("blockName");
+
         DocumentReference ejercicioDocRef = FirebaseFirestore.getInstance()
                 .collection("users")
                 .document(currentUser.getUid())
@@ -138,6 +152,8 @@ public class MostrarCalendarioDatsFragment extends Fragment {
                         MostrarCalendarioDats serieDatos = new MostrarCalendarioDats(repeticiones, peso, rpe);
                         seriesDatosList.add(serieDatos);
                     }
+                    // Notificar al adaptador del cambio
+                    serieDatosAdapter.notifyDataSetChanged();
                 }
             }
         }).addOnFailureListener(e -> {
