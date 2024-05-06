@@ -29,7 +29,7 @@ public class CalendarioEjercicioAdapter extends RecyclerView.Adapter<CalendarioE
     @NonNull
     @Override
     public CalendarioEjercicioViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_days, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_ejercicios2, parent, false);
         return new CalendarioEjercicioViewHolder(view);
     }
 
@@ -38,13 +38,6 @@ public class CalendarioEjercicioAdapter extends RecyclerView.Adapter<CalendarioE
         CalendarioEjercicios ejercicio = ejerciciosList.get(position);
         holder.bind(ejercicio);
 
-        holder.deleteButtonEjercicio.setOnClickListener(v -> {
-            int adapterPosition = holder.getAdapterPosition();
-            if (adapterPosition != RecyclerView.NO_POSITION) {
-                CalendarioEjercicios ejercicioToDelete = ejerciciosList.get(adapterPosition);
-                ondeleteClickListener.onDeleteClick(ejercicioToDelete.getNombre());
-            }
-        });
         holder.itemView.setOnClickListener(v -> {
             if (onEjercicioClickListener != null) {
                 onEjercicioClickListener.onEjercicioClick(ejercicio.getNombre());
@@ -75,8 +68,8 @@ public class CalendarioEjercicioAdapter extends RecyclerView.Adapter<CalendarioE
 
         public CalendarioEjercicioViewHolder(@NonNull View itemView) {
             super(itemView);
-            exerciseNameTextView = itemView.findViewById(R.id.blockNameTextViewDays);
-            deleteButtonEjercicio = itemView.findViewById(R.id.deleteButtonDays);
+            exerciseNameTextView = itemView.findViewById(R.id.blockNameTextViewDays2);
+
         }
 
         public void bind(CalendarioEjercicios ejercicio) {

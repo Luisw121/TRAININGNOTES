@@ -6,11 +6,11 @@
         android:title="@string/home" />
     <item
         android:id="@+id/entrenamiento"
-        android:icon="@drawable/baseline_calendar_month_24"
+        android:icon="@drawable/baseline_create_24"
         android:title="@string/entrenamiento" />
     <item
         android:id="@+id/calendar"
-        android:icon="@drawable/baseline_create_24"
+        android:icon="@drawable/baseline_calendar_month_24"
         android:title="@string/calendari" />
     <item
         android:id="@+id/ubication"
