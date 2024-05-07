@@ -57,7 +57,7 @@ public class signUpFragment extends Fragment {
 
         emailEdit = view.findViewById(R.id.emailEditSignUp);
         passEdit = view.findViewById(R.id.passEditSignUp);
-        nameEdit = view.findViewById(R.id.name);
+        //nameEdit = view.findViewById(R.id.name);
         signInText = view.findViewById(R.id.signInText);
         signUpBtn = view.findViewById(R.id.signUpBtn);
 
@@ -75,10 +75,10 @@ public class signUpFragment extends Fragment {
             public void onClick(View v) {
                 String email = emailEdit.getText().toString();
                 String pass = passEdit.getText().toString();
-                String name = nameEdit.getText().toString();
+                //String name = nameEdit.getText().toString();
 
                 if (!email.isEmpty() && !pass.isEmpty()){
-                    viewModel.register(email , pass, name);
+                    viewModel.register(email , pass);
 
                 }
             }

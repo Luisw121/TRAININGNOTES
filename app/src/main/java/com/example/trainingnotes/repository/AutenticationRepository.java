@@ -39,13 +39,12 @@ public class AutenticationRepository {
         return userLoggedMutableLiveData;
     }
 
-    public void register(String email, String password, String name) {
+    public void register(String email, String password) {
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         FirebaseUser user = mAuth.getCurrentUser();
                         UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
-                                .setDisplayName(name)
                                 .build();
 
                         user.updateProfile(profileUpdates)
