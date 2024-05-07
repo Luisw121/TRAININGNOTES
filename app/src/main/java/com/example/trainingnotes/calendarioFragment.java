@@ -52,6 +52,8 @@ public class calendarioFragment extends Fragment {
     private CollectionReference ejerciciosCollectionRef;
     private TextView textViewFechaSeleccionada;
     private String selectedDate;
+    private static final String TAG = "calendarioFragment";
+
 
     // Interfaz para manejar la selección de fecha
     public interface OnDateSelectedListener {
@@ -116,6 +118,38 @@ public class calendarioFragment extends Fragment {
             }
         });
     }
+    private void deleteFirstDocumentFromCalendario(String selectedDate) {
+        if (currentUser != null) {
+            // Dividir la fecha seleccionada en año, mes y día
+            String[] parts = selectedDate.split("-");
+            String year = parts[0];
+            String month = parts[1];
+            String day = parts[2];
+
+            // Construir la referencia al documento dentro de la estructura de la fecha seleccionada
+            DocumentReference documentRef = firestore.collection("users")
+                    .document(currentUser.getUid())
+                    .collection("calendario")
+                    .document(day);
+
+            // Eliminar el documento de la colección
+            documentRef.delete()
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            Log.d(TAG, "Documento eliminado correctamente");
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.e(TAG, "Error al eliminar el documento: " + e.getMessage());
+                        }
+                    });
+        }
+    }
+
+
 
     private void navigateToCalendarioEjerciciosFragment(String selectedDate, String ejercicioName) {
         Bundle args = new Bundle();
@@ -166,35 +200,5 @@ public class calendarioFragment extends Fragment {
                     });
         }
     }
-
-    private void deleteFirstDocumentFromCalendario(String selectedDate) {
-        if (currentUser != null) {
-            // Dividir la fecha seleccionada en año, mes y día
-            String[] parts = selectedDate.split("-");
-            String year = parts[0];
-            String month = parts[1];
-            String day = parts[2];
-
-            // Construir la referencia al documento de la fecha seleccionada en "calendario"
-            DocumentReference calendarioDocRef = firestore.collection("users")
-                    .document(currentUser.getUid())
-                    .collection("calendario")
-                    .document(day)
-                    .collection(month)
-                    .document(year);
-
-            // Eliminar el documento
-            calendarioDocRef.delete()
-                    .addOnSuccessListener(aVoid -> {
-                        System.out.println("Documento eliminado correctamente");
-                        // Actualizar la interfaz de usuario o hacer cualquier otra acción necesaria
-                    })
-                    .addOnFailureListener(e -> {
-                        System.out.println( "Error al eliminar el documento: " + e.getMessage());
-                    });
-        }
-    }
-
-
 }
 
