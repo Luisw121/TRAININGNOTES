@@ -30,7 +30,7 @@ public class mapsFragment extends Fragment implements OnMapReadyCallback {
     private PlacesClient placesClient;
 
     // Lista de palabras clave para filtrar lugares
-    private List<String> keywords = Arrays.asList("gimnasio", "crossfit", "fit", "gym", "gimnas", "deportivo", "esport", "deporte");
+    private List<String> keywords = Arrays.asList("gimnasio", "crossfit", "fit", "gym", "gimnas", "deportivo", "esport", "deporte", "centro deportivo", "esport", "fit");
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
