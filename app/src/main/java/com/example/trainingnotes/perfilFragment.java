@@ -121,52 +121,70 @@ public class perfilFragment extends Fragment {
         eliminarCUenta.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-                if (currentUser != null) {
-                    // Eliminar la cuenta del Firestore
-                    FirebaseFirestore.getInstance().collection("users").document(currentUser.getUid())
-                            .delete()
-                            .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                @Override
-                                public void onSuccess(Void aVoid) {
-                                    // Eliminar la cuenta de autenticación
-                                    currentUser.delete()
-                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                @Override
-                                                public void onSuccess(Void aVoid) {
-                                                    // Revocar el token de acceso de Google
-                                                    GoogleSignIn.getClient(requireActivity(),
-                                                                    new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                                                                            .build())
-                                                            .revokeAccess()
-                                                            .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                                                @Override
-                                                                public void onComplete(@NonNull Task<Void> task) {
-                                                                    // Redirigir al usuario al fragmento de inicio de sesión
-                                                                    navController.navigate(R.id.signInFragment);
-                                                                }
-                                                            });
-                                                }
-                                            })
-                                            .addOnFailureListener(new OnFailureListener() {
-                                                @Override
-                                                public void onFailure(@NonNull Exception e) {
-                                                    // Manejar el fallo de eliminación de cuenta de autenticación
-                                                    Log.e(TAG, "Error al eliminar la cuenta de autenticación: " + e.getMessage());
-                                                }
-                                            });
-                                }
-                            })
-                            .addOnFailureListener(new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception e) {
-                                    // Manejar el fallo de eliminación de cuenta del Firestore
-                                    Log.e(TAG, "Error al eliminar la cuenta del Firestore: " + e.getMessage());
-                                }
-                            });
-                }
+                // Crear un diálogo de confirmación
+                AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+                builder.setMessage("¿Estás seguro de que quieres eliminar tu cuenta?");
+                builder.setPositiveButton("Sí", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Si el usuario confirma, procede con la eliminación de la cuenta
+                        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+                        if (currentUser != null) {
+                            // Eliminar la cuenta del Firestore
+                            FirebaseFirestore.getInstance().collection("users").document(currentUser.getUid())
+                                    .delete()
+                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
+                                            // Eliminar la cuenta de autenticación
+                                            currentUser.delete()
+                                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                        @Override
+                                                        public void onSuccess(Void aVoid) {
+                                                            // Revocar el token de acceso de Google
+                                                            GoogleSignIn.getClient(requireActivity(),
+                                                                            new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                                                                                    .build())
+                                                                    .revokeAccess()
+                                                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                                        @Override
+                                                                        public void onComplete(@NonNull Task<Void> task) {
+                                                                            // Redirigir al usuario al fragmento de inicio de sesión
+                                                                            navController.navigate(R.id.signInFragment);
+                                                                        }
+                                                                    });
+                                                        }
+                                                    })
+                                                    .addOnFailureListener(new OnFailureListener() {
+                                                        @Override
+                                                        public void onFailure(@NonNull Exception e) {
+                                                            // Manejar el fallo de eliminación de cuenta de autenticación
+                                                            Log.e(TAG, "Error al eliminar la cuenta de autenticación: " + e.getMessage());
+                                                        }
+                                                    });
+                                        }
+                                    })
+                                    .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            // Manejar el fallo de eliminación de cuenta del Firestore
+                                            Log.e(TAG, "Error al eliminar la cuenta del Firestore: " + e.getMessage());
+                                        }
+                                    });
+                        }
+                    }
+                });
+                builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Si el usuario cancela, no hacer nada
+                    }
+                });
+                // Mostrar el diálogo de confirmación
+                builder.create().show();
             }
         });
+
         // Botón para seleccionar la edad
         Button edadButton = view.findViewById(R.id.button2);
         edadTextView = view.findViewById(R.id.edad);

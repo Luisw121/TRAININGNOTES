@@ -24,7 +24,7 @@ import com.google.android.libraries.places.api.net.PlacesClient;
 
 import java.util.Arrays;
 import java.util.List;
-
+import android.Manifest;
 public class mapsFragment extends Fragment implements OnMapReadyCallback {
     GoogleMap mMap;
     private PlacesClient placesClient;
