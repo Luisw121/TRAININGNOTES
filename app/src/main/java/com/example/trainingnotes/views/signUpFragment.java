@@ -54,15 +54,13 @@ public class signUpFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        navController = Navigation.findNavController(view);
 
         emailEdit = view.findViewById(R.id.emailEditSignUp);
         passEdit = view.findViewById(R.id.passEditSignUp);
         //nameEdit = view.findViewById(R.id.name);
         signInText = view.findViewById(R.id.signInText);
         signUpBtn = view.findViewById(R.id.signUpBtn);
-
-        navController = Navigation.findNavController(view);
-
         signInText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
