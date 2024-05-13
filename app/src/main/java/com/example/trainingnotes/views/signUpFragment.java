@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.trainingnotes.R;
 import com.example.trainingnotes.viewmodel.AuthViewModel;
@@ -81,5 +82,21 @@ public class signUpFragment extends Fragment {
                 }
             }
         });
+        signUpBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String email = emailEdit.getText().toString();
+                String pass = passEdit.getText().toString();
+
+                if (email.isEmpty() || pass.isEmpty()) {
+                    // Mostrar mensaje de error si los campos están vacíos
+                    Toast.makeText(requireContext(), "Por favor, complete todos los campos.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                viewModel.register(email, pass);
+            }
+        });
+
     }
 }
