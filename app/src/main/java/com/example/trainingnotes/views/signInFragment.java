@@ -12,10 +12,12 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
+import androidx.navigation.NavOptions;
 import androidx.navigation.Navigation;
 
 import android.util.Log;
@@ -54,7 +56,7 @@ public class signInFragment extends Fragment {
     private SignInButton googleSignInButton;
     private ActivityResultLauncher<Intent> activityResultLauncher;
     private ProgressBar signInProgressBar;
-    private LinearLayout signInForm;
+    private ConstraintLayout signInForm;
     private FirebaseAuth mAuth;
 
     @Override
@@ -221,9 +223,20 @@ public class signInFragment extends Fragment {
                         });
     }
 
+
     private void actualizarUI(FirebaseUser currentUser) {
         if(currentUser != null){
-            navController.navigate(R.id.action_signInFragment_to_pantallaPrincipalFragment);
+            // Crear opciones de navegación para agregar el fragmento al back stack
+            NavOptions.Builder navBuilder = new NavOptions.Builder();
+            navBuilder.setEnterAnim(R.anim.slide_in_right); // Animación de entrada
+            navBuilder.setExitAnim(R.anim.fade_out); // Animación de salida
+            navBuilder.setPopEnterAnim(R.anim.fade_in); // Animación de entrada al retroceder
+            navBuilder.setPopExitAnim(R.anim.slide_out_right); // Animación de salida al retroceder
+            NavOptions options = navBuilder.build();
+
+            // Navegar al destino con las opciones creadas
+            navController.navigate(R.id.action_signInFragment_to_pantallaPrincipalFragment, null, options);
         }
     }
+
 }

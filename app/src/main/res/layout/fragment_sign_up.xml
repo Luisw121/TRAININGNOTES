@@ -19,7 +19,7 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:layout_editor_absoluteX="0dp" />
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/signUpForm"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -29,17 +29,13 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.631">
+        app:layout_constraintTop_toBottomOf="@+id/titulosignup">
 
         <EditText
             android:id="@+id/emailEditSignUp"
             android:layout_width="wrap_content"
             android:layout_height="45dp"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="28dp"
-            android:layout_marginEnd="24dp"
-            android:background="@drawable/edit_bg"
+            android:layout_marginTop="64dp"
             android:ems="10"
             android:hint="Enter Your Email"
             android:inputType="textEmailAddress"
@@ -47,9 +43,8 @@
             android:textColor="@color/white"
             android:textColorHint="@color/white"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/name" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <EditText
             android:id="@+id/passEditSignUp"
@@ -58,7 +53,6 @@
             android:layout_marginStart="24dp"
             android:layout_marginTop="28dp"
             android:layout_marginEnd="24dp"
-            android:background="@drawable/edit_bg"
             android:ems="10"
             android:hint="Enter Your password"
             android:inputType="textPassword"
@@ -72,16 +66,15 @@
 
         <Button
             android:id="@+id/signUpBtn"
-            android:layout_width="wrap_content"
+            style="@style/FirebaseUI.Button"
+            android:layout_width="120dp"
             android:layout_height="50dp"
-            android:layout_marginStart="24dp"
             android:layout_marginTop="28dp"
-            android:layout_marginEnd="24dp"
             android:backgroundTint="@color/white"
+            android:textStyle="bold"
             android:text="SignUp"
             android:textColor="@color/black"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/passEditSignUp" />
 
@@ -89,6 +82,8 @@
             android:id="@+id/signInText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+
+            android:layout_marginTop="20dp"
             android:text="Already Registered ? Sign In"
             android:textColor="@color/white"
             android:textSize="15sp"
@@ -97,7 +92,7 @@
             app:layout_constraintHorizontal_bias="0.497"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/signUpBtn" />
-    </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <ProgressBar
         android:id="@+id/signInProgressBar"
