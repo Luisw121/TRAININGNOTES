@@ -3,14 +3,14 @@ package com.example.trainingnotes;
 public class DatoInicial {
     private String id;
     private int repeticiones;
-    private int peso;
+    private float peso;
     private int rpe;
 
     public DatoInicial() {
         // Constructor vacío necesario para Firestore
     }
 
-    public DatoInicial( int repeticiones, int peso, int rpe) {
+    public DatoInicial( int repeticiones, float peso, int rpe) {
         this.repeticiones = repeticiones;
         this.peso = peso;
         this.rpe = rpe;
@@ -24,11 +24,11 @@ public class DatoInicial {
         this.repeticiones = repeticiones;
     }
 
-    public int getPeso() {
+    public float getPeso() {
         return peso;
     }
 
-    public void setPeso(int peso) {
+    public void setPeso(float peso) {
         this.peso = peso;
     }
 

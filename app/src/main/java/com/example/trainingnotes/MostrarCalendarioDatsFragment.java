@@ -143,8 +143,8 @@ public class MostrarCalendarioDatsFragment extends Fragment {
                         Long repeticionesLong = (Long) serieDatosMap.get("repeticiones");
                         int repeticiones = repeticionesLong != null ? repeticionesLong.intValue() : 0;
 
-                        Long pesoLong = (Long) serieDatosMap.get("peso");
-                        int peso = pesoLong != null ? pesoLong.intValue() : 0;
+                        double pesoDouble = (double) serieDatosMap.get("peso");
+                        float peso = (float) pesoDouble;
 
                         Long rpeLong = (Long) serieDatosMap.get("rpe");
                         int rpe = rpeLong != null ? rpeLong.intValue() : 0;

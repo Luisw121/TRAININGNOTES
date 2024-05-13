@@ -352,8 +352,8 @@ public class DatosEjerciciosFragment extends Fragment {
                         Long repeticionesLong = (Long) serieDatosMap.get("repeticiones");
                         int repeticiones = repeticionesLong != null ? repeticionesLong.intValue() : 0;
 
-                        Long pesoLong = (Long) serieDatosMap.get("peso");
-                        int peso = pesoLong != null ? pesoLong.intValue() : 0;
+                        double pesoDouble = (double) serieDatosMap.get("peso");
+                        float peso = (float) pesoDouble;
 
                         Long rpeLong = (Long) serieDatosMap.get("rpe");
                         int rpe = rpeLong != null ? rpeLong.intValue() : 0;
@@ -398,7 +398,7 @@ public class DatosEjerciciosFragment extends Fragment {
                 if (!TextUtils.isEmpty(repsString) && !TextUtils.isEmpty(pesoString) && !TextUtils.isEmpty(rpeString)) {
                     // Convertir los valores a enteros
                     int reps = Integer.parseInt(repsString);
-                    int peso = Integer.parseInt(pesoString);
+                    float peso = Float.parseFloat(pesoString);
                     int rpe = Integer.parseInt(rpeString);
 
                     // Generar un ID único para la nueva serie

@@ -3,14 +3,14 @@ package com.example.trainingnotes;
 public class MostrarCalendarioDats {
     private String id;
     private int repeticiones;
-    private int peso;
+    private float peso;
     private int rpe;
 
     public MostrarCalendarioDats() {
         // Constructor vacío necesario para Firestore
     }
 
-    public MostrarCalendarioDats( int repeticiones, int peso, int rpe) {
+    public MostrarCalendarioDats( int repeticiones, float peso, int rpe) {
         this.repeticiones = repeticiones;
         this.peso = peso;
         this.rpe = rpe;
@@ -24,11 +24,11 @@ public class MostrarCalendarioDats {
         this.repeticiones = repeticiones;
     }
 
-    public int getPeso() {
+    public float getPeso() {
         return peso;
     }
 
-    public void setPeso(int peso) {
+    public void setPeso(float peso) {
         this.peso = peso;
     }
 
