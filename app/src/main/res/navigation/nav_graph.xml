@@ -46,6 +46,9 @@
         <action
             android:id="@+id/action_pantallaPrincipalFragment_to_listaEjerciciosFragment"
             app:destination="@id/listaEjerciciosFragment" />
+        <action
+            android:id="@+id/action_pantallaPrincipalFragment_to_signInFragment"
+            app:destination="@id/signInFragment" />
     </fragment>
     <fragment
         android:id="@+id/perfilFragment"

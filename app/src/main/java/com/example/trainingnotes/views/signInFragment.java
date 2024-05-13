@@ -101,7 +101,6 @@ public class signInFragment extends Fragment {
                     @Override
                     public void onActivityResult(ActivityResult result) {
                         if (result.getResultCode() == Activity.RESULT_OK) {
-// There are no request codes
                             Intent data = result.getData();
                             try {
                                 firebaseAuthWithGoogle(GoogleSignIn.getSignedInAccountFromIntent(data
@@ -139,11 +138,13 @@ public class signInFragment extends Fragment {
 
         if (email.isEmpty() || password.isEmpty()) {
             Toast.makeText(requireContext(), "Por favor, complete todos los campos.", Toast.LENGTH_SHORT).show();
+            signInForm.setVisibility(View.VISIBLE);
+            signInProgressBar.setVisibility(View.GONE);
             return;
         }
 
-        signInForm.setVisibility(View.GONE);
         signInProgressBar.setVisibility(View.VISIBLE);
+        signInForm.setVisibility(View.GONE);
 
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(requireActivity(), new OnCompleteListener<AuthResult>() {
@@ -171,15 +172,14 @@ public class signInFragment extends Fragment {
                                             if (!task.isSuccessful()) {
                                                 Snackbar.make(requireView(), "Error al actualizar el perfil: " + task.getException().getMessage(), Snackbar.LENGTH_LONG).show();
                                                 signInForm.setVisibility(View.VISIBLE);
-                                                signInProgressBar.setVisibility(View.GONE);
                                             }
                                         }
                                     });
                             navController.navigate(R.id.pantallaPrincipalFragment);
                         } else {
-                            Snackbar.make(requireView(), "Error al iniciar sesión: " + task.getException().getMessage(), Snackbar.LENGTH_LONG).show();
+                            Toast.makeText(requireContext(), "Contraseña incorrecta", Toast.LENGTH_SHORT).show();
                             signInForm.setVisibility(View.VISIBLE);
-                            signInProgressBar.setVisibility(View.GONE);
+
                         }
                     }
                 });
@@ -191,9 +191,9 @@ public class signInFragment extends Fragment {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            actualizarUI(mAuth.getCurrentUser());
+                            //actualizarUI(mAuth.getCurrentUser());
                         } else {
-                            Snackbar.make(requireView(), "Error: " + task.getException(), Snackbar.LENGTH_LONG).show();
+                            Snackbar.make(requireView(), "Error: Contraseña incorrecta", Snackbar.LENGTH_LONG).show();
                         }
                         signInForm.setVisibility(View.VISIBLE);
                         signInProgressBar.setVisibility(View.GONE);
