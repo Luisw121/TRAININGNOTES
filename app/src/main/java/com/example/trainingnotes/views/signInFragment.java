@@ -58,7 +58,6 @@ public class signInFragment extends Fragment {
     private ProgressBar signInProgressBar;
     private ConstraintLayout signInForm;
     private FirebaseAuth mAuth;
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -78,7 +77,6 @@ public class signInFragment extends Fragment {
         signInForm = view.findViewById(R.id.signInForm);
         signInProgressBar = view.findViewById(R.id.signInProgressBar);
         googleSignInButton = view.findViewById(R.id.googleSignInButton);
-
         signUpText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

@@ -29,7 +29,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/titulosignup">
+        app:layout_constraintTop_toBottomOf="@+id/titulosignup"
+        app:layout_constraintVertical_bias="0.207">
 
         <EditText
             android:id="@+id/emailEditSignUp"
@@ -71,9 +72,9 @@
             android:layout_height="50dp"
             android:layout_marginTop="28dp"
             android:backgroundTint="@color/white"
-            android:textStyle="bold"
             android:text="SignUp"
             android:textColor="@color/black"
+            android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/passEditSignUp" />
@@ -82,7 +83,6 @@
             android:id="@+id/signInText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-
             android:layout_marginTop="20dp"
             android:text="Already Registered ? Sign In"
             android:textColor="@color/white"
