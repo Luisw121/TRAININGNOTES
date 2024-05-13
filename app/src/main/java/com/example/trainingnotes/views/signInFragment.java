@@ -77,19 +77,25 @@ public class signInFragment extends Fragment {
         signInForm = view.findViewById(R.id.signInForm);
         signInProgressBar = view.findViewById(R.id.signInProgressBar);
         googleSignInButton = view.findViewById(R.id.googleSignInButton);
+        try {
         signUpText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 navController.navigate(R.id.action_signInFragment_to_signUpFragment);
             }
         });
+        }
+        catch(Exception error){
+            System.out.println(error);
+        }
 
-        signInBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                accederConEmail();
-            }
-        });
+            signInBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    accederConEmail();
+                }
+            });
+
         mAuth = FirebaseAuth.getInstance();
 
         googleSignInButton = view.findViewById(R.id.googleSignInButton);
