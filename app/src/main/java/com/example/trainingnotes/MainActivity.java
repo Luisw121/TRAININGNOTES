@@ -107,3 +107,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
 }
+/*
+private void checkLoginStatus() {
+        if (AuthManager.getInstance().isUserLoggedIn()) {
+            // Usuario autenticado, no necesitamos hacer nada más
+        } else {
+            // Usuario no autenticado, navegar al fragmento de inicio de sesión
+            navController.navigate(R.id.signInFragment);
+        }
+    }
+ */

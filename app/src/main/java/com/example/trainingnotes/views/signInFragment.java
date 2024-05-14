@@ -61,14 +61,16 @@ public class signInFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_sign_in, container, false);
+        signUpText = view.findViewById(R.id.signUpText);
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_sign_in, container, false);
+        return view;
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        navController = Navigation.findNavController(view);
+        navController = Navigation.findNavController(requireView());
 
         emailEdit = view.findViewById(R.id.emailEditSignIn);
         passEdit = view.findViewById(R.id.passEditSignIn);
@@ -77,17 +79,14 @@ public class signInFragment extends Fragment {
         signInForm = view.findViewById(R.id.signInForm);
         signInProgressBar = view.findViewById(R.id.signInProgressBar);
         googleSignInButton = view.findViewById(R.id.googleSignInButton);
-        try {
         signUpText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 navController.navigate(R.id.action_signInFragment_to_signUpFragment);
             }
         });
-        }
-        catch(Exception error){
-            System.out.println(error);
-        }
+
+
 
             signInBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
