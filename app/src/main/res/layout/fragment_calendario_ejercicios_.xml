@@ -36,6 +36,21 @@
         app:layout_constraintTop_toBottomOf="@+id/nameDetailNameTextViewDatosCal"
         app:layout_constraintVertical_bias="0.0" />
 
+    <Button
+        android:id="@+id/clearCalendario"
+        style="@style/FirebaseUI.Button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:backgroundTint="@color/marronfloko"
+        android:text="Clear All"
+        android:textColor="@color/white"
+        android:textSize="16dp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/recyclerViewSerieDatosCal" />
+
     <CalendarView
         android:id="@+id/calendarView1"
         android:layout_width="106dp"

@@ -15,16 +15,24 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.CalendarView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -108,7 +116,49 @@ public class CalendarioEjercicios_Fragment extends Fragment {
                 navigateToDatosEjerciciosFragment(blockName, elementName, ejercicioName);
             }
         });
+        Button clearButton = view.findViewById(R.id.clearCalendario);
+        clearButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                deleteAllElementsFromFirestore(selectedDate);
+            }
+        });
     }
+
+    private void deleteAllElementsFromFirestore(String selectedDate) {
+        String ejercicioName = getArguments().getString("ejercicioName");
+        if (currentUser != null) {
+            // Dividir la fecha seleccionada en año, mes y día
+            String[] parts = selectedDate.split("-");
+            String year = parts[0];
+            String month = parts[1];
+            String day = parts[2];
+            if (currentUser != null) {
+                // Construir la referencia a la colección de ejercicios
+                ejerciciosCollectionRef = firestore.collection("users")
+                        .document(currentUser.getUid())
+                        .collection("calendario")
+                        .document(day).collection(month).document(year)
+                        .collection("elements");
+
+                // Obtener todos los documentos de la colección
+                ejerciciosCollectionRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                // Eliminar cada documento de la colección
+                                document.getReference().delete();
+                            }
+                        } else {
+                            Log.e("Firestore", "Error al obtener documentos: ", task.getException());
+                        }
+                    }
+                });
+            }
+        }
+    }
+
 
     private void navigateToDatosEjerciciosFragment(String blockName, String elementName, String ejercicioName) {
         Bundle bundle = new Bundle();
