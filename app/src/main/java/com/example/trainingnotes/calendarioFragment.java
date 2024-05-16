@@ -110,13 +110,7 @@ public class calendarioFragment extends Fragment {
                 navigateToCalendarioEjerciciosFragment(selectedDate, ejercicioName);
             }
         });
-        ImageView papeleraCalendario = view.findViewById(R.id.papeleraCalendario);
-        papeleraCalendario.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                deleteFirstDocumentFromCalendario(selectedDate);
-            }
-        });
+
     }
     private void deleteFirstDocumentFromCalendario(String selectedDate) {
         if (currentUser != null) {
