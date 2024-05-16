@@ -10,6 +10,7 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.navigation.NavController;
 import androidx.navigation.NavDestination;
 import androidx.navigation.NavHostController;
+import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
@@ -25,6 +26,9 @@ import com.example.trainingnotes.views.signInFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
 import android.Manifest;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -41,7 +45,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                     REQUEST_LOCATION_PERMISSION);
         }
-
         NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
         navController = navHostFragment.getNavController();
 
@@ -58,6 +61,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             } else {
                 bottomNavigationView.setVisibility(View.GONE);
             }
+
+            // Obtener el ID del destino actual
+            int destinationId = navDestination.getId();
+
+            // Actualizar el elemento seleccionado en la BottomNavigationView
+            actualizarElementoSeleccionado(destinationId);
         })));
         bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
@@ -83,6 +92,31 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
 
         });
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (currentUser != null) {
+            // Si el usuario ha iniciado sesión, navega a pantallaPrincipalFragment
+            navController.navigate(R.id.pantallaPrincipalFragment);
+        } else {
+            // Si el usuario no ha iniciado sesión, navega a signInFragment
+            navController.navigate(R.id.signInFragment);
+        }
+    }
+    @Override
+    public void onBackPressed() {
+        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
+        int currentDestination = navController.getCurrentDestination().getId();
+
+        // Obtener el usuario actual
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+
+        // Verificar si el usuario ha iniciado sesión y está en la pantalla principal
+        if (currentUser != null && currentDestination == R.id.pantallaPrincipalFragment) {
+            // Si el usuario ha iniciado sesión y está en la pantalla principal, cierra la aplicación
+            finish();
+        } else {
+            // Si no, realiza el comportamiento de retroceso normal
+            super.onBackPressed();
+        }
     }
 
     @Override
