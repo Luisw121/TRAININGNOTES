@@ -25,12 +25,14 @@ import com.google.android.libraries.places.api.net.PlacesClient;
 import java.util.Arrays;
 import java.util.List;
 import android.Manifest;
+
 public class mapsFragment extends Fragment implements OnMapReadyCallback {
     GoogleMap mMap;
     private PlacesClient placesClient;
+    private static final int PROXIMITY_RADIUS = 10000;
 
     // Lista de palabras clave para filtrar lugares
-    private List<String> keywords = Arrays.asList("gimnasio", "crossfit", "fit", "gym", "gimnas", "deportivo", "esport", "deporte", "centro deportivo", "esport", "fit");
+    private List<String> keywords = Arrays.asList("gimnasio", "crossfit", "fit", "gym", "gimnas", "deportivo", "esport", "deporte", "centro deportivo", "esport", "fitnes", "basic-fit", "Basic-Fit");
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -54,7 +56,17 @@ public class mapsFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
         mMap = googleMap;
+        // Habilitar la capa de ubicación del usuario y mostrar el botón de mi ubicación en el mapa
+        mMap.setMyLocationEnabled(true);
 
+        // Configurar el proveedor de ubicación del mapa
+        mMap.getUiSettings().setMyLocationButtonEnabled(true);
+
+        // Establecer el oyente de clics en los marcadores
+        mMap.setOnMarkerClickListener(marker -> {
+            // Aquí puedes agregar la lógica para manejar el clic en un marcador si lo deseas
+            return false;
+        });
         // Crear una solicitud para encontrar lugares actuales con los campos de nombre y latitud-longitud
         FindCurrentPlaceRequest request = FindCurrentPlaceRequest.newInstance(Arrays.asList(Place.Field.NAME, Place.Field.LAT_LNG));
 
