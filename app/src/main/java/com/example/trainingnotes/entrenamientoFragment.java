@@ -98,6 +98,7 @@ public class entrenamientoFragment extends Fragment {
 
     private void loadBlocksFromFirestore(String userId) {
         firestore.collection("users").document(userId).collection("blocks")
+                .orderBy("timestamp")
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     blockList.clear();
@@ -108,8 +109,11 @@ public class entrenamientoFragment extends Fragment {
                     adapter.notifyDataSetChanged();
                 })
                 .addOnFailureListener(e -> {
+                    // Manejar el error
                 });
     }
+
+
 
     private void showAddBlockDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
@@ -143,15 +147,16 @@ public class entrenamientoFragment extends Fragment {
         firestore.collection("users").document(currentUser.getUid()).collection("blocks")
                 .document(blockName) // Utiliza el nombre del bloque como ID del documento
                 .set(block)
-                .addOnSuccessListener(documentReference -> {
+                .addOnSuccessListener(aVoid -> {
                     // Documento de bloque agregado exitosamente
-                    blockList.add(block);
-                    adapter.notifyDataSetChanged();
+                    loadBlocksFromFirestore(currentUser.getUid());
                 })
                 .addOnFailureListener(e -> {
                     // Error al agregar el documento de bloque
                 });
     }
+
+
 
     private void deleteBlockFromFirestore(String blockName) {
         blocksCollectionRef.whereEqualTo("blockName", blockName)

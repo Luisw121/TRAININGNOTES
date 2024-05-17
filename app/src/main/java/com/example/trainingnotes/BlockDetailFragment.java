@@ -13,7 +13,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.text.InputType;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,7 +25,6 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,7 +37,7 @@ public class BlockDetailFragment extends Fragment {
     private blockAdapter adapterElement;
     private List<block> elementList;
     private CollectionReference elementsCollectionRef;
-    private static final String TAG = "BlockDetailFragment";
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -52,6 +50,7 @@ public class BlockDetailFragment extends Fragment {
         blockNameTextView.setText(blockname);
         return view;
     }
+
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -61,7 +60,7 @@ public class BlockDetailFragment extends Fragment {
         currentUserElement = authElement.getCurrentUser();
 
         if (currentUserElement != null) {
-            elementsCollectionRef = firestoreElement.collection("blocks").document(currentUserElement.getUid()).collection("elements");
+            elementsCollectionRef = firestoreElement.collection("users").document(currentUserElement.getUid()).collection("blocks");
             loadElementsFromFirestore(currentUserElement.getUid(), getArguments().getString("blockName"));
         }
 
@@ -77,21 +76,23 @@ public class BlockDetailFragment extends Fragment {
                 showAddElementDialog();
             }
         });
+
         adapterElement.setOnDeleteClickListener(new blockAdapter.OnDeleteClickListener() {
             @Override
             public void onDeleteClick(String elementName) {
                 deleteElementFromFirestore(elementName);
             }
         });
+
         adapterElement.setOnElemntBlockClickListener(new blockAdapter.OnElemntBlockClickListener() {
             @Override
             public void onElementClickBlock(String elementName) {
             }
         });
+
         adapterElement.setOnElementClickListener(new blockAdapter.onElementClickListener() {
             @Override
             public void onElementClick(String elementName) {
-                //Importante pasar las refencias ya que asi se puede encontrar las colections.
                 String blockName = getArguments().getString("blockName");
                 navigateToElemenetFragment(elementName, blockName);
             }
@@ -101,30 +102,31 @@ public class BlockDetailFragment extends Fragment {
     private void navigateToElemenetFragment(String elementName, String blockName) {
         Bundle bundle = new Bundle();
         bundle.putString("name", elementName);
-        bundle.putString("blockName", blockName); // Agregar el nombre del bloque al Bundle
+        bundle.putString("blockName", blockName);
         NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
         navController.navigate(R.id.action_blockDetailFragment_to_ejerciciosFragment, bundle);
     }
 
-
     private void loadElementsFromFirestore(String userId, String blockName) {
         firestoreElement.collection("users").document(userId).collection("blocks")
-                .document(blockName) // Utiliza el nombre del bloque como ID del documento
-                .collection("elements") // Accede a la colección de elementos dentro del documento de bloque
+                .document(blockName)
+                .collection("elements")
+                .orderBy("timestamp") // Ordenar por timestamp
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     elementList.clear();
                     for (DocumentSnapshot document : queryDocumentSnapshots) {
                         block element = document.toObject(block.class);
-                        elementList.add(element);
+                        if (element != null) { // Verificar si el elemento no es nulo
+                            elementList.add(element);
+                        }
                     }
                     adapterElement.notifyDataSetChanged();
                 })
                 .addOnFailureListener(e -> {
-                    // Error al cargar los elementos
+                    // Manejar el error
                 });
     }
-
 
     private void showAddElementDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
@@ -142,11 +144,11 @@ public class BlockDetailFragment extends Fragment {
                     String blockName = getArguments().getString("blockName");
                     if (blockName != null && !blockName.isEmpty()) {
                         addElementToFirestore(blockName, elementName);
-                    } else {
                     }
                 }
             }
         });
+
         builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -156,6 +158,7 @@ public class BlockDetailFragment extends Fragment {
 
         builder.show();
     }
+
     private void addElementToFirestore(String blockName, String elementName) {
         block element = new block(elementName);
 
@@ -166,7 +169,6 @@ public class BlockDetailFragment extends Fragment {
 
         blockDocumentRef.collection("elements").document(elementName).set(element)
                 .addOnSuccessListener(documentReference -> {
-                    // Manejar el éxito, si es necesario
                     elementList.add(element);
                     adapterElement.notifyDataSetChanged();
                 })
@@ -174,6 +176,7 @@ public class BlockDetailFragment extends Fragment {
                     System.out.println("Error al agregar elemento: " + e.getMessage());
                 });
     }
+
     private void deleteElementFromFirestore(String elementName) {
         DocumentReference documentRef = firestoreElement.collection("users")
                 .document(currentUserElement.getUid())
@@ -184,17 +187,18 @@ public class BlockDetailFragment extends Fragment {
 
         documentRef.delete()
                 .addOnSuccessListener(aVoid -> {
-
+                    for (int i = 0; i < elementList.size(); i++) {
+                        if (elementList.get(i).getName().equals(elementName)) {
+                            elementList.remove(i);
+                            adapterElement.notifyItemRemoved(i);
+                            break;
+                        }
+                    }
                 })
                 .addOnFailureListener(e -> {
-
+                    System.out.println("Error al eliminar el elemento: " + e.getMessage());
                 });
     }
-
-
-
-
-
 
     @Override
     public void onResume() {
