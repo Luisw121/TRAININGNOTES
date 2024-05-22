@@ -3,17 +3,17 @@
     <item
         android:id="@+id/Home"
         android:icon="@drawable/baseline_home_24"
-        android:title="@string/home" />
+        android:title="inicio" />
     <item
         android:id="@+id/entrenamiento"
         android:icon="@drawable/baseline_create_24"
-        android:title="@string/entrenamiento" />
+        android:title="entrenamiento" />
     <item
         android:id="@+id/calendar"
         android:icon="@drawable/baseline_calendar_month_24"
-        android:title="@string/calendari" />
+        android:title="calendario" />
     <item
         android:id="@+id/ubication"
         android:icon="@drawable/ubicacion"
-        android:title="@string/ubication" />
+        android:title="ubicación" />
 </menu>
