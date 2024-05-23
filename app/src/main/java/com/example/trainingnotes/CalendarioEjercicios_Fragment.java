@@ -47,6 +47,7 @@ public class CalendarioEjercicios_Fragment extends Fragment {
     private List<CalendarioEjercicios> calendarioEjerciciosList;
     private CollectionReference ejerciciosCollectionRef;
     private String selectedDate;
+    private NavController navController;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstaceState) {
@@ -63,6 +64,8 @@ public class CalendarioEjercicios_Fragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        navController = Navigation.findNavController(view);
 
         firestore = FirebaseFirestore.getInstance();
         auth = FirebaseAuth.getInstance();
@@ -121,6 +124,7 @@ public class CalendarioEjercicios_Fragment extends Fragment {
             @Override
             public void onClick(View v) {
                 deleteAllElementsFromFirestore(selectedDate);
+                //navController.navigate(R.id.calendarioFragment);
             }
         });
     }
@@ -150,6 +154,8 @@ public class CalendarioEjercicios_Fragment extends Fragment {
                                 // Eliminar cada documento de la colección
                                 document.getReference().delete();
                             }
+                            calendarioEjerciciosList.clear();
+                            calendarioEjercicioAdapter.notifyDataSetChanged();
                         } else {
                             Log.e("Firestore", "Error al obtener documentos: ", task.getException());
                         }
