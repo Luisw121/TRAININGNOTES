@@ -110,7 +110,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
 
         // Verificar si el usuario ha iniciado sesión y está en la pantalla principal
-        if (currentUser != null && currentDestination == R.id.pantallaPrincipalFragment) {
+        if (currentDestination == R.id.signInFragment) {
+            // Si el usuario está en signInFragment, cierra la aplicación
+            finish();
+        } else if (currentUser != null && currentDestination == R.id.pantallaPrincipalFragment) {
             // Si el usuario ha iniciado sesión y está en la pantalla principal, cierra la aplicación
             finish();
         } else {
