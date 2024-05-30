@@ -36,7 +36,6 @@ public class mapsFragment extends Fragment implements OnMapReadyCallback {
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
     private boolean locationPermissionGranted;
     private FusedLocationProviderClient fusedLocationClient;
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_maps, container, false);
@@ -185,88 +184,3 @@ public class mapsFragment extends Fragment implements OnMapReadyCallback {
         }
     }
 }
-
-
-
-
-/*
-import android.content.Intent;
-import android.net.Uri;
-import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
-
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.Toast;
-
-import com.google.android.gms.maps.CameraUpdate;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.libraries.places.api.net.PlacesClient;
-
-public class mapsFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnMapClickListener, GoogleMap.OnMapLongClickListener {
-    EditText txtLatitud, txtLongitud;
-    GoogleMap mMap;
-    private PlacesClient placesClient;
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_maps, container, false);
-
-        txtLatitud = view.findViewById(R.id.txtLatitud);
-        txtLongitud = view.findViewById(R.id.txtLongitud);
-
-        SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
-
-        return view;
-    }
-
-    @Override
-    public void onMapReady(@NonNull GoogleMap googleMap) {
-        mMap = googleMap;
-        this.mMap.setOnMapClickListener(this);
-        this.mMap.setOnMapLongClickListener(this);
-
-        LatLng barcelona = new LatLng(41.38879, 2.15899);
-        mMap.addMarker(new MarkerOptions().position(barcelona).title("Barcelona"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(barcelona));
-    }
-    //para darle click en el mapa pueda generarse
-    @Override
-    public void onMapClick(@NonNull LatLng latLng) {
-        txtLatitud.setText(""+latLng.latitude);
-        txtLongitud.setText(""+latLng.longitude);
-
-        mMap.clear();
-        LatLng barcelona = new LatLng(latLng.latitude, latLng.longitude);
-        mMap.addMarker(new MarkerOptions().position(barcelona).title(""));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(barcelona));
-    }
-    //para cuando presionemos en el mapa peuda generar el evento
-    @Override
-    public void onMapLongClick(@NonNull LatLng latLng) {
-        txtLatitud.setText(""+latLng.latitude);
-        txtLongitud.setText(""+latLng.longitude);
-
-        mMap.clear();
-        LatLng barcelona = new LatLng(latLng.latitude, latLng.longitude);
-        mMap.addMarker(new MarkerOptions().position(barcelona).title(""));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(barcelona));
-    }
-}
- */
