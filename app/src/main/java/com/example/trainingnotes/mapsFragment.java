@@ -1,7 +1,9 @@
 package com.example.trainingnotes;
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -30,6 +32,7 @@ import java.util.List;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import android.os.AsyncTask;
+import android.widget.ImageView;
 
 public class mapsFragment extends Fragment implements OnMapReadyCallback {
     private GoogleMap mMap;
@@ -53,6 +56,24 @@ public class mapsFragment extends Fragment implements OnMapReadyCallback {
 
         getLocationPermission();
 
+        ImageView imageView1 = view.findViewById(R.id.imageViewLogo2);
+        imageView1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Uri uri = Uri.parse("https://www.myprotein.es/");
+                Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                startActivity(intent);
+            }
+        });
+        ImageView imageView2 = view.findViewById(R.id.imageViewLogo3);
+        imageView2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Uri uri = Uri.parse("https://eu.gymshark.com/?gad_source=1&gclid=CjwKCAjwx-CyBhAqEiwAeOcTdV0R-TRELht1daMzvYyxmNVM7oD7abmc4qScE04mB8Z9gAwvu35KdxoC_v0QAvD_BwE&gclsrc=aw.ds");
+                Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                startActivity(intent);
+            }
+        });
         return view;
     }
 
