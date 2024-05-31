@@ -1,4 +1,5 @@
 package com.example.trainingnotes;
+
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -39,6 +40,7 @@ public class mapsFragment extends Fragment implements OnMapReadyCallback {
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
     private boolean locationPermissionGranted;
     private FusedLocationProviderClient fusedLocationClient;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_maps, container, false);
@@ -184,7 +186,7 @@ public class mapsFragment extends Fragment implements OnMapReadyCallback {
 
         private boolean isGym(String name) {
             name = name.toLowerCase();
-            List<String> gymKeywords = Arrays.asList("gym", "gimnasio", "fitness", "fit", "crossfit", "deportivo", "esport", "centro deportivo", "basic-fit");
+            List<String> gymKeywords = Arrays.asList("gym", "gimnasio", "fitness", "fit", "crossfit", "deportivo", "esport", "centro deportivo", "basic-fit", "gimnasio");
             for (String keyword : gymKeywords) {
                 if (name.contains(keyword)) {
                     return true;
@@ -195,7 +197,7 @@ public class mapsFragment extends Fragment implements OnMapReadyCallback {
 
         private boolean isUnwantedPlace(String name) {
             name = name.toLowerCase();
-            List<String> unwantedKeywords = Arrays.asList("druni perfumerias", "bon pastor");
+            List<String> unwantedKeywords = Arrays.asList("druni", "perfumerias", "bon pastor");
             for (String keyword : unwantedKeywords) {
                 if (name.contains(keyword)) {
                     return true;
